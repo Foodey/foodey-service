@@ -1,0 +1,25 @@
+spring:
+  data:
+    mongodb:
+      database: ${MONGO_DATABASE:foodey}
+      uri: mongodb+srv://${MONGO_USER:admin}:${MONGO_PASSWORD}@foodey.jdbhlen.mongodb.net/?retryWrites=true&w=majority&appName=Foodey
+  profiles:
+    active: prod
+
+logging:
+  file: logs/mylog.log
+
+foodey:
+  jwt:
+    secret-key: 01fbe13122a008e71d1f60b9fe9d1df3c3532845de0d3312bf04eee066be7f87 # FOODEY_JWT_SECRET_KEY
+    access-token-expiration: 300000 # 5 mins
+    refresh-token-expiration: 2592000000 # 30 days
+  sms:
+    expiration: 300000 # 5 mins
+
+# OTP SMS Configuration
+# twilio.account.sid=AC8adc8fd23169086c030a75fc218565c1
+# twilio.auth.token=c247d698778e1c3d0bed4016945f4bf2
+# twilio.trial.number=+12058925316
+# twilio.path-service-sid=VAdd009209f87e4bad1db116b3e7b4f8ae
+
