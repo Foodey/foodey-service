@@ -2,12 +2,12 @@ package com.foodey.server.exceptions.advice;
 
 import com.foodey.server.common.payload.ExceptionResponse;
 import com.foodey.server.exceptions.AccountRegistrationException;
-import com.foodey.server.exceptions.RefreshTokenException;
+import com.foodey.server.exceptions.InvalidTokenRequestException;
+import com.foodey.server.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.exceptions.UserLoginException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.BadRequestException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -27,55 +27,50 @@ public class AppExceptionAdvice {
   @ResponseBody
   public ExceptionResponse handleResourceAlreadyInUseException(
       ResourceAlreadyInUseException ex, HttpServletRequest request) {
-    return new ExceptionResponse(
-        HttpStatus.CONFLICT, ex.getMessage(), null, request, ex.getClass().getName());
+    return new ExceptionResponse(ex, request);
   }
 
-  @ExceptionHandler({
-    ResourceNotFoundException.class,
-  })
+  @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ResponseBody
   public ExceptionResponse handleResourceNotFoundException(
       ResourceNotFoundException ex, HttpServletRequest request) {
-    return new ExceptionResponse(
-        HttpStatus.NOT_FOUND, ex.getMessage(), null, request, ex.getClass().getName());
+    return new ExceptionResponse(ex, request);
   }
 
-  @ExceptionHandler({BadRequestException.class})
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(NewRoleRequestAlreadySentException.class)
+  @ResponseStatus(HttpStatus.ALREADY_REPORTED)
   @ResponseBody
-  public ExceptionResponse handleBadRequestException(
-      BadRequestException ex, HttpServletRequest request) {
-    return new ExceptionResponse(
-        HttpStatus.BAD_REQUEST, ex.getMessage(), null, request, ex.getClass().getName());
+  public ExceptionResponse handleNewRoleRequestAlreadySentException(
+      NewRoleRequestAlreadySentException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, request);
   }
 
-  @ExceptionHandler({
-    UsernameNotFoundException.class,
-  })
+  @ExceptionHandler({InvalidTokenRequestException.class})
+  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+  @ResponseBody
+  public ExceptionResponse handleInvalidTokenException(
+      InvalidTokenRequestException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, request);
+  }
+
+  @ExceptionHandler(UsernameNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ResponseBody
-  public ExceptionResponse handleResourceNotFoundException(
-      Exception ex, HttpServletRequest request) {
-    return new ExceptionResponse(
-        HttpStatus.NOT_FOUND, ex.getMessage(), null, request, ex.getClass().getName());
+  public ExceptionResponse handleUserNameNotFoundException(
+      UsernameNotFoundException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, HttpStatus.NOT_FOUND, null, request);
   }
 
   @ExceptionHandler({
     UserLoginException.class,
     BadCredentialsException.class,
     AccountRegistrationException.class,
-    RefreshTokenException.class,
   })
   @ResponseBody
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ExceptionResponse handleUserLoginException(Exception ex, HttpServletRequest request) {
     return new ExceptionResponse(
-        HttpStatus.EXPECTATION_FAILED,
-        "Password or username is incorrect",
-        null,
-        request,
-        ex.getClass().getName());
+        ex, HttpStatus.EXPECTATION_FAILED, "Password or username is incorrect", null, request);
   }
 }

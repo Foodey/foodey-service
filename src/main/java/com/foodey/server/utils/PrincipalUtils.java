@@ -1,7 +1,7 @@
 package com.foodey.server.utils;
 
 import com.foodey.server.exceptions.ResourceNotFoundException;
-import com.foodey.server.user.User;
+import com.foodey.server.user.model.User;
 import java.security.Principal;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

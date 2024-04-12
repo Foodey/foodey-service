@@ -1,6 +1,7 @@
 package com.foodey.server.common.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.foodey.server.exceptions.HttpException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,32 +13,32 @@ import org.springframework.http.HttpStatus;
 public class ExceptionResponse extends ApiResponse {
   private String message;
 
-  public ExceptionResponse(HttpStatus status, String message, String path) {
-    this(status, message, null, path);
+  public ExceptionResponse(
+      HttpException ex, String message, Object payload, HttpServletRequest request) {
+    super(ex.getStatus(), payload, request, ex.getClass());
+    this.message = message;
   }
 
-  public ExceptionResponse(HttpStatus status, String message, Object data, String path) {
-    this(status, message, data, path, null);
+  public ExceptionResponse(HttpException ex, Object payload, HttpServletRequest request) {
+    this(ex, ex.getMessage(), payload, request);
+  }
+
+  public ExceptionResponse(HttpException ex, String message, HttpServletRequest request) {
+    this(ex, message, null, request);
+  }
+
+  public ExceptionResponse(HttpException ex, HttpServletRequest request) {
+    this(ex, ex.getMessage(), null, request);
   }
 
   public ExceptionResponse(
-      HttpStatus status, String message, Object data, String path, String cause) {
-    super(status, data, path, cause);
+      Exception ex, HttpStatus status, String message, Object payload, HttpServletRequest request) {
+    super(status, payload, request, ex.getClass());
     this.message = message;
   }
 
   public ExceptionResponse(
-      HttpStatus status, String message, Object data, HttpServletRequest request, String cause) {
-    super(status, data, request, cause);
-    this.message = message;
-  }
-
-  public ExceptionResponse(
-      HttpStatus status, String message, Object data, HttpServletRequest request) {
-    this(status, message, data, request, null);
-  }
-
-  public ExceptionResponse(HttpStatus status, String message, HttpServletRequest request) {
-    this(status, message, null, request);
+      Exception ex, HttpStatus status, Object payload, HttpServletRequest request) {
+    this(ex, status, ex.getMessage(), payload, request);
   }
 }

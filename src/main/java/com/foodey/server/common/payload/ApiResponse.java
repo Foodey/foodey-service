@@ -20,28 +20,11 @@ public class ApiResponse {
   private final String path;
   private HttpStatus status;
 
-  public ApiResponse(HttpStatus status, Object data, String path, String cause) {
-    this.status = status;
-    this.data = data;
-    this.path = path;
-    this.cause = cause;
-    this.timestamp = Instant.now().toString();
-    this.code = status.value();
-  }
-
-  public ApiResponse(HttpStatus status, Object data, String path) {
-    this(status, data, path, null);
-  }
-
-  public ApiResponse(HttpStatus status, String path) {
-    this(status, null, path, null);
-  }
-
-  public ApiResponse(HttpStatus status, Object data, HttpServletRequest request, String cause) {
+  public ApiResponse(HttpStatus status, Object data, HttpServletRequest request, Class<?> cause) {
     this.status = status;
     this.data = data;
     this.path = request.getServletPath();
-    this.cause = cause;
+    this.cause = cause.getName();
     this.timestamp = Instant.now().toString();
     this.code = status.value();
   }

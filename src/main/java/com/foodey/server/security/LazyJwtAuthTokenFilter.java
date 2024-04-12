@@ -1,9 +1,9 @@
 package com.foodey.server.security;
 
-import com.foodey.server.auth.TokenType;
+import com.foodey.server.auth.enums.TokenType;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
-import com.foodey.server.user.User;
-import com.foodey.server.user.UserRepository;
+import com.foodey.server.user.model.User;
+import com.foodey.server.user.repository.UserRepository;
 import com.foodey.server.utils.HttpHeaderUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

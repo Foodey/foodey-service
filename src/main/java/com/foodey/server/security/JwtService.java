@@ -1,9 +1,9 @@
 package com.foodey.server.security;
 
-import com.foodey.server.auth.RefreshToken;
-import com.foodey.server.auth.TokenType;
+import com.foodey.server.auth.enums.TokenType;
+import com.foodey.server.auth.model.RefreshToken;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
-import com.foodey.server.user.User;
+import com.foodey.server.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
