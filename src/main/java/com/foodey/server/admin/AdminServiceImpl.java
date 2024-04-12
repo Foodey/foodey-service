@@ -31,5 +31,7 @@ public class AdminServiceImpl implements AdminService {
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
 
     userService.upgradeRole(user, request);
+
+    newRoleRequestRepository.deleteById(requestId);
   }
 }

@@ -117,6 +117,7 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.DELETE, WhiteListUrl.DELETE_METHODS)
                     .permitAll()
+                    // .permitAll()
                     // .hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
                     // .requestMatchers(PUT, "/api/v1/management/**")
                     // .hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())

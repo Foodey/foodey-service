@@ -7,7 +7,10 @@ spring:
     active: prod
 
 logging:
-  file: logs/mylog.log
+  # pattern:
+  #   file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  file:
+    name: logs/foodey.log
 
 foodey:
   jwt:
