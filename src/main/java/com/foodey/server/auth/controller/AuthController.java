@@ -1,7 +1,7 @@
 package com.foodey.server.auth.controller;
 
-import com.foodey.server.auth.model.LoginRequest;
-import com.foodey.server.auth.model.RegistrationRequest;
+import com.foodey.server.auth.dto.LoginRequest;
+import com.foodey.server.auth.dto.RegistrationRequest;
 import com.foodey.server.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.ServletException;
@@ -26,6 +26,7 @@ public class AuthController {
 
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Registers a new user to the system")
   public void register(
       @Param(value = "The RegistrationRequest payload") @RequestBody @Valid
           RegistrationRequest signUpRequest) {

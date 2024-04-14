@@ -32,6 +32,7 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    System.out.println(request.getServletPath());
     return request.getServletPath().contains("/api/v1/auth");
   }
 
@@ -59,6 +60,7 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
           if (jwtService.isAccessTokenValid(jwtToken, user)) {
             UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             context.setAuthentication(authentication);
           }

@@ -1,13 +1,14 @@
 package com.foodey.server.auth.service.impl;
 
+import com.foodey.server.auth.dto.JwtResponse;
+import com.foodey.server.auth.dto.LoginRequest;
+import com.foodey.server.auth.dto.LoginResponse;
+import com.foodey.server.auth.dto.RegistrationRequest;
 import com.foodey.server.auth.enums.TokenType;
-import com.foodey.server.auth.model.JwtResponse;
-import com.foodey.server.auth.model.LoginRequest;
-import com.foodey.server.auth.model.LoginResponse;
 import com.foodey.server.auth.model.RefreshToken;
-import com.foodey.server.auth.model.RegistrationRequest;
 import com.foodey.server.auth.repository.RefreshTokenRepository;
 import com.foodey.server.auth.service.AuthService;
+import com.foodey.server.event.UserRegistrationSuccessfulEvent;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.UserLoginException;
@@ -19,6 +20,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,6 +36,8 @@ public class AuthServiceImpl implements AuthService {
   private final RefreshTokenRepository refreshTokenRepository;
 
   private final AuthenticationManager authenticationManager;
+  private final ApplicationEventPublisher eventPublisher;
+
   private final UserService userService;
   private final JwtService jwtService;
 
@@ -105,8 +109,8 @@ public class AuthServiceImpl implements AuthService {
     if (userService.existsByPhoneNumber(phoneNumber))
       throw new ResourceAlreadyInUseException("User", "phoneNumber", phoneNumber);
 
-    User user = userService.createBasicUser(request);
+    User user = userService.save(userService.createBasicUser(request));
 
-    userService.save(user);
+    eventPublisher.publishEvent(new UserRegistrationSuccessfulEvent(user));
   }
 }

@@ -1,11 +1,11 @@
 package com.foodey.server.exceptions.advice;
 
 import com.foodey.server.common.payload.ExceptionResponse;
-import com.foodey.server.exceptions.AccountRegistrationException;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
+import com.foodey.server.exceptions.TooManyRequestsException;
 import com.foodey.server.exceptions.UserLoginException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
@@ -38,6 +38,14 @@ public class AppExceptionAdvice {
     return new ExceptionResponse(ex, request);
   }
 
+  @ExceptionHandler(TooManyRequestsException.class)
+  @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+  @ResponseBody
+  public ExceptionResponse handleTooManyRequestsException(
+      TooManyRequestsException e, HttpServletRequest request) {
+    return new ExceptionResponse(e, HttpStatus.TOO_MANY_REQUESTS, null, request);
+  }
+
   @ExceptionHandler(NewRoleRequestAlreadySentException.class)
   @ResponseStatus(HttpStatus.ALREADY_REPORTED)
   @ResponseBody
@@ -46,7 +54,7 @@ public class AppExceptionAdvice {
     return new ExceptionResponse(ex, request);
   }
 
-  @ExceptionHandler({InvalidTokenRequestException.class})
+  @ExceptionHandler(InvalidTokenRequestException.class)
   @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
   @ResponseBody
   public ExceptionResponse handleInvalidTokenException(
@@ -65,7 +73,6 @@ public class AppExceptionAdvice {
   @ExceptionHandler({
     UserLoginException.class,
     BadCredentialsException.class,
-    AccountRegistrationException.class,
   })
   @ResponseBody
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)

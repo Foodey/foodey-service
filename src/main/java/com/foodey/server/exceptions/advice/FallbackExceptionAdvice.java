@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 @RestControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -25,11 +26,11 @@ public class FallbackExceptionAdvice {
     return new ExceptionResponse(ex, HttpStatus.BAD_REQUEST, null, request);
   }
 
-  @ExceptionHandler(IllegalArgumentException.class)
+  @ExceptionHandler(IllegalAccessException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
   public ExceptionResponse handleIllegalArgumentException(
-      IllegalArgumentException e, HttpServletRequest request) {
+      IllegalAccessException e, HttpServletRequest request) {
     return new ExceptionResponse(e, HttpStatus.BAD_REQUEST, null, request);
   }
 
@@ -39,11 +40,22 @@ public class FallbackExceptionAdvice {
     return new ExceptionResponse(e, request).toResponseEntity();
   }
 
+  @ExceptionHandler(HttpClientErrorException.class)
+  public ResponseEntity<?> handleHttpClientErrorException(
+      HttpClientErrorException e, HttpServletRequest request) {
+    return new ExceptionResponse(
+            e,
+            HttpStatus.valueOf(e.getStatusCode().value()),
+            e.getStatusText(),
+            e.getMessage(),
+            request)
+        .toResponseEntity();
+  }
+
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ResponseBody
-  public ExceptionResponse handleUnwantedException(
-      IllegalArgumentException e, HttpServletRequest request) {
+  public ExceptionResponse handleUnwantedException(Exception e, HttpServletRequest request) {
     return new ExceptionResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, null, request);
   }
 }

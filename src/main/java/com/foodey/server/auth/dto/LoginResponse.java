@@ -1,6 +1,5 @@
-package com.foodey.server.auth.model;
+package com.foodey.server.auth.dto;
 
-/** LoginRequest */
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

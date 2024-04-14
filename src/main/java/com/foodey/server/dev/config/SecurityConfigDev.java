@@ -1,4 +1,4 @@
-package com.foodey.server.dev.configs;
+package com.foodey.server.dev.config;
 
 import com.foodey.server.security.AuthEntryPointJwt;
 import com.foodey.server.security.LazyJwtAuthTokenFilter;

@@ -50,12 +50,12 @@ public class User implements UserDetails, UserRole {
   // Because the phoneNumber can be changed by the user,
   // and we need a unique identifier for the account.
   @Default
-  @Indexed
+  @Indexed(unique = true)
   @Schema(description = "The public id of the account")
   private String pubId = NanoIdUtils.randomNanoId();
 
   @PhoneNumber
-  @Indexed
+  @Indexed(unique = true)
   @Schema(description = "The phone number of the account", required = true)
   private String phoneNumber;
 

@@ -19,6 +19,14 @@ public class ResourceNotFoundException extends HttpException {
     this.fieldValue = fieldValue;
   }
 
+  public ResourceNotFoundException(
+      String message, String resourceName, String fieldName, Object fieldValue) {
+    super(HttpStatus.NOT_FOUND, message);
+    this.resourceName = resourceName;
+    this.fieldName = fieldName;
+    this.fieldValue = fieldValue;
+  }
+
   public String getResourceName() {
     return resourceName;
   }

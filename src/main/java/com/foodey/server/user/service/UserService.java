@@ -1,6 +1,6 @@
 package com.foodey.server.user.service;
 
-import com.foodey.server.auth.model.RegistrationRequest;
+import com.foodey.server.auth.dto.RegistrationRequest;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.foodey.server.auth.model;
+package com.foodey.server.auth.dto;
 
 import com.foodey.server.auth.enums.TokenType;
 import lombok.Getter;

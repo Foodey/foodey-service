@@ -22,25 +22,54 @@ public @interface PhoneNumber {
 
   boolean optional() default false;
 
-  String customRegexp() default "";
+  String regexp() default "";
 
-  Regexp[] regexp() default {
-    Regexp.VIETNAM, Regexp.US, Regexp.UK, Regexp.SINGAPORE, Regexp.AUSTRALIA,
+  Region[] regions() default {
+    Region.VIETNAM,
+    Region.SINGAPORE,
+    Region.CHINA,
+    Region.INDIA,
+    Region.JAPAN,
+    Region.KOREA,
+    Region.AUSTRALIA,
+    Region.US,
+    Region.CANADA,
+    Region.UK,
+    Region.RUSSIA,
+    Region.GERMANY,
+    Region.FRANCE,
   };
 
-  public static enum Regexp {
-    VIETNAM("^(\\+84|0)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-46-9])\\d{7}$"),
-    US("^\\+1\\d{10}$"),
-    UK("^\\+44\\d{10}$"),
-    SINGAPORE("^\\+65\\d{8}$"),
-    AUSTRALIA("^\\+61\\d{9}$"),
-    RUSSIA("^\\+7\\d{10}$"),
-    GERMANY("^\\+49\\d{10}$"),
+  public static enum Region {
+    // South East Asia
+    VIETNAM("^(\\+84|0|0084)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-46-9])\\d{7}$"),
+    SINGAPORE("^(\\+65|0065)\\d{8}$"),
+
+    // East Asia
+    JAPAN("^(\\+81|0081)\\d{10}$"),
+    CHINA("^(\\+86|0086)\\d{11}$"),
+    KOREA("^(\\+82|0082)\\d{10}$"),
+
+    // South Asia
+    INDIA("^(\\+91|0091)\\d{10}$"),
+
+    // Oceania
+    AUSTRALIA("^(\\+61|0061)\\d{9}$"),
+
+    // North America
+    US("^(\\+1|001)\\d{10}$"),
+    CANADA("^(\\+1|001)\\d{10}$"),
+
+    // Europe
+    UK("^(\\+44|0044)\\d{10}$"),
+    RUSSIA("^(\\+7|007)\\d{10}$"),
+    GERMANY("^(\\+49|0049)\\d{10}$"),
+    FRANCE("^(\\+33|0033)\\d{9}$"),
     ;
 
     private final String regexp;
 
-    Regexp(String value) {
+    Region(String value) {
       this.regexp = value;
     }
 

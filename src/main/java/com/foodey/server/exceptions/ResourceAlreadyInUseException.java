@@ -19,6 +19,14 @@ public class ResourceAlreadyInUseException extends HttpException {
     this.fieldValue = fieldValue;
   }
 
+  public ResourceAlreadyInUseException(
+      String message, String resourceName, String fieldName, Object fieldValue) {
+    super(HttpStatus.CONFLICT, message);
+    this.resourceName = resourceName;
+    this.fieldName = fieldName;
+    this.fieldValue = fieldValue;
+  }
+
   public String getResourceName() {
     return resourceName;
   }

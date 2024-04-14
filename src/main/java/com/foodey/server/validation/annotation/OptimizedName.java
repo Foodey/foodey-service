@@ -10,14 +10,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.PARAMETER, ElementType.FIELD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 @Documented
-@NotBlank(message = "Name must be between 3 and 50 characters")
-@Size(min = 2, max = 50, message = "Name must be between 3 and 50 characters")
+@NotBlank
+@Size(min = 3, max = 50)
 public @interface OptimizedName {
-  String message() default "Name must be between 3 and 50 characters";
+
+  String message() default "Name must be between {min} and {max} characters";
 
   Class<?>[] groups() default {};
 

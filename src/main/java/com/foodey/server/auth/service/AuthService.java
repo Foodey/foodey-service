@@ -1,9 +1,9 @@
 package com.foodey.server.auth.service;
 
-import com.foodey.server.auth.model.JwtResponse;
-import com.foodey.server.auth.model.LoginRequest;
-import com.foodey.server.auth.model.LoginResponse;
-import com.foodey.server.auth.model.RegistrationRequest;
+import com.foodey.server.auth.dto.JwtResponse;
+import com.foodey.server.auth.dto.LoginRequest;
+import com.foodey.server.auth.dto.LoginResponse;
+import com.foodey.server.auth.dto.RegistrationRequest;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 

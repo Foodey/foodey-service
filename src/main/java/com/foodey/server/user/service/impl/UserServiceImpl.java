@@ -1,6 +1,6 @@
 package com.foodey.server.user.service.impl;
 
-import com.foodey.server.auth.model.RegistrationRequest;
+import com.foodey.server.auth.dto.RegistrationRequest;
 import com.foodey.server.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;

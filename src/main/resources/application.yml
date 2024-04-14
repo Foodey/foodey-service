@@ -3,12 +3,11 @@ spring:
     mongodb:
       database: ${MONGO_DATABASE:foodey}
       uri: mongodb+srv://${MONGO_USER:admin}:${MONGO_PASSWORD}@foodey.jdbhlen.mongodb.net/?retryWrites=true&w=majority&appName=Foodey
+      autoIndexCreation: true
   profiles:
     active: prod
 
 logging:
-  # pattern:
-  #   file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
   file:
     name: logs/foodey.log
 
@@ -18,9 +17,25 @@ foodey:
     access-token-expiration: 300000 # 5 mins
     refresh-token-expiration: 2592000000 # 30 days
   sms:
-    expiration: 300000 # 5 mins
+    httpsms:
+      api-key: Z1CRFGp2xy2Pww71MTfImM8ikzpNHiEjYGGXoXBB1Bz7gOYTGSCrg_uszlIQr0zd
+      sender: "+84392211343"
+  otp:
+    expiration:
+      high: 600000 # 10 mins
+      medium: 300000 # 5 mins
+      short: 60000 # 1 min
+      fast: 30000 # 30s
+    resend-interval: 60000 # 1 min
 
-# OTP SMS Configuration
+    # OTP SMS Configuration
+twilio:
+  account:
+    sid: AC25441bcc1850e3589856409215753922
+  auth:
+    token:
+      cc529a66b93f144a7ad2d9fb2607f48e
+      #
 # twilio.account.sid=AC8adc8fd23169086c030a75fc218565c1
 # twilio.auth.token=c247d698778e1c3d0bed4016945f4bf2
 # twilio.trial.number=+12058925316
