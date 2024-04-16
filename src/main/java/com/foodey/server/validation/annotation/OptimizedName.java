@@ -2,6 +2,7 @@ package com.foodey.server.validation.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.OverridesAttribute;
+import jakarta.validation.Payload;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.lang.annotation.Documented;
@@ -17,6 +18,12 @@ import java.lang.annotation.Target;
 @NotBlank
 @Size
 public @interface OptimizedName {
+
+  String message() default "Name must be between {min} and {max} characters";
+
+  Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 
   @OverridesAttribute(constraint = Size.class, name = "min")
   int min() default 5;

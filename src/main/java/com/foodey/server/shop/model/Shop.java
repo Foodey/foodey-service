@@ -1,8 +1,7 @@
-package com.foodey.server.shop;
+package com.foodey.server.shop.model;
 
 import com.foodey.server.validation.annotation.OptimizedName;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
@@ -21,17 +20,23 @@ public class Shop {
 
   @OptimizedName private String name;
 
-  private String logo = "";
-  private String wallpaper = "";
+  private String logo;
+  private String wallpaper;
 
-  @Min(0)
   private long rating = 0;
 
-  @NotBlank(message = "Address is required")
-  @Size(min = 2, max = 50, message = "Address must be between 3 and 50 characters")
+  @NotBlank
+  @Size(min = 2, max = 100)
   private String address;
 
   private List<@Valid ShopMenu> menus = new ArrayList<>();
 
   @DBRef private ShopBranch branch;
+
+  public Shop(String name, String address, String logo, String wallpaper) {
+    this.name = name;
+    this.address = address;
+    this.logo = logo;
+    this.wallpaper = wallpaper;
+  }
 }

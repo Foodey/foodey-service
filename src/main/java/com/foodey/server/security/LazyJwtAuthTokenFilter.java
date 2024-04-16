@@ -32,7 +32,6 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-    System.out.println(request.getServletPath());
     return request.getServletPath().contains("/api/v1/auth");
   }
 

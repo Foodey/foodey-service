@@ -1,9 +1,6 @@
 package com.foodey.server.product;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.foodey.server.validation.annotation.OptimizedName;
 import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,44 +18,35 @@ public class Product implements Persistable<String> {
 
   @Id private String id;
 
-  @NotBlank(message = "Name is mandatory")
-  @Size(min = 2, max = 50, message = "Name should be between 2 and 50 characters")
-  private String name;
+  @OptimizedName private String name;
 
-  private String image = "";
+  private long price;
 
-  private String description = "";
+  private String image;
 
-  @Min(value = 0, message = "Price should be greater than 0")
-  @NotNull
-  private Long price;
-
-  @Min(value = 0, message = "Rating should be greater than 0")
-  private long rating = 0;
-
-  @Min(value = 0, message = "Sold quantity should be greater than 0")
-  private long soldQuantity = 0;
-
-  private boolean soldOut = false;
-
-  // @DBRef private ProductCategory category;
+  private String description;
 
   private int menuIndex;
 
   private String branchId;
 
+  private ProductCategory category;
+
+  private long rating = 0;
+
+  private long soldQuantity = 0;
+
+  private boolean soldOut = false;
+
   @CreatedDate private Instant createdAt;
 
   @LastModifiedDate private Instant updatedAt;
 
-  public Product() {
-    this.rating = 0;
-    this.soldQuantity = 0;
-    this.soldOut = false;
-    this.description = "";
-    this.image = "";
-    this.createdAt = Instant.now();
-    this.updatedAt = Instant.now();
+  public Product(String name, long price, String image, String description) {
+    this.name = name;
+    this.price = price;
+    this.image = image;
+    this.description = description;
   }
 
   @Override

@@ -1,6 +1,5 @@
 package com.foodey.server.otp;
 
-/** OTPService */
 public interface OTPService {
 
   OTP generate(String id);
