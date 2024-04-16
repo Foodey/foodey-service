@@ -2,6 +2,7 @@ package com.foodey.server.exceptions.advice;
 
 import com.foodey.server.common.payload.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,13 @@ public class ValidationExceptionAdvice {
   //           });
   //   return new ExceptionResponse(e, HttpStatus.BAD_REQUEST, body, request);
   // }
+  //
+  @ExceptionHandler(ValidationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ExceptionResponse handleValidationException(
+      ValidationException e, HttpServletRequest request) {
+    return new ExceptionResponse(e, HttpStatus.BAD_REQUEST, null, request);
+  }
 
   @ExceptionHandler(BindException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)

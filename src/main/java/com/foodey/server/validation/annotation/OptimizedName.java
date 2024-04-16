@@ -26,7 +26,7 @@ public @interface OptimizedName {
   Class<? extends Payload>[] payload() default {};
 
   @OverridesAttribute(constraint = Size.class, name = "min")
-  int min() default 5;
+  int min() default 3;
 
   @OverridesAttribute(constraint = Size.class, name = "max")
   int max() default 50;

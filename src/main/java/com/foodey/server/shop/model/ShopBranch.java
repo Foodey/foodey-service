@@ -1,35 +1,34 @@
 package com.foodey.server.shop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.PhoneNumber;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @Document(collection = "shop_branches")
-@CompoundIndexes({
-  @CompoundIndex(name = "shopbranch_name_owner_id", def = "{'name': 1, 'ownerId': 1}")
-})
+@CompoundIndex(name = "name_owner_id", def = "{'name': 1, 'ownerId': 1}")
+@AllArgsConstructor
 public class ShopBranch {
-  @Id private String id;
+  @Null @Id private String id;
 
   @OptimizedName private String name;
 
-  @PhoneNumber private String phone;
+  @PhoneNumber private String phoneNumber;
 
   @Email private String email;
 
-  private String ownerId;
+  @JsonIgnore private String ownerId;
 
   private String logo;
 

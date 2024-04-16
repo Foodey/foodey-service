@@ -10,6 +10,7 @@ import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.Password;
 import com.foodey.server.validation.annotation.PhoneNumber;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Null;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 public class User implements UserDetails, UserRole {
 
-  @JsonIgnore @Id private String id;
+  @Null @JsonIgnore @Id private String id;
 
   // Why we need this?
   // The public id is a unique identifier for the account.

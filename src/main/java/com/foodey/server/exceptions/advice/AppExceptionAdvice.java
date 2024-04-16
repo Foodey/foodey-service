@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,5 +80,12 @@ public class AppExceptionAdvice {
   public ExceptionResponse handleUserLoginException(Exception ex, HttpServletRequest request) {
     return new ExceptionResponse(
         ex, HttpStatus.EXPECTATION_FAILED, "Password or username is incorrect", null, request);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ExceptionResponse handleAccessDeniedException(
+      AccessDeniedException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, HttpStatus.FORBIDDEN, null, request);
   }
 }

@@ -13,20 +13,17 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @Document(collection = "otps")
-@CompoundIndexes({
-  @CompoundIndex(
-      name = "id_otp_expireAt",
-      def = "{'id': 1, 'otp': 1, 'expiredAt': 1}",
-      unique = true,
-      background = true)
-})
+@CompoundIndex(
+    name = "id_otp_expireAt",
+    def = "{'id': 1, 'otp': 1, 'expiredAt': 1}",
+    unique = true,
+    background = true)
 public class OTP implements Persistable<String> {
 
   @Transient private static final int MAX_EXPIRED_MS = 10 * 60 * 1000;
