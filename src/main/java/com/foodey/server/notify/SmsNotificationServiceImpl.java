@@ -1,6 +1,7 @@
 package com.foodey.server.notify;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foodey.server.exceptions.SMSNotificationException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -53,7 +54,14 @@ public class SmsNotificationServiceImpl implements NotificationService {
       String response = scanner.hasNext() ? scanner.next() : "";
       scanner.close();
 
-      // Map<String, Object> responseMap = new ObjectMapper().readValue(response, Map.class);
+      final Map<String, Object> responseMap = new ObjectMapper().readValue(response, Map.class);
+
+      if (responseMap.containsKey("failed_at")) {
+        String failedReason = (String) responseMap.get("failure_reason");
+        log.error("SMS failed: " + failedReason);
+
+        throw new SMSNotificationException(receiver, "SMS failed: " + failedReason);
+      }
 
       log.info("SMS response: " + response);
 

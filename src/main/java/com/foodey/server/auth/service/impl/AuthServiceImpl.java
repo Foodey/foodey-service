@@ -12,6 +12,10 @@ import com.foodey.server.auth.service.AuthService;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.UserLoginException;
+import com.foodey.server.notify.NotificationType;
+import com.foodey.server.otp.OTPExpiration;
+import com.foodey.server.otp.OTPProperties;
+import com.foodey.server.otp.OTPService;
 import com.foodey.server.security.jwt.JwtService;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.service.UserService;
@@ -40,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
 
   private final UserService userService;
   private final JwtService jwtService;
+  private final OTPService otpService;
 
   @Override
   public LoginResponse login(LoginRequest loginRequest) {
@@ -110,6 +115,19 @@ public class AuthServiceImpl implements AuthService {
       throw new ResourceAlreadyInUseException("User", "phoneNumber", phoneNumber);
 
     User user = userService.save(userService.createBasicUser(request));
+    OTPProperties otpProperties =
+        OTPProperties.builder()
+            .notificationType(NotificationType.SMS)
+            .otpExpiration(OTPExpiration.SHORT)
+            .build();
+
+    otpService.send(
+        user.getPhoneNumber(),
+        otpProperties,
+        (otp) ->
+            "Welcome to Foodey! Your OTP is "
+                + otp
+                + ". Please enter this OTP to complete your registration.");
 
     applicationEventPulisher.publishEvent(new UserWaitingOTPValidationEvent(this, user));
   }

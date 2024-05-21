@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +27,6 @@ public class LogoutServiceImpl implements LogoutHandler {
   @Transactional
   public void logout(
       HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-    System.out.println("Logging out");
-    SecurityContextHolder.clearContext();
     // try {
     //   final String refreshToken = HttpHeaderHelper.getBearerToken(request);
 

@@ -1,10 +1,10 @@
 package com.foodey.server.otp;
 
 import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
-import com.foodey.server.notify.NotificationFactory;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Function;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,34 +31,39 @@ public class OTPServiceImpl implements OTPService {
   private long SHORT_EXPIRATION_TIME;
 
   private final OTPRepository otpRepository;
-  private final NotificationFactory notificationFactory;
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
-  public void validate(String id, String otp, OTPType otpType) {
-    if (otpRepository.get(id).orElseThrow(() -> new OTPException("OTP expires", otp)).equals(otp)) {
-      otpRepository.remove(id);
-      eventPublisher.publishEvent(new OTPValidatedEvent(this, id, otp, otpType));
+  public void validate(String receiver, String otp, OTPProperties properties) {
+    if (otpRepository
+        .get(receiver)
+        .orElseThrow(() -> new OTPException("OTP expires", otp))
+        .equals(otp)) {
+      otpRepository.remove(receiver);
+      eventPublisher.publishEvent(new OTPValidatedEvent(this, receiver, otp, properties));
     } else {
       throw new OTPException("Invalid OTP", otp);
     }
   }
 
   @Override
-  @Transactional
-  public String send(String notificationType, String id, OTPExpiration expiration) {
-    String otp = generateOtp();
-    otpRepository.put(id, otp, Duration.ofMillis(getExpirationTime(expiration)));
-    notificationFactory.execute(notificationType, id, message(otp));
-    return otp;
+  public String send(String receiver, OTPProperties properties) {
+    return send(receiver, properties, this::message);
   }
 
   @Override
-  @Transactional
-  public String send(String notificationType, String id, long expiredAfterMs) {
+  public String send(
+      String receiver, OTPProperties properties, Function<String, String> messageFunction) {
+
     String otp = generateOtp();
-    otpRepository.put(id, otp, Duration.ofMillis(expiredAfterMs));
-    notificationFactory.execute(notificationType, id, message(otp));
+    if (properties.getOtpExpiration() == null)
+      otpRepository.put(receiver, otp, Duration.ofMillis(properties.getTtl()));
+    else
+      otpRepository.put(
+          receiver, otp, Duration.ofMillis(getExpirationTime(properties.getOtpExpiration())));
+
+    eventPublisher.publishEvent(
+        new OTPSendingEvent(this, receiver, otp, messageFunction.apply(otp), properties));
     return otp;
   }
 
@@ -86,6 +90,10 @@ public class OTPServiceImpl implements OTPService {
     }
   }
 
+  private String message(String otp) {
+    return "Your Foodey OTP is: " + otp + ". Please do not share it with anyone.";
+  }
+
   private long getExpirationTime(OTPExpiration expiration) {
     switch (expiration) {
       case FAST:
@@ -99,9 +107,5 @@ public class OTPServiceImpl implements OTPService {
       default:
         return SHORT_EXPIRATION_TIME;
     }
-  }
-
-  private String message(String otp) {
-    return "Your Foodey OTP is: " + otp + ". Please do not share it with anyone.";
   }
 }

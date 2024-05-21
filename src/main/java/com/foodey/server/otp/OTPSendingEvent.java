@@ -6,16 +6,19 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 @Setter
-public class OTPValidatedEvent extends ApplicationEvent {
+public class OTPSendingEvent extends ApplicationEvent {
 
-  private String otp;
   private String receiver;
+  private String otp;
+  private String message;
   private OTPProperties otpProperties;
 
-  public OTPValidatedEvent(Object source, String receiver, String otp, OTPProperties properties) {
+  public OTPSendingEvent(
+      Object source, String receiver, String otp, String message, OTPProperties props) {
     super(source);
     this.receiver = receiver;
     this.otp = otp;
-    this.otpProperties = properties;
+    this.otpProperties = props;
+    this.message = message;
   }
 }

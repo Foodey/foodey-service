@@ -72,8 +72,8 @@ bucket4j:
       rate-limits:
         - cache-key: "getRemoteAddr()"
           bandwidths:
-            - capacity: 1
-              time: 30
+            - capacity: 3
+              time: 60
               unit: seconds
     - cache-name: rate-limit-buckets
       id: auth-filter
@@ -125,8 +125,8 @@ foodey:
     expiration:
       long: 600000 # 10 mins
       medium: 300000 # 5 mins
-      short: 60000 # 1 min
-      fast: 30000 # 30s
+      short: 120000 # 2 mins
+      fast: 60000 # 10s
     resend-interval: 60000 # 1 min
 
 twilio:

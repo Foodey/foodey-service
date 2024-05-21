@@ -1,12 +1,14 @@
 package com.foodey.server.otp;
 
+import java.util.function.Function;
+
 public interface OTPService {
 
-  void validate(String id, String otp, OTPType otpType);
+  void validate(String reciever, String otp, OTPProperties props);
 
-  String send(String notificationType, String id, OTPExpiration expiration);
+  String send(String reciever, OTPProperties properties);
 
-  String send(String notificationType, String id, long expiredAfterMs);
+  String send(String reciever, OTPProperties properties, Function<String, String> messageFunction);
 
   String generateOtp();
 }

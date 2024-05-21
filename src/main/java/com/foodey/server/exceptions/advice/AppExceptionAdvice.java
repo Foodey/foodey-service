@@ -5,8 +5,10 @@ import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
+import com.foodey.server.exceptions.SMSNotificationException;
 import com.foodey.server.exceptions.TooManyRequestsException;
 import com.foodey.server.exceptions.UserLoginException;
+import com.giffing.bucket4j.spring.boot.starter.context.RateLimitException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -97,9 +99,16 @@ public class AppExceptionAdvice {
     return new ExceptionResponse(ex, HttpStatus.UNAUTHORIZED, null, request);
   }
 
-  // @ExceptionHandler(value = {RateLimitException.class})
-  // @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-  // public ExceptionResponse handleRateLimit(RateLimitException e, HttpServletRequest request) {
-  //   return new ExceptionResponse(e, HttpStatus.TOO_MANY_REQUESTS, null, request);
-  // }
+  @ExceptionHandler(value = {RateLimitException.class})
+  @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+  public ExceptionResponse handleRateLimit(RateLimitException e, HttpServletRequest request) {
+    return new ExceptionResponse(e, HttpStatus.TOO_MANY_REQUESTS, null, request);
+  }
+
+  @ExceptionHandler(SMSNotificationException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ExceptionResponse handleSMSNotificationException(
+      SMSNotificationException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, null, request);
+  }
 }
