@@ -12,7 +12,7 @@ import com.foodey.server.event.UserRegistrationSuccessfulEvent;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.UserLoginException;
-import com.foodey.server.security.JwtService;
+import com.foodey.server.security.jwt.JwtService;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.service.UserService;
 import com.foodey.server.utils.HttpHeaderUtils;

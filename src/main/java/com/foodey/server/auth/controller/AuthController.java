@@ -1,5 +1,6 @@
 package com.foodey.server.auth.controller;
 
+import com.foodey.server.annotation.PublicEndpoint;
 import com.foodey.server.auth.dto.LoginRequest;
 import com.foodey.server.auth.dto.RegistrationRequest;
 import com.foodey.server.auth.service.AuthService;
@@ -27,6 +28,7 @@ public class AuthController {
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Operation(summary = "Registers a new user to the system")
+  @PublicEndpoint
   public void register(
       @Param(value = "The RegistrationRequest payload") @RequestBody @Valid
           RegistrationRequest signUpRequest) {
@@ -35,6 +37,7 @@ public class AuthController {
 
   @PostMapping("/login")
   @Operation(summary = "Logs the user in to the system and return the auth tokens")
+  @PublicEndpoint
   public ResponseEntity<?> login(
       @Param(value = "The LoginRequest payload") @RequestBody @Valid LoginRequest request) {
     return ResponseEntity.ok(authService.login(request));
@@ -42,6 +45,7 @@ public class AuthController {
 
   @PostMapping("/refresh-token")
   @Operation(summary = "Refresh the expired jwt authentication")
+  @PublicEndpoint
   public ResponseEntity<?> refreshToken(HttpServletRequest request) throws ServletException {
     return ResponseEntity.ok(authService.refreshToken(request));
   }

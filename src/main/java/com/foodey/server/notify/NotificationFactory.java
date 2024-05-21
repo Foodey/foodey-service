@@ -38,8 +38,8 @@ public class NotificationFactory {
    * @param notificationType the type of notification to execute
    * @throws IllegalArgumentException if the provided notification type is not supported
    */
-  public <R> void execute(String notificationType, R receiver, String message) {
+  public <R> void execute(String notificationType, R receiver, String message, Object... args) {
     NotificationService notificationService = getNotificationService(notificationType);
-    notificationService.sendNotification(receiver, message);
+    notificationService.sendNotification(receiver, message, args);
   }
 }

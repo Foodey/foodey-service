@@ -3,6 +3,7 @@ package com.foodey.server.exceptions.advice;
 import com.foodey.server.common.payload.ExceptionResponse;
 import com.foodey.server.exceptions.HttpException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @RestControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
+@Slf4j
 public class FallbackExceptionAdvice {
 
   @ExceptionHandler({BadRequestException.class})
@@ -56,6 +58,7 @@ public class FallbackExceptionAdvice {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ResponseBody
   public ExceptionResponse handleUnwantedException(Exception e, HttpServletRequest request) {
+    log.error("Unexpected error", e);
     return new ExceptionResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, null, request);
   }
 }

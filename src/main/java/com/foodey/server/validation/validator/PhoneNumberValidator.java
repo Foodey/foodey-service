@@ -1,7 +1,7 @@
 package com.foodey.server.validation.validator;
 
 import com.foodey.server.validation.annotation.PhoneNumber;
-import com.foodey.server.validation.annotation.PhoneNumber.Region;
+import com.foodey.server.validation.annotation.PhoneNumber.CountryCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, St
 
   String regexp;
   boolean optional;
-  Region[] regions;
+  CountryCode[] regions;
 
   @Override
   public void initialize(PhoneNumber constraintAnnotation) {

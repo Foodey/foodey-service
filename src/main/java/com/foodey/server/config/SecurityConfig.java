@@ -1,8 +1,8 @@
 package com.foodey.server.config;
 
-import com.foodey.server.constants.WhiteListUrl;
-import com.foodey.server.security.AuthEntryPointJwt;
-import com.foodey.server.security.LazyJwtAuthTokenFilter;
+import com.foodey.server.security.jwt.AuthEntryPointJwt;
+import com.foodey.server.security.jwt.LazyJwtAuthTokenFilter;
+import com.foodey.server.utils.ApiEndpointSecurityInspector;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +39,8 @@ public class SecurityConfig {
   private final LazyJwtAuthTokenFilter lazyJwtAuthTokenFilter;
   private final AuthEntryPointJwt unauthorizedHandler;
   private final LogoutHandler logoutHandler;
+
+  private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
 
   @Bean
   public AuthenticationProvider authenticationProvider() {
@@ -88,6 +90,8 @@ public class SecurityConfig {
             "Content-Type",
             "Accept",
             "X-Requested-With",
+            "X-Rate-Limit-Retry-After-Seconds",
+            "X-Rate-Limit-Remaining",
             "Access-Control-Allow-Origin",
             "Access-Control-Allow-Headers",
             "Origin")); // <-- headers exposed in CORS policy
@@ -105,24 +109,18 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(WhiteListUrl.ALL_METHODS)
+                auth.requestMatchers("/api/v1/auth/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, WhiteListUrl.GET_METHODS)
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new))
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, WhiteListUrl.POST_METHODS)
+                    .requestMatchers(
+                        HttpMethod.POST,
+                        apiEndpointSecurityInspector
+                            .getPublicPostEndpoints()
+                            .toArray(String[]::new))
                     .permitAll()
-                    .requestMatchers(HttpMethod.PUT, WhiteListUrl.PUT_METHODS)
-                    .permitAll()
-                    .requestMatchers(HttpMethod.PATCH, WhiteListUrl.PATCH_METHODS)
-                    .permitAll()
-                    .requestMatchers(HttpMethod.DELETE, WhiteListUrl.DELETE_METHODS)
-                    .permitAll()
-                    // .permitAll()
-                    // .hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
-                    // .requestMatchers(PUT, "/api/v1/management/**")
-                    // .hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
-                    // .requestMatchers(DELETE, "/api/v1/management/**")
-                    // .hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
                     .anyRequest()
                     .authenticated())
         .authenticationProvider(authenticationProvider())

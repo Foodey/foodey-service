@@ -13,6 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -88,4 +89,17 @@ public class AppExceptionAdvice {
       AccessDeniedException ex, HttpServletRequest request) {
     return new ExceptionResponse(ex, HttpStatus.FORBIDDEN, null, request);
   }
+
+  @ExceptionHandler(AuthenticationException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ExceptionResponse handleAuthenticationException(
+      AuthenticationException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, HttpStatus.UNAUTHORIZED, null, request);
+  }
+
+  // @ExceptionHandler(value = {RateLimitException.class})
+  // @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+  // public ExceptionResponse handleRateLimit(RateLimitException e, HttpServletRequest request) {
+  //   return new ExceptionResponse(e, HttpStatus.TOO_MANY_REQUESTS, null, request);
+  // }
 }

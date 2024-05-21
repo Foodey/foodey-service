@@ -23,7 +23,7 @@ public class SmsNotificationServiceImpl implements NotificationService {
   private String sender;
 
   @Override
-  public <R> void sendNotification(R receiver, String message) {
+  public <R> void sendNotification(R receiver, String message, Object... args) {
     assert receiver instanceof String;
 
     try {
@@ -53,7 +53,7 @@ public class SmsNotificationServiceImpl implements NotificationService {
       String response = scanner.hasNext() ? scanner.next() : "";
       scanner.close();
 
-      System.out.println(response);
+      log.info("SMS response: " + response);
 
     } catch (Exception e) {
       log.error("Error SMS " + e);

@@ -19,7 +19,7 @@ public final class HttpHeaderUtils {
    */
   public static String extractBearerToken(HttpServletRequest request)
       throws MissingServletRequestPartException {
-    log.info("Extracting bearer token from request");
+    log.debug("Extracting bearer token from request");
     return extractHeader(request, AUTHORIZATION_HEADER, AUTHORIZATION_BEARER_PREFIX);
   }
 

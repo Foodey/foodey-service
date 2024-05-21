@@ -24,23 +24,80 @@ public @interface PhoneNumber {
 
   String regexp() default "";
 
-  Region[] regions() default {
-    Region.VIETNAM,
-    Region.SINGAPORE,
-    Region.CHINA,
-    Region.INDIA,
-    Region.JAPAN,
-    Region.KOREA,
-    Region.AUSTRALIA,
-    Region.US,
-    Region.CANADA,
-    Region.UK,
-    Region.RUSSIA,
-    Region.GERMANY,
-    Region.FRANCE,
+  CountryCode[] regions() default {
+    // South East Asia
+    CountryCode.VIETNAM,
+    CountryCode.SINGAPORE,
+    CountryCode.MALAYSIA,
+    CountryCode.CAMBODIA,
+    CountryCode.LAOS,
+    CountryCode.THAILAND,
+    CountryCode.INDONESIA,
+    CountryCode.PHILIPPINES,
+    CountryCode.MYANMAR,
+    CountryCode.BRUNEI,
+    CountryCode.TIMOR_LESTE,
+
+    // East Asia
+    CountryCode.JAPAN,
+    CountryCode.CHINA,
+    CountryCode.KOREA,
+    CountryCode.HONG_KONG,
+    CountryCode.TAIWAN,
+    CountryCode.MACAU,
+    CountryCode.MONGOLIA,
+    CountryCode.NORTH_KOREA,
+
+    // South Asia
+    CountryCode.INDIA,
+    CountryCode.PAKISTAN,
+    CountryCode.SRI_LANKA,
+    CountryCode.NEPAL,
+    CountryCode.BANGLADESH,
+    CountryCode.BHUTAN,
+
+    // Oceania
+    CountryCode.AUSTRALIA,
+    CountryCode.NEW_ZEALAND,
+    CountryCode.FIJI,
+    CountryCode.TONGA,
+    CountryCode.COOK_ISLAND,
+    CountryCode.SAMOA,
+
+    // North America
+    CountryCode.US,
+    CountryCode.CANADA,
+    CountryCode.MEXICO,
+
+    // South America
+    CountryCode.ARGENTINA,
+    CountryCode.BRAZIL,
+    CountryCode.CHILE,
+    CountryCode.COLOMBIA,
+    CountryCode.VENEZUELA,
+    CountryCode.ECUADOR,
+    CountryCode.PARAGUAY,
+    CountryCode.URUGUAY,
+    CountryCode.SURINAME,
+    CountryCode.GUYANE,
+    CountryCode.FRENCH_GUIANA,
+    CountryCode.PERU,
+    CountryCode.BOLIVIA,
+    CountryCode.GUYANA,
+
+    // Europe
+    CountryCode.UK,
+    CountryCode.RUSSIA,
+    CountryCode.GERMANY,
+    CountryCode.FRANCE,
+    CountryCode.ITALY,
+    CountryCode.SPAIN,
+    CountryCode.SWEDEN,
+    CountryCode.DENMARK,
+    CountryCode.NEITHERLAND,
   };
 
-  public static enum Region {
+  public static enum CountryCode {
     // South East Asia
     VIETNAM("^(\\+84|0|0084)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-46-9])\\d{7}$"),
     SINGAPORE("^(\\+65|0065)\\d{8}$"),
@@ -115,7 +172,7 @@ public @interface PhoneNumber {
 
     private final String regexp;
 
-    Region(String value) {
+    CountryCode(String value) {
       this.regexp = value;
     }
 
@@ -123,7 +180,7 @@ public @interface PhoneNumber {
       return regexp;
     }
 
-    /// Returns true if the phone number matches the regexps
+    // Returns true if the phone number matches the regexps
     public boolean isValid(String phoneNumber) {
       return phoneNumber.matches(regexp);
     }

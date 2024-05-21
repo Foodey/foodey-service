@@ -14,17 +14,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RequiredArgsConstructor
 public class ValidationExceptionAdvice {
 
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ExceptionResponse handleMissingServletRequestPartException(
+      MissingServletRequestPartException e, HttpServletRequest request) {
+    return new ExceptionResponse(e, HttpStatus.BAD_REQUEST, null, request);
+  }
+
   // @ExceptionHandler(MethodArgumentNotValidException.class)
   // @ResponseStatus(HttpStatus.BAD_REQUEST)
   // public ExceptionResponse handleHandlerMethodValidationException(
   //     MethodArgumentNotValidException e, HttpServletRequest request) {
-
   //   final Map<String, String> body = new HashMap<>();
   //   e.getFieldErrors
   //       .forEach(
@@ -35,6 +42,7 @@ public class ValidationExceptionAdvice {
   //           });
   //   return new ExceptionResponse(e, HttpStatus.BAD_REQUEST, body, request);
   // }
+  //
   //
   @ExceptionHandler(ValidationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)

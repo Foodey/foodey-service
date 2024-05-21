@@ -2,6 +2,7 @@ package com.foodey.server.event.listener;
 
 import com.foodey.server.event.UserRegistrationSuccessfulEvent;
 import com.foodey.server.notify.NotificationFactory;
+import com.foodey.server.notify.NotificationType;
 import com.foodey.server.otp.OTPService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,9 @@ public class UserRegistrationSuccessfulListener {
 
     otpService.generate(event.getUser().getUsername());
 
-    // notificationFactory.execute(
-    //     NotificationType.SMS,
-    //     event.getUser().getPhoneNumber(),
-    //     "Welcome to Foodey! Your account has been successfully created. Enjoy your time with
-    // us!");
+    notificationFactory.execute(
+        NotificationType.SMS,
+        event.getUser().getPhoneNumber(),
+        "Welcome to Foodey! Your account has been successfully created. Enjoy your time with us!");
   }
 }
