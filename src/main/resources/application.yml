@@ -107,8 +107,8 @@ logging:
     rollingpolicy:
       file-name-pattern: foodey-%d{yyyy-MM-dd}.%i.log
       max-history: 14
-  level:
-    com.giffing.bucket4j: debug
+  # level:
+  # com.giffing.bucket4j: debug
 
 foodey:
   jwt:
@@ -123,7 +123,7 @@ foodey:
       sender: "+84392211343"
   otp:
     expiration:
-      high: 600000 # 10 mins
+      long: 600000 # 10 mins
       medium: 300000 # 5 mins
       short: 60000 # 1 min
       fast: 30000 # 30s

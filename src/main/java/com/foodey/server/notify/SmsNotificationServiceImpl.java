@@ -53,6 +53,8 @@ public class SmsNotificationServiceImpl implements NotificationService {
       String response = scanner.hasNext() ? scanner.next() : "";
       scanner.close();
 
+      // Map<String, Object> responseMap = new ObjectMapper().readValue(response, Map.class);
+
       log.info("SMS response: " + response);
 
     } catch (Exception e) {

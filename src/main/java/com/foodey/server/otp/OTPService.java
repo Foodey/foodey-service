@@ -2,17 +2,11 @@ package com.foodey.server.otp;
 
 public interface OTPService {
 
-  OTP generate(String id);
+  void validate(String id, String otp, OTPType otpType);
 
-  OTP generate(String id, long expiredAfterMs);
+  String send(String notificationType, String id, OTPExpiration expiration);
 
-  OTP generate(String id, boolean fastExpire);
+  String send(String notificationType, String id, long expiredAfterMs);
 
-  void validate(String id, String otp);
-
-  void send(String id);
-
-  void send(String id, long expiredAfterMs);
-
-  void send(String id, boolean fastExpire);
+  String generateOtp();
 }

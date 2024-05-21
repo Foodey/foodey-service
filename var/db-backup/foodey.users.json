@@ -1,0 +1,59 @@
+[{
+  "_id": {
+    "$oid": "661e3173d9b47d0b9efb0e99"
+  },
+  "pubId": "-2SGzl4M9mn7Q9LlEVP5l",
+  "phoneNumber": "0975639978",
+  "password": "$2a$10$PriNV33idO50iaXFo1Z9Q.Rn/oDScPvKPuVSgLBOvla47Ef8WjpU.",
+  "name": "Admin",
+  "avatar": "",
+  "status": "ACTIVE",
+  "roles": [
+    {
+      "name": "CUSTOMER"
+    },
+    {
+      "name": "SELLER"
+    },
+    {
+      "name": "ADMIN"
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-04-16T08:06:11.343Z"
+  },
+  "updatedAt": {
+    "$date": "2024-04-16T08:06:11.343Z"
+  },
+  "_class": "com.foodey.server.user.model.User"
+},
+{
+  "_id": {
+    "$oid": "661e5195f59f2417e086716b"
+  },
+  "pubId": "_jJc7ZCspj2iL3xQp6xNe",
+  "phoneNumber": "0392211343",
+  "password": "$2a$10$O8m6jiRyJ..2Y60aXByUf.tSBWtCSxjbB.GrjgRLmtDZJZcU//8xK",
+  "name": "Tung",
+  "avatar": "",
+  "profiles": {
+    "identifyImageBack": "d/d",
+    "identifyImageFront": "d/d"
+  },
+  "status": "ACTIVE",
+  "roles": [
+    {
+      "name": "CUSTOMER"
+    },
+    {
+      "name": "SELLER"
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-04-16T10:23:17.009Z"
+  },
+  "updatedAt": {
+    "$date": "2024-04-16T10:43:44.192Z"
+  },
+  "_class": "com.foodey.server.user.model.User"
+}]
