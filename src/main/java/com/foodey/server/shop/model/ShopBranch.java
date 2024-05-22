@@ -1,6 +1,7 @@
 package com.foodey.server.shop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.PhoneNumber;
 import jakarta.validation.constraints.Email;
@@ -19,6 +20,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "shop_branches")
 @CompoundIndex(name = "name_owner_id", def = "{'name': 1, 'ownerId': 1}")
 @AllArgsConstructor
+@JsonIgnoreProperties(
+    value = {"id", "ownerId"},
+    allowGetters = true)
 public class ShopBranch {
   @Null @Id private String id;
 
@@ -28,7 +32,7 @@ public class ShopBranch {
 
   @Email private String email;
 
-  @JsonIgnore private String ownerId;
+  @Null @JsonIgnore private String ownerId;
 
   private String logo;
 

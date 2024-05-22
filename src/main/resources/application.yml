@@ -5,6 +5,9 @@ caching:
     userListTTL: 60000
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   main:
     allow-bean-definition-overriding: true
   cache:
@@ -72,7 +75,7 @@ bucket4j:
       rate-limits:
         - cache-key: "getRemoteAddr()"
           bandwidths:
-            - capacity: 3
+            - capacity: 2
               time: 60
               unit: seconds
     - cache-name: rate-limit-buckets
@@ -84,7 +87,7 @@ bucket4j:
       rate-limits:
         - cache-key: "getRemoteAddr()"
           bandwidths:
-            - capacity: 1
+            - capacity: ${REQUESTS_PER_SECOND_AUTH_DEV:1}
               time: 5
               unit: seconds
     - cache-name: rate-limit-buckets

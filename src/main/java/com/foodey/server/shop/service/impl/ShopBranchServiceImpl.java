@@ -4,8 +4,6 @@ import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.shop.model.ShopBranch;
 import com.foodey.server.shop.repository.ShopBranchRepository;
-import com.foodey.server.shop.repository.ShopMenuRepository;
-import com.foodey.server.shop.repository.ShopRepository;
 import com.foodey.server.shop.service.ShopBranchService;
 import com.foodey.server.user.model.User;
 import java.util.List;
@@ -16,8 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ShopBranchServiceImpl implements ShopBranchService {
 
-  private final ShopRepository shopRepository;
-  private final ShopMenuRepository shopMenuRepository;
   private final ShopBranchRepository shopBranchRepository;
 
   @Override
@@ -41,5 +37,19 @@ public class ShopBranchServiceImpl implements ShopBranchService {
   @Override
   public List<ShopBranch> findByOwnerId(String ownerId) {
     return shopBranchRepository.findByOwnerId(ownerId);
+  }
+
+  @Override
+  public boolean existsByIdAndOwnerId(String id, String ownerId) {
+    return shopBranchRepository.existsByIdAndOwnerId(id, ownerId);
+  }
+
+  @Override
+  public ShopBranch findByIdAndVerifyOwner(String id, User user) {
+    ShopBranch shopBranch = findById(id);
+    if (!shopBranch.getOwnerId().equals(user.getId())) {
+      throw new ResourceNotFoundException("ShopBranch", "ownerId", shopBranch.getOwnerId());
+    }
+    return shopBranch;
   }
 }

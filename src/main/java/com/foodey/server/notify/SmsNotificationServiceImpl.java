@@ -54,6 +54,7 @@ public class SmsNotificationServiceImpl implements NotificationService {
       String response = scanner.hasNext() ? scanner.next() : "";
       scanner.close();
 
+      @SuppressWarnings("unchecked")
       final Map<String, Object> responseMap = new ObjectMapper().readValue(response, Map.class);
 
       if (responseMap.containsKey("failed_at")) {

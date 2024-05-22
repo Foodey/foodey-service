@@ -10,5 +10,9 @@ public interface ShopBranchService {
 
   ShopBranch findById(String id);
 
+  ShopBranch findByIdAndVerifyOwner(String id, User user);
+
   List<ShopBranch> findByOwnerId(String ownerId);
+
+  boolean existsByIdAndOwnerId(String id, String ownerId);
 }

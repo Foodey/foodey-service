@@ -9,7 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +29,10 @@ public class AuthController {
   @Operation(summary = "Registers a new user to the system")
   @PublicEndpoint
   public void register(
-      @Param(value = "The RegistrationRequest payload") @RequestBody @Valid
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "The RegistrationRequest payload")
+          @RequestBody
+          @Valid
           RegistrationRequest signUpRequest) {
     authService.register(signUpRequest);
   }
@@ -39,7 +41,11 @@ public class AuthController {
   @Operation(summary = "Logs the user in to the system and return the auth tokens")
   @PublicEndpoint
   public ResponseEntity<?> login(
-      @Param(value = "The LoginRequest payload") @RequestBody @Valid LoginRequest request) {
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "The LoginRequest payload")
+          @RequestBody
+          @Valid
+          LoginRequest request) {
     return ResponseEntity.ok(authService.login(request));
   }
 

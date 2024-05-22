@@ -7,10 +7,11 @@ import com.foodey.server.annotation.PublicEndpoint;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -23,13 +24,20 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * with {@link PublicEndpoint}.
  */
 @Component
+@Slf4j
 public class ApiEndpointSecurityInspector {
 
   private RequestMappingHandlerMapping requestHandlerMapping;
 
   @Getter
   private List<String> publicGetEndpoints =
-      List.of("/swagger-ui**/**", "/v3/api-docs**/**", "/api/v1/test/**");
+      new ArrayList<>() {
+        {
+          add("/swagger-ui**/**");
+          add("/v3/api-docs**/**");
+          add("/api/v1/test/**");
+        }
+      };
 
   @Getter private List<String> publicPostEndpoints = new ArrayList<>();
 
@@ -53,17 +61,25 @@ public class ApiEndpointSecurityInspector {
     handlerMethods.forEach(
         (requestInfo, handlerMethod) -> {
           if (handlerMethod.hasMethodAnnotation(PublicEndpoint.class)) {
-            final HttpMethod httpMethod =
-                requestInfo.getMethodsCondition().getMethods().iterator().next().asHttpMethod();
-            final var apiPaths = requestInfo.getPathPatternsCondition().getPatternValues();
-
-            if (httpMethod.equals(GET)) {
-              publicGetEndpoints.addAll(apiPaths);
-            } else if (httpMethod.equals(POST)) {
-              publicPostEndpoints.addAll(apiPaths);
-            }
+            final Set<String> apiPaths = requestInfo.getPatternValues();
+            requestInfo.getMethodsCondition().getMethods().stream()
+                .forEach(
+                    httpMethod -> {
+                      switch (httpMethod) {
+                        case GET:
+                          publicGetEndpoints.addAll(apiPaths);
+                          break;
+                        case POST:
+                          publicPostEndpoints.addAll(apiPaths);
+                          break;
+                        default:
+                          break;
+                      }
+                    });
           }
         });
+    log.info("Public GET endpoints: {}", publicGetEndpoints);
+    log.info("Public POST endpoints: {}", publicPostEndpoints);
   }
 
   /**
@@ -88,6 +104,6 @@ public class ApiEndpointSecurityInspector {
   private List<String> getUnsecuredApiPaths(@NonNull final HttpMethod httpMethod) {
     if (httpMethod.equals(GET)) return publicGetEndpoints;
     else if (httpMethod.equals(POST)) return publicPostEndpoints;
-    return Collections.emptyList();
+    return new ArrayList<>();
   }
 }

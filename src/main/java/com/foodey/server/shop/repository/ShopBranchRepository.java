@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface ShopBranchRepository extends MongoRepository<ShopBranch, String> {
   boolean existsByNameAndOwnerId(String name, String ownerId);
 
+  boolean existsByIdAndOwnerId(String name, String ownerId);
+
   List<ShopBranch> findByOwnerId(String ownerId);
 }

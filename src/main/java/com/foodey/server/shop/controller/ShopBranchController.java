@@ -4,6 +4,9 @@ import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.shop.model.ShopBranch;
 import com.foodey.server.shop.service.ShopBranchService;
 import com.foodey.server.user.model.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,16 @@ public class ShopBranchController {
 
   private final ShopBranchService shopBranchService;
 
+  @Operation(summary = "Create a new shop branch for seller")
+  @ApiResponses({
+    @ApiResponse(responseCode = "201", description = "Shop branch created"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(
+        responseCode = "409",
+        description = "Shop branch with the same name already exists"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
   @PostMapping({"", "/"})
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("hasRole('SELLER')")
@@ -32,6 +45,14 @@ public class ShopBranchController {
     return shopBranchService.createShopBranch(shopBranch, user);
   }
 
+  @Operation(summary = "Get shop branch by id")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Shop branch found"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "404", description = "Shop branch not found"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public ShopBranch findById(@PathVariable(required = true, name = "id") String id) {
