@@ -2,6 +2,7 @@ package com.foodey.server.auth.event.listener;
 
 import com.foodey.server.auth.event.UserRegistrationSuccessfulEvent;
 import com.foodey.server.exceptions.DatabaseErrorException;
+import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.otp.OTPType;
 import com.foodey.server.otp.OTPValidatedEvent;
 import com.foodey.server.user.enums.UserStatus;
@@ -30,8 +31,8 @@ public class AuthEventListener {
               .orElseThrow(
                   () -> {
                     log.error("User with phone number {} not found", event.getReceiver());
-                    return new DatabaseErrorException(
-                        "Missing user with phone number " + event.getReceiver());
+                    return new ResourceNotFoundException(
+                        "User", "phone number", event.getReceiver());
                   });
 
       user.setStatus(UserStatus.ACTIVE);

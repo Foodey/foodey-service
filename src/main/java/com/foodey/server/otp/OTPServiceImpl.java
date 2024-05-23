@@ -99,10 +99,6 @@ public class OTPServiceImpl implements OTPService {
     }
   }
 
-  private String message(String otp) {
-    return "Your Foodey OTP is: " + otp + ". Please do not share it with anyone.";
-  }
-
   private long getExpirationTime(OTPExpiration expiration) {
     switch (expiration) {
       case FAST:
