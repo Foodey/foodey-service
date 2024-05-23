@@ -4,10 +4,12 @@ import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.annotation.PublicEndpoint;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.product.service.ProductService;
+import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,14 +39,15 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "Return the newly created product"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized Seller access"),
+    @ApiResponse(responseCode = "403", description = "User is not a seller"),
     @ApiResponse(
         responseCode = "404",
         description = "Shop or ShopMenu or ProductCategory not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @PreAuthorize("hasRole('SELLER')")
   @PostMapping({"/", ""})
   @ResponseStatus(HttpStatus.CREATED)
+  @RolesAllowed(RoleType.Fields.SELLER)
   public Product addNewProductIntoMenuOfShop(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Product object")
           @RequestBody

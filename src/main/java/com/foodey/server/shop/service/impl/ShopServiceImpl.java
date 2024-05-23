@@ -44,16 +44,6 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  public Page<Shop> findAll(Pageable pageable) {
-    return shopRepository.findAll(pageable);
-  }
-
-  @Override
-  public Shop save(Shop shop) {
-    return shopRepository.save(shop);
-  }
-
-  @Override
   public Shop findByIdAndVerifyOwner(String id, User user) {
     Shop shop = findById(id);
 
@@ -61,5 +51,22 @@ public class ShopServiceImpl implements ShopService {
       throw new AccessDeniedException("You are not owner of this shop.");
 
     return shop;
+  }
+
+  @Override
+  public Shop findByIdAndAutoAddBranchMenus(String id) {
+    Shop shop = findById(id);
+    shop.getMenus().addAll(shopBranchService.findById(shop.getBranchId()).getMenus());
+    return shop;
+  }
+
+  @Override
+  public Page<Shop> findAll(Pageable pageable) {
+    return shopRepository.findAll(pageable);
+  }
+
+  @Override
+  public Shop save(Shop shop) {
+    return shopRepository.save(shop);
   }
 }

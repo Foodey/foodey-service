@@ -58,12 +58,7 @@ public class ShopMenuServiceImpl implements ShopMenuService {
   @Override
   public boolean existsInShop(String id, String shopId) {
     Shop shop = shopService.findById(shopId);
-    if (shop.getMenus().stream().anyMatch(menu -> menu.getId().equals(id))) {
-      return true;
-    } else {
-      ShopBranch shopBranch = shopBranchService.findById(shop.getBranchId());
-      return shopBranch.getMenus().stream().anyMatch(menu -> menu.getId().equals(id));
-    }
+    return existsInShop(id, shop);
   }
 
   @Override
@@ -78,19 +73,13 @@ public class ShopMenuServiceImpl implements ShopMenuService {
 
   @Override
   public List<ShopMenu> findAllInShop(String shopId) {
-    Shop shop = shopService.findById(shopId);
-
-    ShopBranch shopBranch = shopBranchService.findById(shop.getBranchId());
-    shop.getMenus().addAll(shopBranch.getMenus());
-
+    Shop shop = shopService.findByIdAndAutoAddBranchMenus(shopId);
     return shop.getMenus();
   }
 
   @Override
   public List<MenuResponse> findAllDetailsInShop(String shopId) {
-    Shop shop = shopService.findById(shopId);
-    ShopBranch shopBranch = shopBranchService.findById(shop.getBranchId());
-    shop.getMenus().addAll(shopBranch.getMenus());
+    Shop shop = shopService.findByIdAndAutoAddBranchMenus(shopId);
 
     return shop.getMenus().stream()
         .parallel()

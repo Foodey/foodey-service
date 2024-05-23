@@ -11,6 +11,8 @@ public interface ShopService {
 
   Shop findById(String id);
 
+  Shop findByIdAndAutoAddBranchMenus(String id);
+
   Page<Shop> findAll(Pageable pageable);
 
   Shop save(Shop shop);

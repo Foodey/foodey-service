@@ -52,8 +52,8 @@ public class Shop implements Persistable<String> {
   @Size(min = 2, max = 100)
   private String address;
 
-  // a list of menus with different names
-  private List<@Valid ShopMenu> menus = new ArrayList<>();
+  // This is a list of menus that the shop has in private
+  @JsonIgnore private List<@Valid ShopMenu> menus = new ArrayList<>();
 
   @Indexed(name = "shop_categories")
   private Set<String> categories = new HashSet<>();
