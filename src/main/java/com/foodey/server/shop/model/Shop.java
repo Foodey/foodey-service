@@ -71,6 +71,7 @@ public class Shop implements Persistable<String> {
   }
 
   @Override
+  @JsonIgnore
   public boolean isNew() {
     return createdAt == null || id == null;
   }

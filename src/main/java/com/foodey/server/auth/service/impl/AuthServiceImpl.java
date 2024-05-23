@@ -11,7 +11,7 @@ import com.foodey.server.auth.repository.RefreshTokenRepository;
 import com.foodey.server.auth.service.AuthService;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
-import com.foodey.server.exceptions.UserLoginException;
+import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.notify.NotificationType;
 import com.foodey.server.otp.OTPExpiration;
 import com.foodey.server.otp.OTPProperties;
@@ -57,7 +57,8 @@ public class AuthServiceImpl implements AuthService {
 
     User user = (User) authentication.getPrincipal();
 
-    if (user == null) throw new UserLoginException("Account not found");
+    if (user == null)
+      throw new ResourceNotFoundException("User", "phoneNumber", loginRequest.getPhoneNumber());
 
     final String accessToken = jwtService.generateAccessToken(user);
     final RefreshToken refreshToken = jwtService.generateRefreshToken(user);

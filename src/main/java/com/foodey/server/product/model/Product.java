@@ -1,5 +1,6 @@
 package com.foodey.server.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foodey.server.validation.annotation.OptimizedName;
 import jakarta.validation.constraints.Min;
@@ -59,7 +60,20 @@ public class Product implements Persistable<String> {
   }
 
   @Override
+  @JsonIgnore
   public boolean isNew() {
     return createdAt == null || id == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    else if (!(obj instanceof Product)) return false;
+    return name.equals(((Product) obj).name) || id.equals(((Product) obj).id);
   }
 }

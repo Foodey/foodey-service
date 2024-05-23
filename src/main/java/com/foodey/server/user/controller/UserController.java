@@ -1,9 +1,11 @@
 package com.foodey.server.user.controller;
 
 import com.foodey.server.annotation.CurrentUser;
+import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.SellerRoleRequest;
 import com.foodey.server.user.service.UserService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ public class UserController {
 
   @PostMapping("/role/seller")
   @ResponseStatus(HttpStatus.NO_CONTENT)
+  @RolesAllowed(RoleType.Fields.CUSTOMER)
   public void registerSellerRole(
       @CurrentUser User user, @RequestBody @Valid SellerRoleRequest request) {
     userService.requestNewRole(user, request);

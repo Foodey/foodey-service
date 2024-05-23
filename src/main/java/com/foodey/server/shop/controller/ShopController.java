@@ -4,9 +4,11 @@ import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.annotation.PublicEndpoint;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
+import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,15 +35,18 @@ public class ShopController {
     @ApiResponse(responseCode = "201", description = "Shop created successfully"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+    @ApiResponse(
+        responseCode = "403",
+        description =
+            "User does not have permission to access this resource. Only sellers can create shops"),
     @ApiResponse(responseCode = "404", description = "Branch not found"),
     @ApiResponse(responseCode = "409", description = "Shop with the same name already exists"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @PreAuthorize("hasRole('SELLER')")
   @PostMapping({"/", ""})
   @ResponseStatus(HttpStatus.CREATED)
+  @RolesAllowed(RoleType.Fields.SELLER)
   public Shop addNewShopOfBranch(@Valid @RequestBody Shop shop, @CurrentUser User user) {
-
     return shopService.createShop(shop, user);
   }
 
