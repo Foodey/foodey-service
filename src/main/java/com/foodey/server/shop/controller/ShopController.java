@@ -58,9 +58,22 @@ public class ShopController {
   })
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping({"/{id}", "/test/{id}"})
+  @GetMapping("/{id}")
   public Shop findById(@PathVariable(required = true, name = "id") String id) {
     return shopService.findById(id);
+  }
+
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Shop found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "404", description = "Shop not found"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @PublicEndpoint
+  @ResponseStatus(HttpStatus.OK)
+  @GetMapping("/enough/{id}")
+  public Shop findByIdWithEnoughMenu(@PathVariable(required = true, name = "id") String id) {
+    return shopService.findByIdAndAutoAddBranchMenus(id);
   }
 
   @ApiResponses({

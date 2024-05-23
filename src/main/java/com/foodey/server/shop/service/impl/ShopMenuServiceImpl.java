@@ -6,6 +6,7 @@ import com.foodey.server.shop.model.MenuResponse;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.model.ShopBranch;
 import com.foodey.server.shop.model.ShopMenu;
+import com.foodey.server.shop.model.ShopMenuFound;
 import com.foodey.server.shop.service.ShopBranchService;
 import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.shop.service.ShopService;
@@ -34,25 +35,30 @@ public class ShopMenuServiceImpl implements ShopMenuService {
   }
 
   @Override
-  public ShopMenu findMenuInShop(String id, String shopId) {
+  public ShopMenuFound findMenuInShop(String id, String shopId) {
     Shop shop = shopService.findById(shopId);
+    return findMenuInShop(id, shop);
+  }
 
-    ShopMenu menuFound =
-        shop.getMenus().stream()
-            .parallel()
-            .filter(menu -> menu.getId().equals(id))
-            .findFirst()
-            .orElseGet(
-                () -> {
-                  ShopBranch shopBranch = shopBranchService.findById(shop.getBranchId());
-                  return shopBranch.getMenus().stream()
+  @Override
+  public ShopMenuFound findMenuInShop(String id, Shop shop) {
+
+    return shop.getMenus().stream()
+        .parallel()
+        .filter(menu -> menu.getId().equals(id))
+        .findFirst()
+        .map((menu) -> new ShopMenuFound(false, menu))
+        .orElseGet(
+            () -> {
+              ShopBranch shopBranch = shopBranchService.findById(shop.getBranchId());
+              return new ShopMenuFound(
+                  true,
+                  shopBranch.getMenus().stream()
                       .parallel()
                       .filter(menu -> menu.getId().equals(id))
                       .findFirst()
-                      .orElseThrow(() -> new ResourceNotFoundException("Menu", "id", id));
-                });
-
-    return menuFound;
+                      .orElseThrow(() -> new ResourceNotFoundException("Menu", "id", id)));
+            });
   }
 
   @Override
@@ -89,7 +95,7 @@ public class ShopMenuServiceImpl implements ShopMenuService {
 
   @Override
   public MenuResponse findMenuDetailsInShop(String id, String shopId) {
-    ShopMenu menu = findMenuInShop(id, shopId);
+    ShopMenu menu = findMenuInShop(id, shopId).getValue();
     return new MenuResponse(menu, productRepository.findAllById(menu.getProductIds()));
   }
 }

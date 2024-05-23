@@ -63,7 +63,7 @@ public class ShopMenuController {
   public ShopMenu getMenuInShop(
       @PathVariable(required = true, name = "shopId") String shopId,
       @PathVariable(required = true, name = "menuId") String menuId) {
-    return shopMenuService.findMenuInShop(menuId, shopId);
+    return shopMenuService.findMenuInShop(menuId, shopId).getValue();
   }
 
   @Operation(summary = "Get menu with products in shop with shopId. This is public endpoint.")

@@ -66,23 +66,16 @@ public class AppExceptionAdvice {
     return new ExceptionResponse(ex, request);
   }
 
-  @ExceptionHandler(UsernameNotFoundException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ResponseBody
-  public ExceptionResponse handleUserNameNotFoundException(
-      UsernameNotFoundException ex, HttpServletRequest request) {
-    return new ExceptionResponse(ex, HttpStatus.NOT_FOUND, null, request);
-  }
-
   @ExceptionHandler({
     UserLoginException.class,
+    UsernameNotFoundException.class,
     BadCredentialsException.class,
   })
   @ResponseBody
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
   public ExceptionResponse handleUserLoginException(Exception ex, HttpServletRequest request) {
     return new ExceptionResponse(
-        ex, HttpStatus.EXPECTATION_FAILED, "Password or username is incorrect", null, request);
+        ex, HttpStatus.NOT_FOUND, "Password or username is incorrect", null, request);
   }
 
   @ExceptionHandler(AccessDeniedException.class)
