@@ -2,8 +2,8 @@ package com.foodey.server.product.service;
 
 import com.foodey.server.product.model.Product;
 import com.foodey.server.user.model.User;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface ProductService {
 
@@ -11,7 +11,7 @@ public interface ProductService {
 
   Product findById(String id);
 
-  Page<Product> findAll(Pageable pageable);
+  Slice<Product> findAll(Pageable pageable);
 
   Product save(Product product);
 }

@@ -2,8 +2,8 @@ package com.foodey.server.shop.service;
 
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface ShopService {
 
@@ -13,7 +13,7 @@ public interface ShopService {
 
   Shop findByIdAndAutoAddBranchMenus(String id);
 
-  Page<Shop> findAll(Pageable pageable);
+  Slice<Shop> findAll(Pageable pageable);
 
   Shop save(Shop shop);
 

@@ -13,8 +13,8 @@ import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.model.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,11 +35,13 @@ public class ProductServiceImpl implements ProductService {
 
     Shop shop = shopService.findByIdAndVerifyOwner(product.getShopId(), user);
     ShopMenuFound shopMenuFound = shopMenuService.findMenuInShop(product.getMenuId(), shop);
+    ShopMenu menu = shopMenuFound.getValue();
+
+    shopMenuService.validateMenuSize(menu);
 
     Product createdProduct = productRepository.save(product);
     shop.getCategories().add(categoryId);
 
-    ShopMenu menu = shopMenuFound.getValue();
     menu.getProductIds().add(createdProduct.getId());
 
     ShopMenusContainer from = shopMenuFound.getFrom();
@@ -58,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Page<Product> findAll(Pageable pageable) {
+  public Slice<Product> findAll(Pageable pageable) {
     return productRepository.findAll(pageable);
   }
 

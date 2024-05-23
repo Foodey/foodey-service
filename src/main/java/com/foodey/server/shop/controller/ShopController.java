@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -84,7 +84,7 @@ public class ShopController {
   @GetMapping({"/", ""})
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
-  public Page<Shop> findAll(
+  public Slice<Shop> findAll(
       @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.ASC)
           Pageable pageable) {
     return shopService.findAll(pageable);

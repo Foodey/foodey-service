@@ -18,6 +18,8 @@ public interface ShopMenuService {
 
   boolean existsInShop(String id, Shop shop);
 
+  void validateMenuSize(ShopMenu menu);
+
   ShopMenuFound findMenuInShop(String id, String shopId);
 
   ShopMenuFound findMenuInShop(String id, Shop shop);

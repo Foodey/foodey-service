@@ -12,8 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -70,7 +70,7 @@ public class ProductController {
   @GetMapping({"/", ""})
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
-  public Page<Product> getProducts(
+  public Slice<Product> getProducts(
       @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
           Pageable pageable) {
     return productService.findAll(pageable);

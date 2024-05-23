@@ -33,6 +33,7 @@ build/
 .vscode/
 
 .env
-var/logs/**
+var/log/**
 logs/**
+var/
 

@@ -1,8 +1,8 @@
 package com.foodey.server.product.service;
 
 import com.foodey.server.product.model.ProductCategory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface ProductCategoryService {
 
@@ -10,7 +10,7 @@ public interface ProductCategoryService {
 
   ProductCategory findById(String id);
 
-  Page<ProductCategory> findAll(Pageable pageable);
+  Slice<ProductCategory> findAll(Pageable pageable);
 
   boolean existsByName(String name);
 

@@ -6,8 +6,8 @@ import com.foodey.server.product.model.ProductCategory;
 import com.foodey.server.product.repository.ProductCategoryRepository;
 import com.foodey.server.product.service.ProductCategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 /** ProductCategoryServiceImpl */
@@ -33,7 +33,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   }
 
   @Override
-  public Page<ProductCategory> findAll(Pageable pageable) {
+  public Slice<ProductCategory> findAll(Pageable pageable) {
     return productCategoryRepository.findAll(pageable);
   }
 

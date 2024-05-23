@@ -2,6 +2,7 @@ package com.foodey.server.shop.service.impl;
 
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.product.repository.ProductRepository;
+import com.foodey.server.shop.exceptions.MenuSizeTooBigException;
 import com.foodey.server.shop.model.MenuResponse;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.model.ShopBranch;
@@ -113,5 +114,10 @@ public class ShopMenuServiceImpl implements ShopMenuService {
     if (container instanceof Shop) shopService.save((Shop) container);
     else if (container instanceof ShopBranch) shopBranchService.save((ShopBranch) container);
     else throw new IllegalArgumentException("Invalid container type");
+  }
+
+  @Override
+  public void validateMenuSize(ShopMenu menu) {
+    if (menu.getProductIds().size() >= 30) throw new MenuSizeTooBigException(30);
   }
 }

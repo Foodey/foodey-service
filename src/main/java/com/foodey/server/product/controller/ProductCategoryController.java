@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +37,7 @@ public class ProductCategoryController {
   })
   @PublicEndpoint
   @GetMapping({"/", ""})
-  public Page<ProductCategory> getCategories(
+  public Slice<ProductCategory> getCategories(
       @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
           Pageable pageable) {
     return productCategoryService.findAll(pageable);
