@@ -7,6 +7,8 @@ import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.product.service.ProductService;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.model.ShopMenu;
+import com.foodey.server.shop.model.ShopMenuFound;
+import com.foodey.server.shop.model.ShopMenusContainer;
 import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.model.User;
@@ -32,19 +34,18 @@ public class ProductServiceImpl implements ProductService {
       throw new ResourceNotFoundException("ProductCategory", "id", categoryId);
 
     Shop shop = shopService.findByIdAndVerifyOwner(product.getShopId(), user);
-
-    ShopMenu shopMenu =
-        shop.getMenus().stream()
-            .filter(menu -> menu.getId().equals(product.getMenuId()))
-            .findFirst()
-            .orElseThrow(
-                () -> new ResourceNotFoundException("ShopMenu", "id", product.getMenuId()));
+    ShopMenuFound shopMenuFound = shopMenuService.findMenuInShop(product.getMenuId(), shop);
 
     Product createdProduct = productRepository.save(product);
-    shopMenu.getProductIds().add(createdProduct.getId());
-
     shop.getCategories().add(categoryId);
-    shopService.save(shop);
+
+    ShopMenu menu = shopMenuFound.getValue();
+    menu.getProductIds().add(createdProduct.getId());
+
+    ShopMenusContainer from = shopMenuFound.getFrom();
+    if (!(from instanceof Shop)) shopService.save(shop);
+
+    shopMenuService.save(from);
 
     return createdProduct;
   }
@@ -64,12 +65,5 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Product save(Product product) {
     return productRepository.save(product);
-  }
-
-  @Override
-  public Page<Product> findByShopIdAndMenuId(String shopId, String menuId, Pageable pageable) {
-
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'findByShopIdAndMenuId'");
   }
 }

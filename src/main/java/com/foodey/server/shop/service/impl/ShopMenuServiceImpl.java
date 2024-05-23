@@ -7,6 +7,7 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.model.ShopBranch;
 import com.foodey.server.shop.model.ShopMenu;
 import com.foodey.server.shop.model.ShopMenuFound;
+import com.foodey.server.shop.model.ShopMenusContainer;
 import com.foodey.server.shop.service.ShopBranchService;
 import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.shop.service.ShopService;
@@ -35,6 +36,14 @@ public class ShopMenuServiceImpl implements ShopMenuService {
   }
 
   @Override
+  public ShopMenu createShopMenuInAllBranch(ShopMenu shopMenu, String branchId, User user) {
+    ShopBranch shopBranch = shopBranchService.findByIdAndVerifyOwner(branchId, user);
+    shopBranch.getMenus().add(shopMenu);
+    shopBranchService.save(shopBranch);
+    return shopMenu;
+  }
+
+  @Override
   public ShopMenuFound findMenuInShop(String id, String shopId) {
     Shop shop = shopService.findById(shopId);
     return findMenuInShop(id, shop);
@@ -47,12 +56,12 @@ public class ShopMenuServiceImpl implements ShopMenuService {
         .parallel()
         .filter(menu -> menu.getId().equals(id))
         .findFirst()
-        .map((menu) -> new ShopMenuFound(false, menu))
+        .map((menu) -> new ShopMenuFound(shop, menu))
         .orElseGet(
             () -> {
               ShopBranch shopBranch = shopBranchService.findById(shop.getBranchId());
               return new ShopMenuFound(
-                  true,
+                  shopBranch,
                   shopBranch.getMenus().stream()
                       .parallel()
                       .filter(menu -> menu.getId().equals(id))
@@ -97,5 +106,12 @@ public class ShopMenuServiceImpl implements ShopMenuService {
   public MenuResponse findMenuDetailsInShop(String id, String shopId) {
     ShopMenu menu = findMenuInShop(id, shopId).getValue();
     return new MenuResponse(menu, productRepository.findAllById(menu.getProductIds()));
+  }
+
+  @Override
+  public void save(ShopMenusContainer container) {
+    if (container instanceof Shop) shopService.save((Shop) container);
+    else if (container instanceof ShopBranch) shopBranchService.save((ShopBranch) container);
+    else throw new IllegalArgumentException("Invalid container type");
   }
 }

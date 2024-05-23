@@ -7,12 +7,12 @@ import lombok.Setter;
 @Setter
 public class ShopMenuFound {
 
-  private boolean global;
+  private ShopMenusContainer from;
 
   private ShopMenu value;
 
-  public ShopMenuFound(boolean global, ShopMenu value) {
-    this.global = global;
+  public ShopMenuFound(ShopMenusContainer from, ShopMenu value) {
+    this.from = from;
     this.value = value;
   }
 }

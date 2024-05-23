@@ -14,6 +14,4 @@ public interface ProductService {
   Page<Product> findAll(Pageable pageable);
 
   Product save(Product product);
-
-  Page<Product> findByShopIdAndMenuId(String shopId, String menuId, Pageable pageable);
 }

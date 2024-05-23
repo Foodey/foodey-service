@@ -42,7 +42,8 @@ public class OTPController {
       @Param(value = "The ID of the OTP to send (e.g. a phone number)")
           @PathVariable(required = true, name = "receiver")
           String receiver,
-      @Param(value = "The OTP properties payload") @RequestBody OTPProperties properties) {
+      @Param(value = "The OTP properties payload") @RequestBody @Valid OTPProperties properties) {
+
     otpService.send(receiver, properties);
   }
 }

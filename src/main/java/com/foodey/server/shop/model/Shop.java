@@ -33,7 +33,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @CompoundIndex(def = "{'name': 1, 'branchId': 1}", name = "shop_name_branch_id")
 @ToString
 @NoArgsConstructor
-public class Shop implements Persistable<String> {
+public class Shop implements Persistable<String>, ShopMenusContainer {
 
   @Null @Id private String id;
 

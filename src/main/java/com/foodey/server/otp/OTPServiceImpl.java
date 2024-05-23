@@ -48,7 +48,7 @@ public class OTPServiceImpl implements OTPService {
 
   @Override
   public String send(String receiver, OTPProperties properties) {
-    return send(receiver, properties, this::message);
+    return send(receiver, properties, (otp) -> message(otp, properties.getOtpType()));
   }
 
   @Override
@@ -87,6 +87,15 @@ public class OTPServiceImpl implements OTPService {
     } catch (Exception e) {
       log.error("Error while generating OTP: " + e.getMessage());
       throw new OTPException(e.getMessage(), null);
+    }
+  }
+
+  private String message(String otp, OTPType type) {
+    switch (type) {
+      case USER_REGISTRATION:
+        return "Welcome to Foodey! Your OTP is: " + otp + ". Please do not share it with anyone.";
+      default:
+        return "Your Foodey OTP is: " + otp + ". Please do not share it with anyone.";
     }
   }
 

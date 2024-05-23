@@ -15,4 +15,6 @@ public interface ShopBranchService {
   List<ShopBranch> findByOwnerId(String ownerId);
 
   boolean existsByIdAndOwnerId(String id, String ownerId);
+
+  ShopBranch save(ShopBranch shopBranch);
 }

@@ -8,6 +8,7 @@ import com.foodey.server.shop.service.ShopBranchService;
 import com.foodey.server.user.model.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -48,8 +49,13 @@ public class ShopBranchServiceImpl implements ShopBranchService {
   public ShopBranch findByIdAndVerifyOwner(String id, User user) {
     ShopBranch shopBranch = findById(id);
     if (!shopBranch.getOwnerId().equals(user.getId())) {
-      throw new ResourceNotFoundException("ShopBranch", "ownerId", shopBranch.getOwnerId());
+      throw new AccessDeniedException("User does not own this shop branch");
     }
     return shopBranch;
+  }
+
+  @Override
+  public ShopBranch save(ShopBranch shopBranch) {
+    return shopBranchRepository.save(shopBranch);
   }
 }

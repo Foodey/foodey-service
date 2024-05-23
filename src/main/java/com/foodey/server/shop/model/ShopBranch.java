@@ -29,7 +29,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @JsonIgnoreProperties(
     value = {"id", "ownerId"},
     allowGetters = true)
-public class ShopBranch {
+public class ShopBranch implements ShopMenusContainer {
   @Null @Id private String id;
 
   @OptimizedName private String name;

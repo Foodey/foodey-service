@@ -3,7 +3,9 @@ package com.foodey.server.shop.controller;
 import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.annotation.PublicEndpoint;
 import com.foodey.server.shop.model.ShopBranch;
+import com.foodey.server.shop.model.ShopMenu;
 import com.foodey.server.shop.service.ShopBranchService;
+import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShopBranchController {
 
   private final ShopBranchService shopBranchService;
+  private final ShopMenuService shopMenuService;
 
   @Operation(summary = "Create a new shop branch for seller")
   @ApiResponses({
@@ -68,5 +71,27 @@ public class ShopBranchController {
   @ResponseStatus(HttpStatus.OK)
   public List<ShopBranch> findByOwnerId(@CurrentUser User user) {
     return shopBranchService.findByOwnerId(user.getId());
+  }
+
+  @Operation(summary = "Add new menu into all shops of brand with brandId")
+  @ApiResponses({
+    @ApiResponse(responseCode = "201", description = "Shop menu created successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(
+        responseCode = "403",
+        description = "User cannot access this resource. Only seller can access this resource"),
+    @ApiResponse(responseCode = "404", description = "Shop not found"),
+    @ApiResponse(responseCode = "409", description = "Menu with the same name already exists"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @PostMapping("/{branchId}/menus")
+  @ResponseStatus(HttpStatus.CREATED)
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public ShopMenu addNewMenuIntoAllShopsOfBranch(
+      @PathVariable(required = true, name = "branchId") String branchId,
+      @Valid @RequestBody ShopMenu shopMenu,
+      @CurrentUser User user) {
+    return shopMenuService.createShopMenuInAllBranch(shopMenu, branchId, user);
   }
 }

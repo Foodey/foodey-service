@@ -16,6 +16,7 @@ import com.foodey.server.notify.NotificationType;
 import com.foodey.server.otp.OTPExpiration;
 import com.foodey.server.otp.OTPProperties;
 import com.foodey.server.otp.OTPService;
+import com.foodey.server.otp.OTPType;
 import com.foodey.server.security.jwt.JwtService;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.service.UserService;
@@ -121,15 +122,10 @@ public class AuthServiceImpl implements AuthService {
         OTPProperties.builder()
             .notificationType(NotificationType.SMS)
             .otpExpiration(OTPExpiration.SHORT)
+            .otpType(OTPType.USER_REGISTRATION)
             .build();
 
-    otpService.send(
-        user.getPhoneNumber(),
-        otpProperties,
-        (otp) ->
-            "Welcome to Foodey! Your OTP is "
-                + otp
-                + ". Please enter this OTP to complete your registration.");
+    otpService.send(user.getPhoneNumber(), otpProperties);
 
     applicationEventPulisher.publishEvent(new UserWaitingOTPValidationEvent(this, user));
   }
