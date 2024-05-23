@@ -106,12 +106,6 @@ bucket4j:
 logging:
   file:
     name: var/log/foodey.log
-  logback:
-    rollingpolicy:
-      file-name-pattern: foodey-%d{yyyy-MM-dd}.%i.log
-      max-history: 14
-  # level:
-  # com.giffing.bucket4j: debug
 
 foodey:
   jwt:
