@@ -52,6 +52,7 @@ public class Shop implements Persistable<String> {
   @Size(min = 2, max = 100)
   private String address;
 
+  // a list of menus with different names
   private List<@Valid ShopMenu> menus = new ArrayList<>();
 
   @Indexed(name = "shop_categories")

@@ -9,11 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Document(collection = "shop_menus")
 @JsonIgnoreProperties(
     value = {"id", "productIds"},
     allowGetters = true)
@@ -26,4 +24,15 @@ public class ShopMenu {
   private String description = "";
 
   private Set<String> productIds = new HashSet<>();
+
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
+
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    else if (!(obj instanceof ShopMenu)) return false;
+    return name.equals(((ShopMenu) obj).name) || id.equals(((ShopMenu) obj).id);
+  }
 }

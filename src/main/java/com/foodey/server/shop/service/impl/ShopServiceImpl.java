@@ -10,6 +10,7 @@ import com.foodey.server.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -57,7 +58,8 @@ public class ShopServiceImpl implements ShopService {
     Shop shop = findById(id);
 
     if (!shop.getOwnerId().equals(user.getId()))
-      throw new ResourceNotFoundException("Shop", "ownerId", shop.getOwnerId());
+      throw new AccessDeniedException("You are not owner of this shop.");
+
     return shop;
   }
 }
