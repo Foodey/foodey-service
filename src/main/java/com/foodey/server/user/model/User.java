@@ -85,6 +85,14 @@ public class User implements UserDetails, UserRole {
   @Schema(description = "The roles of the account")
   private Set<Role> roles = Set.of(new Role(RoleType.CUSTOMER));
 
+  @Schema(description = "The favorite product ids of the account")
+  @Default
+  private Set<String> favoriteProductIds = new HashSet<>();
+
+  @Schema(description = "The favorite shop ids of the account")
+  @Default
+  private Set<String> favoriteShopIds = new HashSet<>();
+
   @Default
   @CreatedDate
   @Schema(description = "The created time of the account")

@@ -1,9 +1,13 @@
 package com.foodey.server.user.service;
 
 import com.foodey.server.auth.dto.RegistrationRequest;
+import com.foodey.server.product.model.Product;
+import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface UserService {
 
@@ -22,4 +26,16 @@ public interface UserService {
   void requestNewRole(User user, NewRoleRequest request);
 
   void upgradeRole(User user, NewRoleRequest request);
+
+  void addFavoriteShop(User user, String shopId);
+
+  void removeFavoriteShop(User user, String shopId);
+
+  void addFavoriteProduct(User user, String productId);
+
+  void removeFavoriteProduct(User user, String productId);
+
+  Slice<Shop> findFavoriteShops(User user, Pageable pageable);
+
+  Slice<Product> findFavoriteProducts(User user, Pageable pageable);
 }

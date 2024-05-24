@@ -18,4 +18,6 @@ public interface ShopRepository extends MongoRepository<Shop, String> {
   Optional<ShopMenu> findByIdAndMenusIdContaining(String id, String menuId);
 
   Slice<Shop> findByCategoryIdsContaining(String categoryId, Pageable pageable);
+
+  Slice<Shop> findByIdIn(Iterable<String> ids, Pageable pageable);
 }

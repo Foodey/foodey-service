@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Payment {
-  // private PaymentMethod method;
-  // private PaymentStatus status;
+  private PaymentMethod method;
+  private PaymentStatus status;
 
   private Double price;
 }

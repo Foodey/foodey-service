@@ -19,14 +19,12 @@ import org.springframework.data.redis.core.RedisHash;
 public class ShopCart {
   @Id private String id;
 
-  private double totalPrice;
   private long numberOfItems;
 
   private Map<String, Long> productsWithQuantity;
 
   public ShopCart(String userId, String shopId) {
     this.id = id(userId, shopId);
-    this.totalPrice = 0;
     this.numberOfItems = 0;
     this.productsWithQuantity = new HashMap<>();
   }

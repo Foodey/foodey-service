@@ -18,8 +18,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /** Order */
 @Getter
 @Setter
-@Document(collection = "orders")
 @ToString
+@Document(collection = "orders")
 public class Order implements Persistable<String> {
   @Null @Id private String id;
 
@@ -27,7 +27,7 @@ public class Order implements Persistable<String> {
 
   private String shopId;
 
-  private String shiperId;
+  private String shipperId;
 
   private String voucherCode;
 
@@ -45,14 +45,14 @@ public class Order implements Persistable<String> {
   public Order(
       String userId,
       String shopId,
-      String shiperId,
+      String shipperId,
       String shippingAddress,
       Payment payment,
       String voucherCode,
       List<OrderItem> items) {
     this.userId = userId;
     this.shopId = shopId;
-    this.shiperId = shiperId;
+    this.shipperId = shipperId;
     this.shippingAddress = shippingAddress;
     this.payment = payment;
     this.voucherCode = voucherCode;

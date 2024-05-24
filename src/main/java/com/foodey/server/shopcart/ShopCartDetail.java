@@ -17,8 +17,12 @@ public class ShopCartDetail {
   private List<OrderItem> items;
 
   public ShopCartDetail(ShopCart shopCart, List<OrderItem> items) {
-    this.totalPrice = shopCart.getTotalPrice();
     this.numberOfItems = shopCart.getNumberOfItems();
     this.items = items;
+    calculateTotalPrice();
+  }
+
+  void calculateTotalPrice() {
+    totalPrice = items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
   }
 }
