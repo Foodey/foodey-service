@@ -43,20 +43,17 @@ public class ShopCartServiceImpl implements ShopCartService {
 
   @Override
   public void delete(String userId, String shopId) {
-    System.out.println(
-        "Deleting shop cart" + shopCartRepository.findById(ShopCart.id(userId, shopId)) != null);
     shopCartRepository.deleteById(ShopCart.id(userId, shopId));
   }
 
   @Override
   public ShopCartDetail getDetail(String userId, String shopId) {
     ShopCart cart = shopCartRepository.findById(ShopCart.id(userId, shopId)).orElse(null);
-    if (cart == null) {
-      return new ShopCartDetail(new ShopCart(userId, shopId), new ArrayList<>());
-    }
+    if (cart == null) return new ShopCartDetail(new ShopCart(userId, shopId), new ArrayList<>());
 
     List<String> productIds = new ArrayList<>();
     Map<String, Long> productQuantityMap = cart.getProductsWithQuantity();
+    if (productQuantityMap == null) return new ShopCartDetail(cart, new ArrayList<>());
     productQuantityMap.forEach((k, v) -> productIds.add(k));
 
     List<Product> products = productRepository.findAllById(productIds);
@@ -149,7 +146,7 @@ public class ShopCartServiceImpl implements ShopCartService {
       case REMOVE_PRODUCT:
         removeProduct(userId, shopId, productId);
         break;
-      case DECEASE_PRODUCT_QUANTITY:
+      case DECREASE_PRODUCT_QUANTITY:
         decreaseProductQuantity(userId, shopId, productId, quantity);
         break;
       case REPLACE_PRODUCT_QUANTITY:

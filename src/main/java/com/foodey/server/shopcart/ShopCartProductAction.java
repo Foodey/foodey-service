@@ -18,5 +18,5 @@ public enum ShopCartProductAction {
   REPLACE_PRODUCT_QUANTITY,
 
   @FieldNameConstants.Include
-  DECEASE_PRODUCT_QUANTITY,
+  DECREASE_PRODUCT_QUANTITY,
 }

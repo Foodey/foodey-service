@@ -82,7 +82,8 @@ public class ShopCartController {
         description = "User does not have permission to access this resource"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  public void clearShopCart(String shopId, @CurrentUser User user) {
+  public void clearShopCart(
+      @PathVariable(required = true, name = "shopId") String shopId, @CurrentUser User user) {
     shopCartService.delete(user.getId(), shopId);
   }
 
