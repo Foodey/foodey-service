@@ -1,5 +1,7 @@
-package com.foodey.server.shop.model;
+package com.foodey.server.shop.model.dto;
 
+import com.foodey.server.shop.model.ShopMenu;
+import com.foodey.server.shop.model.ShopMenusContainer;
 import lombok.Getter;
 import lombok.Setter;
 

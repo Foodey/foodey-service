@@ -18,4 +18,8 @@ public interface ShopService {
   Shop save(Shop shop);
 
   Shop findByIdAndVerifyOwner(String id, User user);
+
+  Slice<Shop> findByCategoryId(String category, Pageable pageable);
+
+  Slice<Shop> findByCategoryIdAndAutoAddBranchMenus(String category, Pageable pageable);
 }

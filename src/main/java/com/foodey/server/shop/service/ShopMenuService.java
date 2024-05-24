@@ -1,10 +1,10 @@
 package com.foodey.server.shop.service;
 
-import com.foodey.server.shop.model.MenuResponse;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.model.ShopMenu;
-import com.foodey.server.shop.model.ShopMenuFound;
 import com.foodey.server.shop.model.ShopMenusContainer;
+import com.foodey.server.shop.model.dto.MenuResponse;
+import com.foodey.server.shop.model.dto.ShopMenuFound;
 import com.foodey.server.user.model.User;
 import java.util.List;
 

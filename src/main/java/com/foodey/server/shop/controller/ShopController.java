@@ -89,4 +89,19 @@ public class ShopController {
           Pageable pageable) {
     return shopService.findAll(pageable);
   }
+
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Shops found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/categories/{categoryId}")
+  @PublicEndpoint
+  @ResponseStatus(HttpStatus.OK)
+  public Slice<Shop> findByCategoryId(
+      @PathVariable(required = true, name = "categoryId") String categoryId,
+      @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.ASC)
+          Pageable pageable) {
+    return shopService.findByCategoryId(categoryId, pageable);
+  }
 }

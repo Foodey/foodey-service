@@ -7,8 +7,8 @@ import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.product.service.ProductService;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.model.ShopMenu;
-import com.foodey.server.shop.model.ShopMenuFound;
 import com.foodey.server.shop.model.ShopMenusContainer;
+import com.foodey.server.shop.model.dto.ShopMenuFound;
 import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.model.User;
@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     shopMenuService.validateMenuSize(menu);
 
     Product createdProduct = productRepository.save(product);
-    shop.getCategories().add(categoryId);
+    shop.getCategoryIds().add(categoryId);
 
     menu.getProductIds().add(createdProduct.getId());
 

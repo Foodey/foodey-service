@@ -30,7 +30,7 @@ public class Product implements Persistable<String> {
   @OptimizedName private String name;
 
   @Min(0)
-  private long price;
+  private double price;
 
   private String image = "";
 

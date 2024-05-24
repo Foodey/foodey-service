@@ -54,6 +54,14 @@ public class FallbackExceptionAdvice {
         .toResponseEntity();
   }
 
+  @ExceptionHandler(UnsupportedOperationException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  public ExceptionResponse handleUnsuuportOperationException(
+      UnsupportedOperationException e, HttpServletRequest request) {
+    return new ExceptionResponse(e, HttpStatus.EXPECTATION_FAILED, null, request);
+  }
+
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ResponseBody

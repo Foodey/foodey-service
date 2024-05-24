@@ -80,7 +80,7 @@ public class ProductController {
       summary = "Get product by id",
       description = "Get product by id. This endpoint is public.")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Return all products in a paginated format"),
+    @ApiResponse(responseCode = "200", description = "Return product"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })

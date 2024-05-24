@@ -8,6 +8,8 @@ import com.foodey.server.shop.service.ShopBranchService;
 import com.foodey.server.user.model.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -57,5 +59,10 @@ public class ShopBranchServiceImpl implements ShopBranchService {
   @Override
   public ShopBranch save(ShopBranch shopBranch) {
     return shopBranchRepository.save(shopBranch);
+  }
+
+  @Override
+  public Slice<ShopBranch> findAll(Pageable pageable) {
+    return shopBranchRepository.findAll(pageable);
   }
 }

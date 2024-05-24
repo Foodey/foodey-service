@@ -69,4 +69,14 @@ public class ShopServiceImpl implements ShopService {
   public Shop save(Shop shop) {
     return shopRepository.save(shop);
   }
+
+  @Override
+  public Slice<Shop> findByCategoryId(String category, Pageable pageable) {
+    return shopRepository.findByCategoryIdsContaining(category, pageable);
+  }
+
+  @Override
+  public Slice<Shop> findByCategoryIdAndAutoAddBranchMenus(String category, Pageable pageable) {
+    return shopRepository.findByCategoryIdsContaining(category, pageable);
+  }
 }

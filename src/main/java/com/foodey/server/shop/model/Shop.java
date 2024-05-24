@@ -28,7 +28,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @Document(collection = "shops")
 @JsonIgnoreProperties(
-    value = {"id", "menus", "ownerId", "createdAt", "updatedAt", "rating", "categories"},
+    value = {"id", "menus", "ownerId", "createdAt", "updatedAt", "rating", "categoryIds"},
     allowGetters = true)
 @CompoundIndex(def = "{'name': 1, 'branchId': 1}", name = "shop_name_branch_id")
 @ToString
@@ -56,7 +56,7 @@ public class Shop implements Persistable<String>, ShopMenusContainer {
   private List<@Valid ShopMenu> menus = new ArrayList<>();
 
   @Indexed(name = "shop_categories")
-  private Set<String> categories = new HashSet<>();
+  private Set<String> categoryIds = new HashSet<>();
 
   @JsonIgnore @CreatedDate private Instant createdAt;
 

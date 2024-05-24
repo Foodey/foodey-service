@@ -1,4 +1,4 @@
-package com.foodey.server.exceptions;
+package com.foodey.server.notify;
 
 import lombok.Getter;
 

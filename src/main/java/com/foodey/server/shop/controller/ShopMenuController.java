@@ -2,8 +2,8 @@ package com.foodey.server.shop.controller;
 
 import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.annotation.PublicEndpoint;
-import com.foodey.server.shop.model.MenuResponse;
 import com.foodey.server.shop.model.ShopMenu;
+import com.foodey.server.shop.model.dto.MenuResponse;
 import com.foodey.server.shop.service.ShopMenuService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;

@@ -1,18 +1,18 @@
 package com.foodey.server.utils;
 
-import com.foodey.server.exceptions.ResourceNotFoundException;
+import com.foodey.server.exceptions.UnauthenticatedUserException;
 import com.foodey.server.user.model.User;
-import java.security.Principal;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class PrincipalUtils {
 
-  public static final User getUser(Principal connectedUser) {
-    if (connectedUser == null) {
-      throw new ResourceNotFoundException("User", "", "");
-    }
+  public static final User getUser() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof User) return (User) principal;
+    throw new UnauthenticatedUserException();
+  }
 
-    final var token = (UsernamePasswordAuthenticationToken) connectedUser;
-    return (User) token.getPrincipal();
+  public static final String getUserId() {
+    return getUser().getId();
   }
 }

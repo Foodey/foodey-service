@@ -1,7 +1,6 @@
 package com.foodey.server.notify;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foodey.server.exceptions.SMSNotificationException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;

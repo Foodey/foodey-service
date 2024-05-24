@@ -3,6 +3,8 @@ package com.foodey.server.shop.service;
 import com.foodey.server.shop.model.ShopBranch;
 import com.foodey.server.user.model.User;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface ShopBranchService {
 
@@ -17,4 +19,6 @@ public interface ShopBranchService {
   boolean existsByIdAndOwnerId(String id, String ownerId);
 
   ShopBranch save(ShopBranch shopBranch);
+
+  Slice<ShopBranch> findAll(Pageable pageable);
 }
