@@ -61,7 +61,10 @@ public class ApiEndpointSecurityInspector {
 
     handlerMethods.forEach(
         (requestInfo, handlerMethod) -> {
-          if (handlerMethod.hasMethodAnnotation(PublicEndpoint.class)) {
+          // check if the method is annotated with PublicEndpoint or the parent class is annotated
+
+          if (handlerMethod.hasMethodAnnotation(PublicEndpoint.class)
+              || handlerMethod.getBeanType().isAnnotationPresent(PublicEndpoint.class)) {
             final Set<String> apiPaths = requestInfo.getPatternValues();
             requestInfo.getMethodsCondition().getMethods().stream()
                 .forEach(

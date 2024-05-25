@@ -11,23 +11,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth/fido2")
 public class WebAuthnController {
 
-  // @GetMapping("/register/options")
-  // public PublicKeyCredentialCreationOptions getRegistrationOptions() {
-  //   // Tạo và trả về các tùy chọn đăng ký
-  // }
+  // private final WebAuthnManager webAuthnManager;
 
-  // @PostMapping("/register")
-  // public void register(@RequestBody PublicKeyCredentialCreationResponse response) {
-  //   // Xử lý phản hồi đăng ký và lưu khóa công khai
-  // }
-
-  // @GetMapping("/authenticate/options")
-  // public PublicKeyCredentialRequestOptions getAuthenticationOptions() {
-  //   // Tạo và trả về các tùy chọn xác thực
+  // @PostMapping("/register/start")
+  // public PublicKeyCredentialCreationOptions startRegistration(
+  //     @RequestBody Fido2RegistrationRequest request) {
+  //   // Xử lý logic đăng ký người dùng mới
+  //   // Tạo và trả về PublicKeyCredentialCreationOptions cho client
+  //   //
+  //   return null;
   // }
 
   // @PostMapping("/authenticate")
-  // public void authenticate(@RequestBody PublicKeyCredentialRequestResponse response) {
-  //   // Xác minh phản hồi xác thực
+  // public PublicKeyCredentialRequestOptions startAuthentication(
+  //     @RequestBody StartAuthenticationRequest request) {
+  //   // Xử lý logic xác thực người dùng
+  //   // Tạo và trả về PublicKeyCredentialRequestOptions cho client
+  // }
+
+  // @PostMapping("/register/finish")
+  // public void finishRegistration(@RequestBody FinishRegistrationRequest request) {
+  //   // Xử lý logic hoàn tất đăng ký
+  //   // Xác thực phản hồi từ thiết bị xác thực và lưu trữ thông tin người dùng
+  // }
+
+  // @PostMapping("/authenticate/finish")
+  // public void finishAuthentication(@RequestBody FinishAuthenticationRequest request) {
+  //   // Xử lý logic hoàn tất xác thực
+  //   // Xác thực phản hồi từ thiết bị xác thực
   // }
 }

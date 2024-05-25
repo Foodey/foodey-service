@@ -1,17 +1,17 @@
 package com.foodey.server.voucher;
 
 import com.foodey.server.order.OrderItem;
+import com.foodey.server.validation.annotation.OptimizedName;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -89,12 +89,10 @@ public class Voucher {
 
   private String code;
 
-  @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
-  @NotBlank
-  private String name;
+  @OptimizedName private String name;
 
-  @lombok.Builder.Default private String image = "";
-  @lombok.Builder.Default private String description = "";
+  @Default private String image = "";
+  @Default private String description = "";
 
   @NotNull private VoucherType type;
   @NotNull private VoucherMethod method;

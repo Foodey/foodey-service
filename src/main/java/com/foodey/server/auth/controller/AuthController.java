@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@PublicEndpoint
 public class AuthController {
 
   private final AuthService authService;
@@ -35,7 +36,6 @@ public class AuthController {
   })
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PublicEndpoint
   public void register(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
               description = "The RegistrationRequest payload")
@@ -53,7 +53,6 @@ public class AuthController {
   })
   @PostMapping("/login")
   @Operation(summary = "Logs the user in to the system and return the auth tokens")
-  @PublicEndpoint
   public ResponseEntity<?> login(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
               description = "The LoginRequest payload")
@@ -65,7 +64,6 @@ public class AuthController {
 
   @PostMapping("/refresh-token")
   @Operation(summary = "Refresh the expired jwt authentication")
-  @PublicEndpoint
   public ResponseEntity<?> refreshToken(HttpServletRequest request) throws ServletException {
     return ResponseEntity.ok(authService.refreshToken(request));
   }
