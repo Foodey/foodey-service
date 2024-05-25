@@ -15,4 +15,12 @@ public class PrincipalUtils {
   public static final String getUserId() {
     return getUser().getId();
   }
+
+  public static final Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public static final String getUsername() {
+    return SecurityContextHolder.getContext().getAuthentication().getName();
+  }
 }

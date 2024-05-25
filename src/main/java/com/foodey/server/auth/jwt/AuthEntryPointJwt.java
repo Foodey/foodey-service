@@ -1,4 +1,4 @@
-package com.foodey.server.security.jwt;
+package com.foodey.server.auth.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

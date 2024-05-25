@@ -2,12 +2,12 @@ package com.foodey.server.exceptions.advice;
 
 import com.foodey.server.common.payload.ExceptionResponse;
 import com.foodey.server.exceptions.InvalidTokenRequestException;
-import com.foodey.server.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.exceptions.TooManyRequestsException;
 import com.foodey.server.exceptions.UserLoginException;
 import com.foodey.server.notify.SMSNotificationException;
+import com.foodey.server.user.exceptions.NewRoleRequestAlreadySentException;
 import com.giffing.bucket4j.spring.boot.starter.context.RateLimitException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;

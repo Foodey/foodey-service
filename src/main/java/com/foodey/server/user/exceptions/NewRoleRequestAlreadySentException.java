@@ -1,5 +1,6 @@
-package com.foodey.server.exceptions;
+package com.foodey.server.user.exceptions;
 
+import com.foodey.server.exceptions.HttpException;
 import com.foodey.server.user.enums.RoleType;
 import lombok.Getter;
 import lombok.Setter;

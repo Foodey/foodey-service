@@ -120,7 +120,7 @@ public class User implements UserDetails, UserRole {
             role -> {
               auths.add(new SimpleGrantedAuthority("ROLE_" + role.getName().name()));
               if (role.getPermissions() != null) {
-                role.getPermissions()
+                role.getPermissions().stream()
                     .forEach(
                         permission -> {
                           auths.add(new SimpleGrantedAuthority(permission.name()));

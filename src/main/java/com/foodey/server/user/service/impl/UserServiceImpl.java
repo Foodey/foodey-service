@@ -1,11 +1,11 @@
 package com.foodey.server.user.service.impl;
 
 import com.foodey.server.auth.dto.RegistrationRequest;
-import com.foodey.server.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.repository.ShopRepository;
+import com.foodey.server.user.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;
 import com.foodey.server.user.model.decorator.SellerRoleDecorator;

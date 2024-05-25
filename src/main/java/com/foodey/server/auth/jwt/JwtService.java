@@ -1,4 +1,4 @@
-package com.foodey.server.security.jwt;
+package com.foodey.server.auth.jwt;
 
 import com.foodey.server.auth.enums.TokenType;
 import com.foodey.server.auth.model.RefreshToken;

@@ -1,7 +1,7 @@
 package com.foodey.server.config;
 
-import com.foodey.server.security.jwt.AuthEntryPointJwt;
-import com.foodey.server.security.jwt.LazyJwtAuthTokenFilter;
+import com.foodey.server.auth.jwt.AuthEntryPointJwt;
+import com.foodey.server.auth.jwt.LazyJwtAuthTokenFilter;
 import com.foodey.server.utils.ApiEndpointSecurityInspector;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
