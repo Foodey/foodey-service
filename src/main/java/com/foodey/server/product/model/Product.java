@@ -48,9 +48,9 @@ public class Product implements Persistable<String> {
 
   private boolean soldOut = false;
 
-  @CreatedDate private Instant createdAt;
+  @JsonIgnore @CreatedDate private Instant createdAt;
 
-  @LastModifiedDate private Instant updatedAt;
+  @JsonIgnore @LastModifiedDate private Instant updatedAt;
 
   public Product(String name, long price, String image, String description) {
     this.name = name;

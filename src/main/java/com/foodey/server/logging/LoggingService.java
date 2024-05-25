@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,7 @@ public class LoggingService {
     log.info(data.toString());
   }
 
+  @Async
   public void logRequest(HttpServletRequest httpServletRequest, Object body) {
     try {
       if (httpServletRequest.getRequestURI().contains("medias")) {
@@ -65,6 +67,7 @@ public class LoggingService {
     return data;
   }
 
+  @Async
   public void logResponse(HttpServletRequest request, HttpServletResponse response, Object body) {
     try {
       if (request.getRequestURI().contains("medias")) {

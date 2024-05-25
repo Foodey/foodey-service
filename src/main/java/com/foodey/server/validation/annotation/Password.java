@@ -20,5 +20,6 @@ public @interface Password {
 
   Class<? extends Payload>[] payload() default {};
 
+  // ^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$
   String regexp() default "^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\\d@$!%*?&]{8,}$";
 }

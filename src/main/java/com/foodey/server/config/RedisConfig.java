@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.redisson.spring.data.connection.RedissonConnectionFactory;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
     enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 @ImportAutoConfiguration({
   RedisAutoConfiguration.class,
-  CacheAutoConfiguration.class,
 })
 public class RedisConfig {
 
@@ -51,6 +49,7 @@ public class RedisConfig {
   // public Config config() {
   //   Config config = new Config();
   //   String address = String.format("redis://%s:%s", HOST, PORT);
+
   //   config.useSingleServer().setAddress(address).setPassword(PASSWORD);
   //   return config;
   // }

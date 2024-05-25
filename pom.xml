@@ -17,6 +17,7 @@
     <java.version>17</java.version>
     <lombok.version>1.18.32</lombok.version>
     <jwt.version>0.12.5</jwt.version>
+    <webauthn4j-spring-security.version>0.10.0.RELEASE</webauthn4j-spring-security.version>
   </properties>
   <dependencies>
     <!-- Database -->
@@ -30,6 +31,12 @@
       <version>4.11.1</version>
     </dependency>
     <!-- Core -->
+    <dependency>
+      <groupId>com.yubico</groupId>
+      <artifactId>webauthn-server-core</artifactId>
+      <version>2.5.2</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>
       <artifactId>bucket4j-spring-boot-starter</artifactId>
@@ -54,6 +61,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webauthn4j</groupId>
+      <artifactId>webauthn4j-spring-security-core</artifactId>
+      <version>${webauthn4j-spring-security.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

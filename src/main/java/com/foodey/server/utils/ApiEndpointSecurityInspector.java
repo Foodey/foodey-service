@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class ApiEndpointSecurityInspector {
 
   private RequestMappingHandlerMapping requestHandlerMapping;
+  private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
   @Getter
   private List<String> publicGetEndpoints =
@@ -89,10 +90,8 @@ public class ApiEndpointSecurityInspector {
    * @return {@code true} if the request is to an unsecured API endpoint, {@code false} otherwise.
    */
   public boolean isUnsecureRequest(@NonNull final HttpServletRequest request) {
-    final HttpMethod requestHttpMethod = HttpMethod.valueOf(request.getMethod());
-
-    return getUnsecuredApiPaths(requestHttpMethod).stream()
-        .anyMatch(apiPath -> new AntPathMatcher().match(apiPath, request.getRequestURI()));
+    return getUnsecuredApiPaths(HttpMethod.valueOf(request.getMethod())).stream()
+        .anyMatch(apiPath -> antPathMatcher.match(apiPath, request.getRequestURI()));
   }
 
   /**
