@@ -42,5 +42,62 @@ public class WebAuthnController {
 
   // Server: Xác minh assertion, kiểm tra tính hợp lệ của thông tin, và nếu thành công, hoàn tất quá
   // trình xác thực.
+  // @PostMapping(value = "/signup")
+  //     public String create(HttpServletRequest request, @Valid @ModelAttribute("userForm")
+  // UserCreateForm userCreateForm, BindingResult result, Model model, RedirectAttributes
+  // redirectAttributes) {
+  //         try {
+  //             if (result.hasErrors()) {
+  //                 model.addAttribute("errorMessage", "Your input needs correction.");
+  //                 logger.error("User input validation failed.");
+  //                 return VIEW_LOGIN;
+  //             }
+  //             WebAuthnRegistrationRequestValidationResponse
+  // registrationRequestValidationResponse;
+  //             try {
+  //                 registrationRequestValidationResponse = registrationRequestValidator.validate(
+  //                     request,
+  //                     userCreateForm.getClientDataJSON(),
+  //                     userCreateForm.getAttestationObject(),
+  //                     userCreateForm.getTransports(),
+  //                     userCreateForm.getClientExtensions()
+  //                 );
+  //             } catch (WebAuthnException | WebAuthnAuthenticationException e) {
+  //                 model.addAttribute("errorMessage", "Authenticator registration request
+  // validation failed. Please try again.");
+  //                 logger.error("WebAuthn registration request validation failed.", e);
+  //                 return VIEW_LOGIN;
+  //             }
+  //             var username = userCreateForm.getUsername();
+  //             var authenticator = new WebAuthnAuthenticatorImpl(
+  //                 "authenticator",
+  //                 username,
+  //
+  // registrationRequestValidationResponse.getAttestationObject().getAuthenticatorData().getAttestedCredentialData(),
+  //
+  // registrationRequestValidationResponse.getAttestationObject().getAttestationStatement(),
+  //
+  // registrationRequestValidationResponse.getAttestationObject().getAuthenticatorData().getSignCount(),
+  //                 registrationRequestValidationResponse.getTransports(),
+  //                 registrationRequestValidationResponse.getRegistrationExtensionsClientOutputs(),
+  //
+  // registrationRequestValidationResponse.getAttestationObject().getAuthenticatorData().getExtensions()
+  //             );
+  //             try {
+  //                 webAuthnAuthenticatorManager.createAuthenticator(authenticator);
+  //             } catch (IllegalArgumentException ex) {
+  //                 model.addAttribute("errorMessage", "Registration failed. The user may already
+  // be registered.");
+  //                 logger.error("Registration failed.", ex);
+  //                 return VIEW_LOGIN;
+  //             }
+  //         } catch (RuntimeException ex) {
+  //             model.addAttribute("errorMessage", "Registration failed by unexpected error.");
+  //             logger.error("Registration failed.", ex);
+  //             return VIEW_LOGIN;
+  //         }
+  //         model.addAttribute("successMessage", "User registration successful. Please login.");
+  //         return VIEW_LOGIN;
+  //     }
 
 }

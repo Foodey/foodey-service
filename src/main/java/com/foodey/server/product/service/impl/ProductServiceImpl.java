@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
   private final ProductCategoryRepository productCategoryRepository;
 
   @Override
+  @Transactional
   public Product createProduct(Product product, User user) {
 
     String categoryId = product.getCategoryId();

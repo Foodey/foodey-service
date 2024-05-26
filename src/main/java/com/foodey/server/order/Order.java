@@ -1,9 +1,11 @@
 package com.foodey.server.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.payment.Payment;
+import com.foodey.server.shop.model.Shop;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import java.time.Instant;
 import java.util.List;
 import lombok.Getter;
@@ -13,6 +15,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /** Order */
@@ -21,11 +24,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString
 @Document(collection = "orders")
 public class Order implements Persistable<String> {
-  @Null @Id private String id;
+  @Id private String id;
 
   private String userId;
 
-  private String shopId;
+  @DBRef private Shop shop;
 
   private String shipperId;
 
@@ -39,19 +42,24 @@ public class Order implements Persistable<String> {
 
   @NotNull private Payment payment;
 
-  @CreatedDate private Instant createdAt;
-  @LastModifiedDate private Instant updatedAt;
+  @JsonSerialize(using = InstantSerializer.class)
+  @CreatedDate
+  private Instant createdAt;
+
+  @JsonSerialize(using = InstantSerializer.class)
+  @LastModifiedDate
+  private Instant updatedAt;
 
   public Order(
       String userId,
-      String shopId,
+      Shop shop,
       String shipperId,
       String shippingAddress,
       Payment payment,
       String voucherCode,
       List<OrderItem> items) {
     this.userId = userId;
-    this.shopId = shopId;
+    this.shop = shop;
     this.shipperId = shipperId;
     this.shippingAddress = shippingAddress;
     this.payment = payment;

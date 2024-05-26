@@ -2,6 +2,8 @@ package com.foodey.server.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -42,15 +44,19 @@ public class Product implements Persistable<String> {
 
   @NotBlank private String categoryId;
 
-  private long rating = 0;
+  // private long rating = 0;
 
-  private long soldQuantity = 0;
+  // private long soldQuantity = 0;
 
-  private boolean soldOut = false;
+  // private boolean soldOut = false;
 
-  @JsonIgnore @CreatedDate private Instant createdAt;
+  @JsonSerialize(using = InstantSerializer.class)
+  @CreatedDate
+  private Instant createdAt;
 
-  @JsonIgnore @LastModifiedDate private Instant updatedAt;
+  @JsonSerialize(using = InstantSerializer.class)
+  @LastModifiedDate
+  private Instant updatedAt;
 
   public Product(String name, long price, String image, String description) {
     this.name = name;

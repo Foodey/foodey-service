@@ -119,49 +119,52 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+    apiEndpointSecurityInspector.getPublicEndpoints().add("/api/v1/auth/**");
+
     // WebAuthn Login
     http.with(
-        WebAuthnLoginConfigurer.webAuthnLogin(),
-        (customizer) -> {
-          customizer
-              .loginPage("/api/v1/auth/webauthn/login")
-              .usernameParameter("username")
-              .passwordParameter("rawPassword")
-              .credentialIdParameter("credentialId")
-              .clientDataJSONParameter("clientDataJSON")
-              .authenticatorDataParameter("authenticatorData")
-              .signatureParameter("signature")
-              .clientExtensionsJSONParameter("clientExtensionsJSON")
-              .loginProcessingUrl("/login")
-              .rpId("example.com")
-              .attestationOptionsEndpoint()
-              .attestationOptionsProvider(attestationOptionsProvider)
-              .processingUrl("/api/v1/auth/webauthn/attestation/options")
-              .rp()
-              .name("example")
-              .and()
-              .pubKeyCredParams(
-                  new PublicKeyCredentialParameters(
-                      PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
-                  new PublicKeyCredentialParameters(
-                      PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS1))
-              .authenticatorSelection()
-              .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
-              .residentKey(ResidentKeyRequirement.PREFERRED)
-              .userVerification(UserVerificationRequirement.PREFERRED)
-              .and()
-              .attestation(AttestationConveyancePreference.DIRECT)
-              .extensions()
-              .credProps(true)
-              .uvm(true)
-              .and()
-              .assertionOptionsEndpoint()
-              .assertionOptionsProvider(assertionOptionsProvider)
-              .rpId("example.com")
-              .userVerification(UserVerificationRequirement.PREFERRED);
-        });
+            WebAuthnLoginConfigurer.webAuthnLogin(),
+            (customizer) -> {
+              customizer
+                  .loginPage("/login")
+                  // .usernameParameter("username")
+                  // .passwordParameter("rawPassword")
+                  // .credentialIdParameter("credentialId")
+                  // .clientDataJSONParameter("clientDataJSON")
+                  // .authenticatorDataParameter("authenticatorData")
+                  // .signatureParameter("signature")
+                  // .clientExtensionsJSONParameter("clientExtensionsJSON")
+                  .loginProcessingUrl("/api/v1/auth/webauthn/login")
+                  .rpId("foodey.com") // this is the domain name of the foodey web
+                  .attestationOptionsEndpoint()
+                  .attestationOptionsProvider(attestationOptionsProvider)
+                  .processingUrl("/api/v1/auth/webauthn/attestation/options")
+                  .rp()
+                  .name("foodey")
+                  .and()
+                  .pubKeyCredParams(
+                      new PublicKeyCredentialParameters(
+                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
+                      new PublicKeyCredentialParameters(
+                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS1))
+                  .authenticatorSelection()
+                  .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                  .residentKey(ResidentKeyRequirement.PREFERRED)
+                  .userVerification(UserVerificationRequirement.PREFERRED)
+                  .and()
+                  .attestation(AttestationConveyancePreference.DIRECT)
+                  .extensions()
+                  .credProps(true)
+                  .uvm(true)
+                  .and()
+                  .assertionOptionsEndpoint()
+                  .assertionOptionsProvider(assertionOptionsProvider)
+                  .rpId("example.com")
+                  .userVerification(UserVerificationRequirement.PREFERRED);
+            })
 
-    http.headers(
+        // headers
+        .headers(
             headers -> {
 
               // 'publickey-credentials-get *' allows getting WebAuthn credentials to all

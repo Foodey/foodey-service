@@ -1,15 +1,16 @@
 package com.foodey.server.order;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.payment.Payment;
 import com.foodey.server.payment.PaymentStatus;
+import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.shopcart.ShopCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /** OrderServiceImpl */
 @Service
@@ -18,10 +19,13 @@ public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository orderRepository;
   private final ShopCartService shopCartService;
+  private final ShopService shopService;
 
   @Override
+  @Transactional
   public Order createOrderFromShopCart(String userId, OrderRequest orderRequest) {
-    ShopCartDetail shopCart = shopCartService.getDetail(userId, orderRequest.getShopId());
+    String shopId = orderRequest.getShopId();
+    ShopCartDetail shopCart = shopCartService.getDetail(userId, shopId);
 
     Payment payment =
         new Payment(
@@ -30,8 +34,8 @@ public class OrderServiceImpl implements OrderService {
     Order order =
         new Order(
             userId,
-            orderRequest.getShopId(),
-            NanoIdUtils.randomNanoId(),
+            shopService.findById(shopId),
+            null,
             orderRequest.getAddress(),
             payment,
             orderRequest.getVoucherCode(),

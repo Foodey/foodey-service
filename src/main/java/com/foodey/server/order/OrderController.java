@@ -73,7 +73,7 @@ public class OrderController {
       @RequestParam(name = "status", required = true, defaultValue = OrderStatus.Fields.DELIVERED)
           OrderStatus status,
       @CurrentUser User user,
-      @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.DESC)
+      @PageableDefault(page = 0, size = 8, sort = "createdAt", direction = Direction.DESC)
           Pageable pageable) {
     return orderService.findOrdersByUserIdAndStatus(user.getId(), status, pageable);
   }
@@ -91,7 +91,7 @@ public class OrderController {
       @PathVariable(name = "shopId", required = true) String shopId,
       @RequestParam(name = "status", required = true, defaultValue = OrderStatus.Fields.DELIVERED)
           OrderStatus status,
-      @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.DESC)
+      @PageableDefault(page = 0, size = 8, sort = "createdAt", direction = Direction.DESC)
           Pageable pageable) {
     return orderService.findOrdersByShopIdAndStatus(shopId, status, pageable);
   }

@@ -6,8 +6,7 @@ import static org.springframework.http.HttpMethod.POST;
 import com.foodey.server.annotation.PublicEndpoint;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.NonNull;
@@ -30,17 +29,19 @@ public class ApiEndpointSecurityInspector {
   private RequestMappingHandlerMapping requestHandlerMapping;
   private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
+  /** A set of public endpoints that are accessible via any HTTP method. */
+  @Getter private Set<String> publicEndpoints = new HashSet<>();
+
   @Getter
-  private List<String> publicGetEndpoints =
-      new ArrayList<>() {
+  private Set<String> publicGetEndpoints =
+      new HashSet<>() {
         {
-          add("/api/v1/auth/webauthn/**");
           add("/swagger-ui**/**");
           add("/v3/api-docs**/**");
         }
       };
 
-  @Getter private List<String> publicPostEndpoints = new ArrayList<>();
+  @Getter private Set<String> publicPostEndpoints = new HashSet<>();
 
   public ApiEndpointSecurityInspector(
       @Qualifier("requestMappingHandlerMapping")
@@ -95,7 +96,9 @@ public class ApiEndpointSecurityInspector {
    */
   public boolean isUnsecureRequest(@NonNull final HttpServletRequest request) {
     return getUnsecuredApiPaths(HttpMethod.valueOf(request.getMethod())).stream()
-        .anyMatch(apiPath -> antPathMatcher.match(apiPath, request.getRequestURI()));
+            .anyMatch(apiPath -> antPathMatcher.match(apiPath, request.getRequestURI()))
+        || publicEndpoints.stream()
+            .anyMatch(apiPath -> antPathMatcher.match(apiPath, request.getRequestURI()));
   }
 
   /**
@@ -104,9 +107,9 @@ public class ApiEndpointSecurityInspector {
    * @param httpMethod The HTTP method for which unsecured paths are to be retrieved.
    * @return A list of unsecured API paths for the specified HTTP method.s
    */
-  private List<String> getUnsecuredApiPaths(@NonNull final HttpMethod httpMethod) {
+  private Set<String> getUnsecuredApiPaths(@NonNull final HttpMethod httpMethod) {
     if (httpMethod.equals(GET)) return publicGetEndpoints;
     else if (httpMethod.equals(POST)) return publicPostEndpoints;
-    return new ArrayList<>();
+    return new HashSet<>();
   }
 }

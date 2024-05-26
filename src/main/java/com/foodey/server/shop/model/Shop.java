@@ -2,6 +2,8 @@ package com.foodey.server.shop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -53,14 +55,18 @@ public class Shop implements Persistable<String>, ShopMenusContainer {
   private String address;
 
   // This is a list of menus that the shop has in private
-  private List<@Valid ShopMenu> menus = new ArrayList<>();
+  @JsonIgnore private List<@Valid ShopMenu> menus = new ArrayList<>();
 
   @Indexed(name = "shop_categories")
   private Set<String> categoryIds = new HashSet<>();
 
-  @JsonIgnore @CreatedDate private Instant createdAt;
+  @JsonSerialize(using = InstantSerializer.class)
+  @CreatedDate
+  private Instant createdAt;
 
-  @JsonIgnore @LastModifiedDate private Instant updatedAt;
+  @JsonSerialize(using = InstantSerializer.class)
+  @LastModifiedDate
+  private Instant updatedAt;
 
   public Shop(
       String name, String address, String logo, String wallpaper, String branchId, String ownerId) {

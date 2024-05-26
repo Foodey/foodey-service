@@ -45,5 +45,5 @@ public class ShopBranch implements ShopMenusContainer {
   private String wallpaper;
 
   // the list of menus apply to all shop of the same branch
-  @Default private List<@Valid ShopMenu> menus = new ArrayList<>();
+  @JsonIgnore @Default private List<@Valid ShopMenu> menus = new ArrayList<>();
 }

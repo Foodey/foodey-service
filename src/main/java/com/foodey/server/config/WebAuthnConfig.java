@@ -89,6 +89,7 @@ public class WebAuthnConfig {
     ObjectMapper jsonMapper = new ObjectMapper();
     jsonMapper.registerModule(new WebAuthnMetadataJSONModule());
     jsonMapper.registerModule(new WebAuthn4JSpringSecurityJSONModule());
+
     ObjectMapper cborMapper = new ObjectMapper(new CBORFactory());
     return new ObjectConverter(jsonMapper, cborMapper);
   }
