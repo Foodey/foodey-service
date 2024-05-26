@@ -12,7 +12,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** OrderServiceImpl */
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -62,6 +61,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional
   public Order updateOrderStatus(String orderId, OrderStatus status) {
     Order order = findById(orderId);
     order.setStatus(status);
@@ -69,11 +69,13 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional
   public Order save(Order order) {
     return orderRepository.save(order);
   }
 
   @Override
+  @Transactional
   public void deleteById(String orderId) {
     orderRepository.deleteById(orderId);
   }
