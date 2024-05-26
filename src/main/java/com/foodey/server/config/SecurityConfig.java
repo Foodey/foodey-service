@@ -1,21 +1,20 @@
 package com.foodey.server.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.foodey.server.auth.jwt.AuthEntryPointJwt;
 import com.foodey.server.auth.jwt.LazyJwtAuthTokenFilter;
 import com.foodey.server.utils.ApiEndpointSecurityInspector;
-import com.webauthn4j.WebAuthnManager;
-import com.webauthn4j.converter.util.ObjectConverter;
-import com.webauthn4j.metadata.converter.jackson.WebAuthnMetadataJSONModule;
-import com.webauthn4j.springframework.security.WebAuthnAuthenticationProvider;
-import com.webauthn4j.springframework.security.converter.jackson.WebAuthn4JSpringSecurityJSONModule;
-import com.webauthn4j.springframework.security.credential.InMemoryWebAuthnCredentialRecordManager;
-import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecordManager;
-import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecordService;
+import com.webauthn4j.data.AttestationConveyancePreference;
+import com.webauthn4j.data.AuthenticatorAttachment;
+import com.webauthn4j.data.PublicKeyCredentialParameters;
+import com.webauthn4j.data.PublicKeyCredentialType;
+import com.webauthn4j.data.ResidentKeyRequirement;
+import com.webauthn4j.data.UserVerificationRequirement;
+import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
+import com.webauthn4j.springframework.security.config.configurers.WebAuthnLoginConfigurer;
+import com.webauthn4j.springframework.security.options.AssertionOptionsProvider;
+import com.webauthn4j.springframework.security.options.AttestationOptionsProvider;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -51,37 +50,13 @@ public class SecurityConfig {
   private final LazyJwtAuthTokenFilter lazyJwtAuthTokenFilter;
   private final AuthEntryPointJwt unauthorizedHandler;
   private final LogoutHandler logoutHandler;
-  private final ApplicationContext applicationContext;
   private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
-
-  @Bean
-  public WebAuthnCredentialRecordManager webAuthnAuthenticatorManager() {
-    return new InMemoryWebAuthnCredentialRecordManager();
-  }
-
-  @Bean
-  public WebAuthnAuthenticationProvider webAuthnAuthenticationProvider(
-      WebAuthnCredentialRecordService authenticatorService, WebAuthnManager webAuthnManager) {
-    return new WebAuthnAuthenticationProvider(authenticatorService, webAuthnManager);
-  }
+  private final AttestationOptionsProvider attestationOptionsProvider;
+  private final AssertionOptionsProvider assertionOptionsProvider;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public ObjectConverter objectConverter() {
-    ObjectMapper jsonMapper = new ObjectMapper();
-    jsonMapper.registerModule(new WebAuthnMetadataJSONModule());
-    jsonMapper.registerModule(new WebAuthn4JSpringSecurityJSONModule());
-    ObjectMapper cborMapper = new ObjectMapper(new CBORFactory());
-    return new ObjectConverter(jsonMapper, cborMapper);
-  }
-
-  @Bean
-  public WebAuthnManager webAuthnManager(ObjectConverter objectConverter) {
-    return WebAuthnManager.createNonStrictWebAuthnManager(objectConverter);
   }
 
   @Bean
@@ -145,31 +120,46 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     // WebAuthn Login
-    // http.with(
-    //     WebAuthnLoginConfigurer.webAuthnLogin(),
-    //     (customizer) -> {
-    //       customizer
-    //           .defaultSuccessUrl("/", true)
-    //           .failureUrl("/login")
-    //           .attestationOptionsEndpoint()
-    //           .rp()
-    //           .name("WebAuthn4J Spring Security Sample")
-    //           .and()
-    //           .pubKeyCredParams(
-    //               new PublicKeyCredentialParameters(
-    //                   PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
-    //               new PublicKeyCredentialParameters(
-    //                   PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS1))
-    //           .attestation(AttestationConveyancePreference.NONE)
-    //           .extensions()
-    //           .uvm(true)
-    //           .credProps(true)
-    //           .extensionProviders()
-    //           .and()
-    //           .assertionOptionsEndpoint()
-    //           .extensions()
-    //           .extensionProviders();
-    //     });
+    http.with(
+        WebAuthnLoginConfigurer.webAuthnLogin(),
+        (customizer) -> {
+          customizer
+              .loginPage("/api/v1/auth/webauthn/login")
+              .usernameParameter("username")
+              .passwordParameter("rawPassword")
+              .credentialIdParameter("credentialId")
+              .clientDataJSONParameter("clientDataJSON")
+              .authenticatorDataParameter("authenticatorData")
+              .signatureParameter("signature")
+              .clientExtensionsJSONParameter("clientExtensionsJSON")
+              .loginProcessingUrl("/login")
+              .rpId("example.com")
+              .attestationOptionsEndpoint()
+              .attestationOptionsProvider(attestationOptionsProvider)
+              .processingUrl("/api/v1/auth/webauthn/attestation/options")
+              .rp()
+              .name("example")
+              .and()
+              .pubKeyCredParams(
+                  new PublicKeyCredentialParameters(
+                      PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
+                  new PublicKeyCredentialParameters(
+                      PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS1))
+              .authenticatorSelection()
+              .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+              .residentKey(ResidentKeyRequirement.PREFERRED)
+              .userVerification(UserVerificationRequirement.PREFERRED)
+              .and()
+              .attestation(AttestationConveyancePreference.DIRECT)
+              .extensions()
+              .credProps(true)
+              .uvm(true)
+              .and()
+              .assertionOptionsEndpoint()
+              .assertionOptionsProvider(assertionOptionsProvider)
+              .rpId("example.com")
+              .userVerification(UserVerificationRequirement.PREFERRED);
+        });
 
     http.headers(
             headers -> {
@@ -194,9 +184,7 @@ public class SecurityConfig {
         // authorize
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/v1/auth/**")
-                    .permitAll()
-                    .requestMatchers(
+                auth.requestMatchers(
                         HttpMethod.GET,
                         apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new))
                     .permitAll()

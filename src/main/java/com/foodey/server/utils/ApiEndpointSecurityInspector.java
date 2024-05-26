@@ -34,9 +34,9 @@ public class ApiEndpointSecurityInspector {
   private List<String> publicGetEndpoints =
       new ArrayList<>() {
         {
+          add("/api/v1/auth/webauthn/**");
           add("/swagger-ui**/**");
           add("/v3/api-docs**/**");
-          add("/api/v1/test/**");
         }
       };
 
@@ -65,6 +65,7 @@ public class ApiEndpointSecurityInspector {
 
           if (handlerMethod.hasMethodAnnotation(PublicEndpoint.class)
               || handlerMethod.getBeanType().isAnnotationPresent(PublicEndpoint.class)) {
+
             final Set<String> apiPaths = requestInfo.getPatternValues();
             requestInfo.getMethodsCondition().getMethods().stream()
                 .forEach(

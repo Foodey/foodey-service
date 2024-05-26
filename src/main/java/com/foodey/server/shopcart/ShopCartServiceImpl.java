@@ -90,6 +90,7 @@ public class ShopCartServiceImpl implements ShopCartService {
   private boolean decreaseProductQuantity(
       String userId, String shopId, String productId, long quantity) {
     ShopCart cart = findOrCreate(userId, shopId);
+
     Map<String, Long> productQuantityMap = cart.getProductsWithQuantity();
     if (productQuantityMap.containsKey(productId)) {
       long newQuantity = productQuantityMap.get(productId) - quantity;
