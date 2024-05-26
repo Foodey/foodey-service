@@ -15,6 +15,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -23,6 +25,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @ToString
 @Document(collection = "orders")
+@CompoundIndexes({
+  @CompoundIndex(name = "user_status_idx", def = "{'userId': 1, 'status': 1}"),
+  @CompoundIndex(name = "shop_status_idx", def = "{'shop.$id': 1, 'status': 1}")
+})
 public class Order implements Persistable<String> {
   @Id private String id;
 
