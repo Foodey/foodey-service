@@ -117,6 +117,11 @@ public class SecurityConfig {
     return source;
   }
 
+  // @Bean
+  // public PublicKeyCredentialUserEntityProvider publicKeyCredentialUserEntityProvider() {
+  //   // return new PublicKeyCredentialUserEntityProvider() {};
+  // }
+
   @Bean
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     apiEndpointSecurityInspector.getPublicEndpoints().add("/api/v1/auth/**");
@@ -126,7 +131,8 @@ public class SecurityConfig {
             WebAuthnLoginConfigurer.webAuthnLogin(),
             (customizer) -> {
               customizer
-                  .loginPage("/login")
+                  .rpId("foodey.com") // this is the domain name of the foodey web
+                  // .loginPage("/api/v1/auth/webauthn/login")
                   // .usernameParameter("username")
                   // .passwordParameter("rawPassword")
                   // .credentialIdParameter("credentialId")
@@ -135,14 +141,15 @@ public class SecurityConfig {
                   // .signatureParameter("signature")
                   // .clientExtensionsJSONParameter("clientExtensionsJSON")
                   .loginProcessingUrl("/api/v1/auth/webauthn/login")
-                  .rpId("foodey.com") // this is the domain name of the foodey web
                   .attestationOptionsEndpoint()
                   .attestationOptionsProvider(attestationOptionsProvider)
                   .processingUrl("/api/v1/auth/webauthn/attestation/options")
                   .rp()
-                  .name("foodey")
+                  .name("Foodey Corporation")
                   .and()
                   .pubKeyCredParams(
+                      new PublicKeyCredentialParameters(
+                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS256),
                       new PublicKeyCredentialParameters(
                           PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
                       new PublicKeyCredentialParameters(
@@ -152,7 +159,7 @@ public class SecurityConfig {
                   .residentKey(ResidentKeyRequirement.PREFERRED)
                   .userVerification(UserVerificationRequirement.PREFERRED)
                   .and()
-                  .attestation(AttestationConveyancePreference.DIRECT)
+                  .attestation(AttestationConveyancePreference.NONE)
                   .extensions()
                   .credProps(true)
                   .uvm(true)
@@ -175,7 +182,12 @@ public class SecurityConfig {
               headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
             })
         .cors(cors -> cors.configurationSource(corsApiConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf((csrf) -> csrf.disable())
+        // .csrf(
+        //     customizer -> {
+        //       customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        //       customizer.ignoringRequestMatchers("/api/v1/auth/webauthn/**");
+        //     })
 
         // exception handling
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

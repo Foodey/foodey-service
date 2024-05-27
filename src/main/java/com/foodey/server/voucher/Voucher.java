@@ -1,23 +1,30 @@
 package com.foodey.server.voucher;
 
-import com.foodey.server.order.OrderItem;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.validation.annotation.OptimizedName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Function;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.Transient;
+import org.springframework.util.StringUtils;
 
 /** Vouncher */
 @Getter
@@ -25,120 +32,104 @@ import org.springframework.security.core.Transient;
 @AllArgsConstructor
 @Builder
 @Document(collection = "vouchers")
-// @ValidVoucher
-public class Voucher {
+@JsonIgnoreProperties(
+    value = {
+      "id",
+      "createdAt",
+      "updatedAt",
+      "shopOrBrandId",
+    },
+    allowGetters = true)
+public class Voucher implements Persistable<String> {
 
-  @Transient
-  @Getter
-  @Setter
-  public static final class Result {
-
-    private Double newTotalMoney;
-    // If this voucher is PRODUCT type,
-    // then this list will contain the product ids that can be used to donate to the customer
-    // And the first element is the quantity of products can be donated
-    private Object[] donateProducts = {0, null};
-    private String id;
-    private String code;
-    private String name;
-    private String image;
-    private String description;
-    private VoucherType type;
-    private VoucherMethod method;
-    private Double discountAmount;
-
-    public Result(Double newTotalMoney, String voucherId, String voucherCode) {
-      this.newTotalMoney = newTotalMoney;
-      this.id = voucherId;
-      this.code = voucherCode;
-    }
-
-    public Result(
-        Double newTotalMoney, Object[] donateProducts, String voucherId, String voucherCode) {
-      this.newTotalMoney = newTotalMoney;
-      this.donateProducts = donateProducts;
-      this.id = voucherId;
-      this.code = voucherCode;
-    }
-
-    public Result(
-        Double newTotalMoney,
-        Object[] donateProducts,
-        String voucherId,
-        String voucherCode,
-        String voucherName,
-        String voucherImage,
-        String voucherDescription,
-        VoucherType voucherType,
-        VoucherMethod voucherMethod,
-        Double voucherDiscountAmount) {
-      this.newTotalMoney = newTotalMoney;
-      this.donateProducts = donateProducts;
-      this.id = voucherId;
-      this.code = voucherCode;
-      this.name = voucherName;
-      this.image = voucherImage;
-      this.description = voucherDescription;
-      this.type = voucherType;
-      this.method = voucherMethod;
-      this.discountAmount = voucherDiscountAmount;
-    }
-  }
-
-  @Id private String id;
+  @Id
+  @Schema(description = "The voucher id")
+  private String id;
 
   private String code;
 
-  @OptimizedName private String name;
+  @Schema(description = "The name of the voucher")
+  @OptimizedName
+  private String name;
 
   @Default private String image = "";
+
   @Default private String description = "";
 
-  @NotNull private VoucherType type;
-  @NotNull private VoucherMethod method;
+  @Schema(description = "The type of the voucher")
+  @NotNull
+  private VoucherType type;
 
-  // If this voucher created by a branch else null
-  private String fromBranchId;
+  @Schema(description = "The method of the voucher")
+  @NotNull
+  private VoucherMethod method;
 
-  @NotNull @FutureOrPresent @DateTimeFormat private Instant activationDate;
+  @JsonSerialize(using = InstantSerializer.class)
+  @Default
+  @FutureOrPresent
+  @DateTimeFormat
+  @Schema(
+      description =
+          "The date when the voucher is activated, the voucher can be used after this date, default"
+              + " is now. The seller can set this date to the future to activate the voucher"
+              + " later.")
+  private Instant activationDate = Instant.now();
 
-  @NotNull @DateTimeFormat @Future private Instant expiryDate;
+  @NotNull
+  @DateTimeFormat
+  @Future
+  @JsonSerialize(using = InstantSerializer.class)
+  @Schema(
+      description =
+          "The date when the voucher is expired, the voucher cannot be used after this date.")
+  private Instant expiryDate;
 
-  // If this voucher is only for unique customer else null
-  private List<String> customerIds;
-  // If this list is empty or null, then this voucher can be used in all restaurants
-  private List<String> appliedStoreId;
-  // If this list is empty or null, then this voucher can be used in all categories
-  private List<String> appliedCategoriesId;
-  // If this list is empty or null, then this voucher can be used in all products
-  private List<String> appliedProductsId;
+  @CreatedDate
+  @JsonSerialize(using = InstantSerializer.class)
+  @Schema(description = "The time the voucher is created")
+  private Instant createdAt;
 
-  // The maximum number of times this voucher can be used
-  @lombok.Builder.Default private Long usageLimitTimes = 1L;
+  @LastModifiedDate
+  @JsonSerialize(using = InstantSerializer.class)
+  @Schema(description = "The last time the voucher is updated")
+  private Instant updatedAt;
 
-  // Minimum quantity of products have to buy for the voucher to apply
-  @lombok.Builder.Default private Long minimumBuyingQuantity = 1L;
+  // constraints
 
-  // Minimum quantity of products have to buy for the voucher to apply
-  private Long minimumDistance;
+  @Schema(description = "The shop or brand id that this voucher can be used. If null, then all")
+  private String shopOrBrandId;
 
-  @lombok.Builder.Default private Instant createdAt = Instant.now();
-  @lombok.Builder.Default private Instant updatedAt = Instant.now();
+  @Schema(description = "The list of category ids that this voucher can be used")
+  private Set<String> appliedCategoryIds;
 
-  // Amount discount rely on the voucher method
-  // If the voucher method is SPECIAL_AMOUNT, then the discount amount is the specific money amount
-  // or specific product amount if type is PRODUCT
-  // If the voucher method is PERCENTAGE, then the discount amount is the percentage of the total
-  @NotNull private Double discountAmount;
+  @Schema(description = "The list of product ids that this voucher can be used")
+  private Set<String> appliedProductIds;
 
-  public Voucher() {
-    this.usageLimitTimes = 1L;
-    this.minimumBuyingQuantity = 1L;
-    this.createdAt = Instant.now();
-    this.updatedAt = Instant.now();
-    this.description = "";
-    this.image = "";
-  }
+  @Default
+  @Schema(
+      description =
+          "The number of times this voucher can be used, When this number is 0, the"
+              + " voucher cannot be used anymore.")
+  private Long quantity = 1L;
+
+  @Schema(description = "The minimum quantity of products have to buy for the voucher to apply")
+  @Default
+  private Long minimumBuyingQuantity = 1L;
+
+  @Schema(
+      description = "The minimum distance from the store for the voucher to apply. The unit is km")
+  @Default
+  private Long minimumDistanceFromStore = 5L;
+
+  @NotNull
+  @Min(0)
+  @Schema(
+      description =
+          "The discount amount of the voucher. The unit is percentage or money or product. If the"
+              + " method is PERCENTAGE, then the discount amount is the percentage of the total. If"
+              + " the method is SPECIAL_AMOUNT, then the discount amount is the specific money"
+              + " amount or specific product amount if type is PRODUCT.")
+  private Double discountAmount;
 
   public boolean isExpired() {
     return this.expiryDate.isBefore(Instant.now());
@@ -148,146 +139,41 @@ public class Voucher {
     return this.activationDate.isBefore(Instant.now());
   }
 
-  public boolean isApplicableToStore(String storeId) {
-    return this.appliedStoreId == null
-        || this.appliedStoreId.isEmpty()
-        || this.appliedStoreId.contains(storeId);
+  private boolean isApplicableToStore(String storeId) {
+    return !StringUtils.hasText(this.shopOrBrandId) || this.shopOrBrandId.equals(storeId);
+  }
+
+  public boolean isApplicableToStore(String storeId, String brandId) {
+    return isApplicableToStore(storeId) || isApplicableToStore(brandId);
   }
 
   public boolean isApplicableToCategory(String categoryId) {
-    return this.appliedCategoriesId == null
-        || this.appliedCategoriesId.isEmpty()
-        || this.appliedCategoriesId.contains(categoryId);
+    return appliedCategoryIds.contains(categoryId);
   }
 
   public boolean isApplicableToProduct(String productId) {
-    return this.appliedProductsId == null
-        || this.appliedProductsId.isEmpty()
-        || this.appliedProductsId.contains(productId);
-  }
-
-  public boolean isApplicableToCustomer(String customerId) {
-    return this.customerIds == null
-        || this.customerIds.isEmpty()
-        || this.customerIds.contains(customerId);
-  }
-
-  public boolean isExceedUsageLimitTimes() {
-    return this.usageLimitTimes < 1;
+    return appliedProductIds.contains(productId);
   }
 
   public boolean isEnoughMiniumDistance(Long distance) {
-    return distance == null || !(distance < this.minimumDistance);
+    return distance >= this.minimumDistanceFromStore;
   }
 
   public boolean isEnoughMiniumBuyingQuantity(Long quantity) {
     return quantity >= this.minimumBuyingQuantity;
   }
 
-  public boolean isEnoughMiniumBuyingQuantityOfCategory(List<OrderItem> boughtOrderItems) {
-    return this.isEnoughMiniumBuyingQuantity(
-        boughtOrderItems.stream()
-            .filter(
-                orderItem ->
-                    isApplicableToProduct(orderItem.getProductId())
-                        && isApplicableToCategory(orderItem.getCategoryId()))
-            .count());
+  public boolean canBeUsed() {
+    return !isExpired() && isActivated() && quantity > 0;
   }
 
-  public boolean canBeUsed(List<OrderItem> boughtOrderItems, String storeId, String customerId) {
-
-    return this.isApplicableToCustomer(customerId)
-        && !this.isExpired()
-        && this.isActivated()
-        && !this.isExceedUsageLimitTimes()
-        && this.isApplicableToStore(storeId)
-        && this.isEnoughMiniumBuyingQuantityOfCategory(boughtOrderItems);
+  public boolean canBeAppliedTo(String storeId, String brandId, ShopCartDetail shopCartDetail) {
+    return canBeUsed();
   }
 
-  public boolean canBeUsed(
-      List<OrderItem> boughtOrderItems, String storeId, String customerId, Long distance) {
-
-    return this.isApplicableToCustomer(customerId)
-        && !this.isExpired()
-        && this.isActivated()
-        && !this.isExceedUsageLimitTimes()
-        && this.isApplicableToStore(storeId)
-        && this.isEnoughMiniumBuyingQuantityOfCategory(boughtOrderItems)
-        && this.isEnoughMiniumDistance(distance);
-  }
-
-  public Double calcMoneyAfterDiscount(Double moneyBeforeDiscount, VoucherMethod method) {
-    switch (method) {
-      case PERCENTAGE:
-        return moneyBeforeDiscount * (1 - this.discountAmount / 100);
-      case SPECIAL_AMOUNT:
-        return moneyBeforeDiscount - this.discountAmount;
-      default:
-        throw new IllegalStateException("Unexpected value: " + method);
-    }
-  }
-
-  public Result useVoucher(
-      List<OrderItem> boughtOrderItems,
-      String storeId,
-      String customerId,
-      VoucherType type,
-      VoucherMethod method,
-      Double totalMoneyBeforeDiscount) {
-
-    if (!this.canBeUsed(boughtOrderItems, storeId, customerId)) return null;
-
-    switch (type) {
-      case MONEY:
-      case DELIVERY:
-        return new Result(
-            calcMoneyAfterDiscount(totalMoneyBeforeDiscount, method),
-            null,
-            this.id,
-            this.code,
-            this.name,
-            this.image,
-            this.description,
-            this.type,
-            this.method,
-            this.discountAmount);
-      case PRODUCT:
-        return new Result(
-            totalMoneyBeforeDiscount,
-            new Object[] {
-              this.discountAmount, this.appliedProductsId,
-            },
-            this.id,
-            this.code,
-            this.name,
-            this.image,
-            this.description,
-            this.type,
-            this.method,
-            this.discountAmount);
-      default:
-        return null;
-    }
-  }
-
-  public void generateCode() {
-    this.code = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
-  }
-
-  public void generateCode(Function<String, Boolean> isCodeExist) {
-    {
-      if (isCodeExist == null) {
-        throw new IllegalArgumentException("isCodeExist cannot be null");
-      }
-      byte tryCount = 0;
-      while (tryCount++ < 10) {
-        generateCode();
-        if (!isCodeExist.apply(this.code)) {
-          return;
-        }
-      }
-
-      // throw new OutOfLimitException("Try to generate voucher code too many times");
-    }
+  @Override
+  @JsonIgnore
+  public boolean isNew() {
+    return createdAt == null || id == null;
   }
 }

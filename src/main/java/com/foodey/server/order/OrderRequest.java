@@ -1,12 +1,13 @@
 package com.foodey.server.order;
 
+import com.foodey.server.common.payload.IBodyRequest;
 import com.foodey.server.payment.PaymentMethod;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class OrderRequest {
+public class OrderRequest implements IBodyRequest {
 
   String shopId;
 
@@ -15,4 +16,6 @@ public class OrderRequest {
   String voucherCode;
 
   String address;
+
+  String note;
 }

@@ -21,12 +21,21 @@ import org.springframework.data.redis.core.RedisHash;
 public class ShopCart {
   @Id private String id;
 
+  private String shopId;
+
+  private String branchId;
+
+  private String userId;
+
   private long numberOfItems;
 
   private Map<String, Long> productsWithQuantity;
 
   public ShopCart(String userId, String shopId) {
     this.id = id(userId, shopId);
+    this.shopId = shopId;
+    this.branchId = "";
+    this.userId = userId;
     this.numberOfItems = 0;
     this.productsWithQuantity = new HashMap<>();
   }

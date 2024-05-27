@@ -12,7 +12,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** OrderServiceImpl */
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -39,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
             orderRequest.getAddress(),
             payment,
             orderRequest.getVoucherCode(),
+            orderRequest.getNote(),
             shopCart.getItems());
 
     return orderRepository.save(order);

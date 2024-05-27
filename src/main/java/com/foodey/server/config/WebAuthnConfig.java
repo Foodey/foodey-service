@@ -98,4 +98,8 @@ public class WebAuthnConfig {
   public WebAuthnManager webAuthnManager(ObjectConverter objectConverter) {
     return WebAuthnManager.createNonStrictWebAuthnManager(objectConverter);
   }
+
+  // @Bean
+  // public PublicKeyCredentialUserEntityProvider publicKeyCredentialUserEntityProvider() {
+  // }
 }

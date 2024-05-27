@@ -93,6 +93,10 @@ public class User implements UserDetails, UserRole {
   @Default
   private Set<String> favoriteShopIds = new HashSet<>();
 
+  @Schema(description = "The list of voucher that the user colleted")
+  @Default
+  private Set<String> voucherCodes = new HashSet<>();
+
   @Default
   @CreatedDate
   @Schema(description = "The created time of the account")

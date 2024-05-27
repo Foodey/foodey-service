@@ -36,6 +36,8 @@ public class Order implements Persistable<String> {
 
   @DBRef private Shop shop;
 
+  private String note;
+
   private String shipperId;
 
   private String voucherCode;
@@ -63,6 +65,7 @@ public class Order implements Persistable<String> {
       String shippingAddress,
       Payment payment,
       String voucherCode,
+      String note,
       List<OrderItem> items) {
     this.userId = userId;
     this.shop = shop;
@@ -71,6 +74,7 @@ public class Order implements Persistable<String> {
     this.payment = payment;
     this.voucherCode = voucherCode;
     this.items = items;
+    this.note = note == null ? "" : note;
     this.status = OrderStatus.PENDING;
   }
 

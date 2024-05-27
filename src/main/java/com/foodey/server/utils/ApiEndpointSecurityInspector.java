@@ -38,6 +38,7 @@ public class ApiEndpointSecurityInspector {
         {
           add("/swagger-ui**/**");
           add("/v3/api-docs**/**");
+          add("/.well-known/**");
         }
       };
 
