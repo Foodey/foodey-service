@@ -125,6 +125,12 @@ foodey:
       short: 120000 # 2 mins
       fast: 60000 # 10s
     resend-interval: 60000 # 1 min
+  webauthn:
+    rp:
+      name: "Foodey"
+    user:
+      name: "FoodeyPasskeyUser"
+      displayName: "Foodey Passkey User"
 
 twilio:
   account:

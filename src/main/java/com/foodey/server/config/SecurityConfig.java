@@ -13,6 +13,7 @@ import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
 import com.webauthn4j.springframework.security.config.configurers.WebAuthnLoginConfigurer;
 import com.webauthn4j.springframework.security.options.AssertionOptionsProvider;
 import com.webauthn4j.springframework.security.options.AttestationOptionsProvider;
+import com.webauthn4j.springframework.security.options.PublicKeyCredentialUserEntityProvider;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -53,6 +55,7 @@ public class SecurityConfig {
   private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
   private final AttestationOptionsProvider attestationOptionsProvider;
   private final AssertionOptionsProvider assertionOptionsProvider;
+  private final PublicKeyCredentialUserEntityProvider publicKeyCredentialUserEntityProvider;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -144,6 +147,7 @@ public class SecurityConfig {
                   .attestationOptionsEndpoint()
                   .attestationOptionsProvider(attestationOptionsProvider)
                   .processingUrl("/api/v1/auth/webauthn/attestation/options")
+                  .userProvider(publicKeyCredentialUserEntityProvider)
                   .rp()
                   .name("Foodey Corporation")
                   .and()
@@ -182,12 +186,12 @@ public class SecurityConfig {
               headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
             })
         .cors(cors -> cors.configurationSource(corsApiConfigurationSource()))
-        .csrf((csrf) -> csrf.disable())
-        // .csrf(
-        //     customizer -> {
-        //       customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        //       customizer.ignoringRequestMatchers("/api/v1/auth/webauthn/**");
-        //     })
+        // .csrf((csrf) -> csrf.disable())
+        .csrf(
+            customizer -> {
+              customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+              customizer.ignoringRequestMatchers("/api/v1/auth/webauthn/**");
+            })
 
         // exception handling
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

@@ -1,3 +1,5 @@
 package com.foodey.server.common.payload;
 
-public interface IBodyRequest {}
+import java.io.Serializable;
+
+public interface IBodyRequest extends Serializable {}
