@@ -1,7 +1,7 @@
 package com.foodey.server.auth.controller;
 
 import com.foodey.server.annotation.PublicEndpoint;
-import com.foodey.server.auth.fido2.WebAuthnCreationForm;
+import com.foodey.server.auth.fido2.WebAuthnRegistrationRequest;
 import com.foodey.server.auth.fido2.WebAuthnService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,9 +21,10 @@ public class WebAuthnController {
 
   private final WebAuthnService webAuthnService;
 
-  @PostMapping(value = "/signup")
+  @PostMapping(value = "/register")
   public boolean signup(
-      HttpServletRequest request, @Valid @RequestBody WebAuthnCreationForm userCreateForm) {
-    return webAuthnService.signUp(request, userCreateForm);
+      HttpServletRequest request,
+      @Valid @RequestBody WebAuthnRegistrationRequest webAuthnRegistrationRequest) {
+    return webAuthnService.signUp(request, webAuthnRegistrationRequest);
   }
 }

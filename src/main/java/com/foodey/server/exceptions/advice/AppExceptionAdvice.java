@@ -9,6 +9,7 @@ import com.foodey.server.exceptions.UserLoginException;
 import com.foodey.server.notify.SMSNotificationException;
 import com.foodey.server.user.exceptions.NewRoleRequestAlreadySentException;
 import com.giffing.bucket4j.spring.boot.starter.context.RateLimitException;
+import com.webauthn4j.springframework.security.exception.ValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -90,6 +91,13 @@ public class AppExceptionAdvice {
   public ExceptionResponse handleAuthenticationException(
       AuthenticationException ex, HttpServletRequest request) {
     return new ExceptionResponse(ex, HttpStatus.UNAUTHORIZED, null, request);
+  }
+
+  @ExceptionHandler(ValidationException.class)
+  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+  public ExceptionResponse handleValidationExceptionWebauthn4(
+      ValidationException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, HttpStatus.NOT_ACCEPTABLE, null, request);
   }
 
   @ExceptionHandler(value = {RateLimitException.class})

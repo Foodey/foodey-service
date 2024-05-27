@@ -6,5 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface WebAuthnService {
 
-  boolean signUp(HttpServletRequest request, WebAuthnCreationForm form);
+  boolean signUp(
+      HttpServletRequest request, WebAuthnRegistrationRequest webAuthnRegistrationRequest);
 }

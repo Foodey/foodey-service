@@ -16,6 +16,7 @@ import com.webauthn4j.springframework.security.options.AttestationOptionsProvide
 import com.webauthn4j.springframework.security.options.PublicKeyCredentialUserEntityProvider;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -47,6 +48,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 @Profile("!dev")
 public class SecurityConfig {
+
+  @Value("${foodey.webauthn.rp.name}")
+  private String RP_NAME;
 
   private final UserDetailsService userDetailsService;
   private final LazyJwtAuthTokenFilter lazyJwtAuthTokenFilter;
@@ -134,7 +138,6 @@ public class SecurityConfig {
             WebAuthnLoginConfigurer.webAuthnLogin(),
             (customizer) -> {
               customizer
-                  .rpId("foodey.com") // this is the domain name of the foodey web
                   // .loginPage("/api/v1/auth/webauthn/login")
                   // .usernameParameter("username")
                   // .passwordParameter("rawPassword")
@@ -149,17 +152,16 @@ public class SecurityConfig {
                   .processingUrl("/api/v1/auth/webauthn/attestation/options")
                   .userProvider(publicKeyCredentialUserEntityProvider)
                   .rp()
-                  .name("Foodey Corporation")
+                  .name(RP_NAME)
                   .and()
                   .pubKeyCredParams(
                       new PublicKeyCredentialParameters(
-                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS256),
-                      new PublicKeyCredentialParameters(
                           PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
                       new PublicKeyCredentialParameters(
-                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS1))
+                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS256))
                   .authenticatorSelection()
                   .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                  .authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
                   .residentKey(ResidentKeyRequirement.PREFERRED)
                   .userVerification(UserVerificationRequirement.PREFERRED)
                   .and()
@@ -170,7 +172,6 @@ public class SecurityConfig {
                   .and()
                   .assertionOptionsEndpoint()
                   .assertionOptionsProvider(assertionOptionsProvider)
-                  .rpId("example.com")
                   .userVerification(UserVerificationRequirement.PREFERRED);
             })
 
