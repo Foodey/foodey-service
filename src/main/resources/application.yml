@@ -5,6 +5,8 @@ caching:
     userListTTL: 60000
 
 spring:
+  profiles:
+    active: prod
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -27,13 +29,11 @@ spring:
       host: ${REDIS_HOST:redis-19795.c82.us-east-1-2.ec2.redns.redis-cloud.com}
       port: ${REDIS_PORT:19795}
       # password: ${REDIS_PASSWORD:IxXNUvoIE4ZywfZ8PMZ0nmVxVzKwUeC3}
-  profiles:
-    active: prod
   mail:
     host: ${EMAIL_HOST:smtp.gmail.com}
     port: 25
-    username: ${EMAIL_USERNAME:setusername}
-    password: ${EMAIL_PASSWORD:setpassword}
+    username: ${EMAIL_USERNAME:foodeysystem@gmail.com}
+    password: ${EMAIL_PASSWORD:Foodeyadmin03}
     properties:
       mail:
         smtp:
@@ -102,10 +102,6 @@ bucket4j:
             - capacity: 7
               time: 1
               unit: seconds
-
-logging:
-  file:
-    name: var/log/foodey.log
 
 foodey:
   jwt:

@@ -1,12 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <include resource="org/springframework/boot/logging/logback/base.xml"></include>
-  <!-- <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT"> -->
-  <!--   <encoder> -->
-  <!--     <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n</pattern> -->
-  <!--   </encoder> -->
-  <!-- </appender> -->
-  <!-- <root level="info"> -->
-  <!--   <appender-ref ref="STDOUT"></appender-ref> -->
-  <!-- </root> -->
+  <property name="LOG_PATH" value="logs"></property>
+  <property name="LOG_PATH_INFO" value="${LOG_PATH}/infos"></property>
+  <property name="LOG_PATH_DEBUG" value="${LOG_PATH}/debugs"></property>
+  <property name="LOG_PATH_ERROR" value="${LOG_PATH}/errors"></property>
+  <property name="LOG_PATH_WARN" value="${LOG_PATH}/warns"></property>
+  <!-- Pattern -->
+  <property name="LOG_FILE_PATTERN" value="%d{dd-MM-yyyy HH:mm:ss.SSS} %-5level --- [%thread] %logger{36}.%M : %msg%n"></property>
+  <property name="LOG_DATEFORMAT_PATTERN" value="dd-MM-yyyy'T'HH:mm:ss.SSSXXX"></property>
+  <!-- Include -->
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"></include>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"></include>
+  <!-- Appender -->
+  <!-- Định nghĩa bộ mã hóa chung -->
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="INFO_FILE">
+    <file>${LOG_PATH_INFO}/info.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH_INFO}/info.%d{dd-MM-yyyy}.log</fileNamePattern>
+      <maxHistory>15</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>INFO</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="DEBUG_FILE">
+    <file>${LOG_PATH_DEBUG}/debug.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH_DEBUG}/debug.%d{dd-MM-yyyy}.log</fileNamePattern>
+      <maxHistory>15</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>DEBUG</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="WARN_FILE">
+    <file>${LOG_PATH_WARN}/warn.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH_WARN}/warn.%d{dd-MM-yyyy}.log</fileNamePattern>
+      <maxHistory>15</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>WARN</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ERROR_FILE">
+    <file>${LOG_PATH_ERROR}/error.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH_ERROR}/error.%d{dd-MM-yyyy}.log</fileNamePattern>
+      <maxHistory>15</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+  <!-- Appender async -->
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_INFO_FILE">
+    <appender-ref ref="INFO_FILE"></appender-ref>
+  </appender>
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_DEBUG_FILE">
+    <appender-ref ref="DEBUG_FILE"></appender-ref>
+  </appender>
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_WARN_FILE">
+    <appender-ref ref="WARN_FILE"></appender-ref>
+  </appender>
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_ERROR_FILE">
+    <appender-ref ref="ERROR_FILE"></appender-ref>
+  </appender>
+  <property name="ACTIVE_PROFILE" value="${spring.profiles.active:-default}"></property>
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"></appender-ref>
+    <appender-ref ref="ASYNC_INFO_FILE"></appender-ref>
+    <appender-ref ref="ASYNC_WARN_FILE"></appender-ref>
+    <appender-ref ref="ASYNC_ERROR_FILE"></appender-ref>
+  </root>
+  <logger additivity="false" level="DEBUG" name="com.yourpackage">
+    <appender-ref ref="ASYNC_DEBUG_FILE"></appender-ref>
+  </logger>
 </configuration>
