@@ -1,5 +1,6 @@
 package com.foodey.server.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.Password;
 import com.foodey.server.validation.annotation.PhoneNumber;
@@ -10,7 +11,9 @@ import lombok.Setter;
 @Setter
 public class RegistrationRequest {
 
-  @PhoneNumber private String phoneNumber;
+  @PhoneNumber
+  @JsonAlias("username")
+  private String phoneNumber;
 
   @Password private String password;
 

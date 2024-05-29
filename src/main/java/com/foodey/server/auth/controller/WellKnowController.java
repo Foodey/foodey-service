@@ -9,14 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/.well-known")
+@RequestMapping("/.well-known")
 @Slf4j
 public class WellKnowController {
 
   @GetMapping("/assetlinks.json")
   public Object assetlinks() {
     try {
-      String json = Files.readString(Paths.get("src/main/resources/.well-known/assetlinks.json"));
+      String json =
+          Files.readString(Paths.get("src/main/resources/static/.well-known/assetlinks.json"));
       return new ObjectMapper().readValue(json, Object.class);
     } catch (Exception e) {
       log.error("Error when create assetlinks", e);

@@ -10,7 +10,7 @@ public class BeanConfig {
 
   @Bean
   @Primary
-  ObjectMapper objectMapper() {
+  public ObjectMapper objectMapper() {
     return new ObjectMapper();
   }
 }

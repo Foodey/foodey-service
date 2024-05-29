@@ -1,34 +1,39 @@
 package com.foodey.server.validation.validator;
 
+import com.foodey.server.common.regexp.PhoneNumberRegexp;
 import com.foodey.server.validation.annotation.PhoneNumber;
-import com.foodey.server.validation.annotation.PhoneNumber.CountryCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, String> {
 
-  String regexp;
-  boolean optional;
-  CountryCode[] regions;
+  private String regexp;
+  private boolean optional;
+  private PhoneNumberRegexp[] regions;
 
   @Override
   public void initialize(PhoneNumber constraintAnnotation) {
-    this.optional = constraintAnnotation.optional();
-    this.regexp = constraintAnnotation.regexp();
-    this.regions = constraintAnnotation.regions();
+    optional = constraintAnnotation.optional();
+    regexp = constraintAnnotation.regexp();
+    regions = constraintAnnotation.regions();
   }
 
   @Override
   public boolean isValid(String phoneNumber, ConstraintValidatorContext context) {
-
-    if (StringUtils.hasText(phoneNumber)
-            && (StringUtils.hasText(regexp) && phoneNumber.matches(regexp))
-        || Arrays.stream(regions).anyMatch(region -> region.isValid(phoneNumber))) return true;
-
-    return optional;
+    if (!StringUtils.hasText(phoneNumber)) {
+      return optional;
+    } else if (StringUtils.hasText(regexp) && phoneNumber.matches(regexp)) {
+      return true;
+    } else if (regions.length > 0) {
+      for (PhoneNumberRegexp regionRegexp : regions) {
+        if (regionRegexp.isValid(phoneNumber)) {
+          return true;
+        }
+      }
+    }
+    return com.foodey.server.utils.PhoneNumberValidator.validate(phoneNumber);
   }
 }
