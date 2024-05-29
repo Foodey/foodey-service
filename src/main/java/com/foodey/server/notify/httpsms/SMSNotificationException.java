@@ -1,8 +1,7 @@
-package com.foodey.server.notify;
+package com.foodey.server.notify.httpsms;
 
 import lombok.Getter;
 
-/** SMSNotificationException */
 @Getter
 public class SMSNotificationException extends RuntimeException {
 

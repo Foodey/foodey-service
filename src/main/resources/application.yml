@@ -30,10 +30,10 @@ spring:
   profiles:
     active: prod
   mail:
-    host: smtp.example.com
+    host: ${EMAIL_HOST:smtp.gmail.com}
     port: 25
-    username: setusername
-    password: setpassword
+    username: ${EMAIL_USERNAME:setusername}
+    password: ${EMAIL_PASSWORD:setpassword}
     properties:
       mail:
         smtp:

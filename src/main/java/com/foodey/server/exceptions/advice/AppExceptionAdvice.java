@@ -6,10 +6,10 @@ import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.exceptions.TooManyRequestsException;
 import com.foodey.server.exceptions.UserLoginException;
-import com.foodey.server.notify.SMSNotificationException;
+import com.foodey.server.notify.httpsms.SMSNotificationException;
 import com.foodey.server.user.exceptions.NewRoleRequestAlreadySentException;
 import com.giffing.bucket4j.spring.boot.starter.context.RateLimitException;
-import com.webauthn4j.springframework.security.exception.ValidationException;
+import com.webauthn4j.util.exception.WebAuthnException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -93,11 +93,11 @@ public class AppExceptionAdvice {
     return new ExceptionResponse(ex, HttpStatus.UNAUTHORIZED, null, request);
   }
 
-  @ExceptionHandler(ValidationException.class)
-  @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-  public ExceptionResponse handleValidationExceptionWebauthn4(
-      ValidationException ex, HttpServletRequest request) {
-    return new ExceptionResponse(ex, HttpStatus.NOT_ACCEPTABLE, null, request);
+  @ExceptionHandler(WebAuthnException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ExceptionResponse handleWebAuthnException(
+      WebAuthnException ex, HttpServletRequest request) {
+    return new ExceptionResponse(ex, HttpStatus.FORBIDDEN, null, request);
   }
 
   @ExceptionHandler(value = {RateLimitException.class})

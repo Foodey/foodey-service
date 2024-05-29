@@ -1,5 +1,7 @@
-package com.foodey.server.notify;
+package com.foodey.server.notify.mail;
 
+import com.foodey.server.notify.NotificationService;
+import com.foodey.server.notify.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
