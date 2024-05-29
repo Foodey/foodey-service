@@ -3,15 +3,17 @@ package com.foodey.server.logging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class LoggingService {
+@RequiredArgsConstructor
+public class LoggingHttpRequestService {
 
-  private ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper;
 
   public void logRequestInfo(HttpServletRequest httpServletRequest) {
     StringBuilder data = createRequestInfo(httpServletRequest);
@@ -25,6 +27,7 @@ public class LoggingService {
       if (httpServletRequest.getRequestURI().contains("medias")) {
         return;
       }
+
       StringBuilder data = createRequestInfo(httpServletRequest);
 
       if (body == null) data.append("[BODY REQUEST]: ").append("<empty>");

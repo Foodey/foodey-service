@@ -16,6 +16,7 @@ public class LoggingRequestFilterConfig {
   public FilterRegistrationBean<Filter> loggingFilter() {
     FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>();
 
+    registrationBean.setOrder(1);
     registrationBean.setFilter(loggingRequestFilter);
     registrationBean.setAsyncSupported(true);
     registrationBean.addUrlPatterns("/*");

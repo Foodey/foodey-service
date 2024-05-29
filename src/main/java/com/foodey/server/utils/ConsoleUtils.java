@@ -3,7 +3,7 @@ package com.foodey.server.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 
-public class LoggingUtils {
+public class ConsoleUtils {
 
   private static ObjectMapper objectMapper = new ObjectMapper();
 

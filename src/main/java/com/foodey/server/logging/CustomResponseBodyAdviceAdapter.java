@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @RequiredArgsConstructor
 public class CustomResponseBodyAdviceAdapter implements ResponseBodyAdvice<Object> {
 
-  private final LoggingService loggingService;
+  private final LoggingHttpRequestService loggingService;
 
   @Override
   public boolean supports(

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingRequestFilter implements Filter {
 
-  private final LoggingService loggingService;
+  private final LoggingHttpRequestService loggingService;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
