@@ -32,6 +32,10 @@
     </dependency>
     <!-- Core -->
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-logging</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>
       <artifactId>bucket4j-spring-boot-starter</artifactId>
       <version>0.12.6</version>
@@ -67,18 +71,17 @@
       <artifactId>jackson-dataformat-cbor</artifactId>
       <version>2.13.0</version>
     </dependency>
+    <dependency>
+      <groupId>io.cloudevents</groupId>
+      <artifactId>cloudevents-spring</artifactId>
+      <version>2.3.0</version>
+    </dependency>
     <!-- https://stackoverflow.com/questions/21384820/is-there-a-jackson-datatype-module-for-jdk8-java-time   -->
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
       <version>2.17.1</version>
     </dependency>
-    <!-- <dependency> -->
-    <!--   <groupId>com.yubico</groupId> -->
-    <!--   <artifactId>webauthn-server-core</artifactId> -->
-    <!--   <version>2.5.2</version> -->
-    <!--   <scope>compile</scope> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
@@ -178,6 +181,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
+    <!-- <dependency> -->
+    <!--   <groupId>org.apache.commons</groupId> -->
+    <!--   <artifactId>commons-email</artifactId> -->
+    <!--   <version>1.6.0</version> -->
+    <!-- </dependency> -->
     <!-- Dev tools -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

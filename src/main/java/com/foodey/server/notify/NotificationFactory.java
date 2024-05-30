@@ -2,6 +2,7 @@ package com.foodey.server.notify;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,8 +39,13 @@ public class NotificationFactory {
    * @param notificationType the type of notification to execute
    * @throws IllegalArgumentException if the provided notification type is not supported
    */
-  public <R> void execute(String notificationType, R receiver, String message, Object... args) {
+  public void execute(String notificationType, NotificationRequest notificationRequest) {
     NotificationService notificationService = getNotificationService(notificationType);
-    notificationService.sendNotification(receiver, message, args);
+    notificationService.sendNotification(notificationRequest);
+  }
+
+  @Async
+  public void executeAsync(String notificationType, NotificationRequest notificationRequest) {
+    execute(notificationType, notificationRequest);
   }
 }

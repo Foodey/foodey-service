@@ -1,6 +1,7 @@
 package com.foodey.server.otp;
 
 import com.foodey.server.notify.NotificationFactory;
+import com.foodey.server.notify.httpsms.SMSRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -17,9 +18,8 @@ public class OTPEventListener {
   @Async
   @TransactionalEventListener
   public void onOTPSendingEvent(OTPSendingEvent event) {
-
     log.info("Sending OTP to {}", event.getReceiver());
-    notificationFactory.execute(
-        event.getOtpProperties().getNotificationType(), event.getReceiver(), event.getMessage());
+    SMSRequest smsRequest = new SMSRequest(event.getReceiver(), event.getMessage());
+    notificationFactory.execute(event.getOtpProperties().getNotificationType(), smsRequest);
   }
 }

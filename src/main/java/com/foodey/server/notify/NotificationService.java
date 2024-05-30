@@ -1,6 +1,12 @@
 package com.foodey.server.notify;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface NotificationService {
 
-  <R> void sendNotification(R receiver, String message, Object... args);
+  void sendNotification(NotificationRequest request);
+
+  default void sendNotificationAsync(NotificationRequest request) {
+    CompletableFuture.runAsync(() -> sendNotification(request));
+  }
 }

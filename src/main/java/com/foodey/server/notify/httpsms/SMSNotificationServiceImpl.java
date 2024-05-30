@@ -1,9 +1,10 @@
 package com.foodey.server.notify.httpsms;
 
+import com.foodey.server.notify.NotificationRequest;
 import com.foodey.server.notify.NotificationService;
 import com.foodey.server.notify.NotificationType;
+import com.foodey.server.utils.ConsoleUtils;
 import com.foodey.server.utils.HttpRequestUtils;
-import com.foodey.server.utils.LoggingUtils;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,7 @@ public class SMSNotificationServiceImpl implements NotificationService {
   private String sender;
 
   @Override
-  public <R> void sendNotification(R receiver, String message, Object... args) {
-    assert receiver instanceof String : "Receiver must be a string";
+  public void sendNotification(NotificationRequest request) {
 
     try {
       Object response =
@@ -31,9 +31,9 @@ public class SMSNotificationServiceImpl implements NotificationService {
               "https://api.httpsms.com/v1/messages/send",
               new HashMap<>() {
                 {
-                  put("content", message);
+                  put("content", request.getMessage());
                   put("from", sender);
-                  put("to", (String) receiver);
+                  put("to", (String) request.getRecipient());
                 }
               },
               new HashMap<>() {
@@ -44,7 +44,7 @@ public class SMSNotificationServiceImpl implements NotificationService {
                 }
               });
 
-      LoggingUtils.log(response);
+      ConsoleUtils.prettyPrint(response);
 
     } catch (Exception e) {
       log.error("Error SMS " + e);

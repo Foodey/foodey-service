@@ -86,9 +86,9 @@ public class ApiEndpointSecurityInspector {
           }
         });
 
-    log.info("Public endpoints: {}", publicEndpoints);
-    log.info("Public GET endpoints: {}", publicGetEndpoints);
-    log.info("Public POST endpoints: {}", publicPostEndpoints);
+    log.info("Initializes public endpoints for all HTTP methods: {}" + publicEndpoints);
+    log.info("Initializes public GET endpoints: {}" + publicGetEndpoints);
+    log.info("Initializes public POST endpoints: {}" + publicPostEndpoints);
   }
 
   /**

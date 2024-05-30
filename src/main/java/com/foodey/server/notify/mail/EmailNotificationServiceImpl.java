@@ -1,8 +1,12 @@
 package com.foodey.server.notify.mail;
 
+import com.foodey.server.notify.NotificationRequest;
 import com.foodey.server.notify.NotificationService;
 import com.foodey.server.notify.NotificationType;
+import jakarta.mail.Message;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,18 +22,42 @@ public class EmailNotificationServiceImpl implements NotificationService {
   private final JavaMailSender mailSender;
 
   @Override
-  public <R> void sendNotification(R receiver, String message, Object... args) {
-    assert receiver instanceof String;
-    assert args.length > 0 : "No Subject provided";
-    assert args[0] instanceof String : "Subject must be a string";
+  public void sendNotification(NotificationRequest request) {
+    assert request instanceof EmailRequest;
+    EmailRequest emailRequest = (EmailRequest) request;
+    switch (emailRequest.getEmailType()) {
+      case SIMPLE:
+        sendSimpleMessage(
+            emailRequest.getRecipient(), emailRequest.getSubject(), emailRequest.getMessage());
+        break;
+      case HTML:
+        sendHtmlMessage(
+            emailRequest.getRecipient(), emailRequest.getSubject(), emailRequest.getMessage());
+        break;
+      default:
+        sendSimpleMessage(
+            emailRequest.getRecipient(), emailRequest.getSubject(), emailRequest.getMessage());
+    }
+  }
 
-    SimpleMailMessage mailMessage = new SimpleMailMessage();
+  private void sendSimpleMessage(String to, String subject, String text) {
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setTo(to);
+    message.setSubject(subject);
+    message.setText(text);
+    mailSender.send(message);
+  }
 
-    mailMessage.setTo((String) receiver);
-    mailMessage.setSubject((String) args[0]);
-    mailMessage.setText(message);
-    mailMessage.setFrom(sender);
+  @SneakyThrows
+  private void sendHtmlMessage(String to, String subject, String text) {
 
-    mailSender.send(mailMessage);
+    MimeMessage message = mailSender.createMimeMessage();
+
+    message.setFrom(sender);
+    message.setRecipients(Message.RecipientType.TO, to);
+    message.setSubject(subject);
+    message.setContent(text, "text/html");
+
+    mailSender.send(message);
   }
 }

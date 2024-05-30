@@ -5,6 +5,7 @@
   <property name="LOG_PATH_DEBUG" value="${LOG_PATH}/debugs"></property>
   <property name="LOG_PATH_ERROR" value="${LOG_PATH}/errors"></property>
   <property name="LOG_PATH_WARN" value="${LOG_PATH}/warns"></property>
+  <property name="LOG_PATH_HTTP_REQUEST" value="${LOG_PATH}/https"></property>
   <!-- Pattern -->
   <property name="LOG_FILE_PATTERN" value="%d{dd-MM-yyyy HH:mm:ss.SSS} %-5level --- [%thread] %logger{36}.%M : %msg%n"></property>
   <property name="LOG_DATEFORMAT_PATTERN" value="dd-MM-yyyy'T'HH:mm:ss.SSSXXX"></property>
@@ -73,6 +74,16 @@
       <onMismatch>DENY</onMismatch>
     </filter>
   </appender>
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="HTTP_REQUEST_FILE">
+    <file>${LOG_PATH_HTTP_REQUEST}/http.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH_HTTP_REQUEST}/http.%d{dd-MM-yyyy}.log</fileNamePattern>
+      <maxHistory>7</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
   <!-- Appender async -->
   <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_INFO_FILE">
     <appender-ref ref="INFO_FILE"></appender-ref>
@@ -86,14 +97,18 @@
   <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_ERROR_FILE">
     <appender-ref ref="ERROR_FILE"></appender-ref>
   </appender>
-  <property name="ACTIVE_PROFILE" value="${spring.profiles.active:-default}"></property>
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_HTTP_REQUEST_FILE">
+    <appender-ref ref="HTTP_REQUEST_FILE"></appender-ref>
+  </appender>
+  <property name="PROFILE_ACTIVE" value="${spring.profiles.active:-dev}"></property>
   <root level="INFO">
     <appender-ref ref="CONSOLE"></appender-ref>
     <appender-ref ref="ASYNC_INFO_FILE"></appender-ref>
     <appender-ref ref="ASYNC_WARN_FILE"></appender-ref>
+    <appender-ref ref="ASYNC_DEBUG_FILE"></appender-ref>
     <appender-ref ref="ASYNC_ERROR_FILE"></appender-ref>
   </root>
-  <logger additivity="false" level="DEBUG" name="com.yourpackage">
-    <appender-ref ref="ASYNC_DEBUG_FILE"></appender-ref>
+  <logger additivity="false" level="INFO" name="com.foodey.server.logging.LoggingHttpRequestService">
+    <appender-ref ref="ASYNC_HTTP_REQUEST_FILE"></appender-ref>
   </logger>
 </configuration>

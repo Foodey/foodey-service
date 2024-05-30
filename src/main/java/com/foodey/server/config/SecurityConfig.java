@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -37,7 +36,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,7 +44,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @RequiredArgsConstructor
-@Profile("!dev")
 public class SecurityConfig {
 
   @Value("${foodey.webauthn.rp.name}")
@@ -57,6 +54,7 @@ public class SecurityConfig {
   private final AuthEntryPointJwt unauthorizedHandler;
   private final LogoutHandler logoutHandler;
   private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
+
   private final AttestationOptionsProvider attestationOptionsProvider;
   private final AssertionOptionsProvider assertionOptionsProvider;
   private final PublicKeyCredentialUserEntityProvider publicKeyCredentialUserEntityProvider;
@@ -67,7 +65,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public AuthenticationProvider authenticationProvider() {
+  public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
     authProvider.setUserDetailsService(userDetailsService);
     authProvider.setPasswordEncoder(passwordEncoder());
@@ -124,11 +122,6 @@ public class SecurityConfig {
     return source;
   }
 
-  // @Bean
-  // public PublicKeyCredentialUserEntityProvider publicKeyCredentialUserEntityProvider() {
-  //   // return new PublicKeyCredentialUserEntityProvider() {};
-  // }
-
   @Bean
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     apiEndpointSecurityInspector.getPublicEndpoints().add("/api/v1/auth/**");
@@ -138,15 +131,16 @@ public class SecurityConfig {
             WebAuthnLoginConfigurer.webAuthnLogin(),
             (customizer) -> {
               customizer
-                  // .loginPage("/api/v1/auth/webauthn/login")
-                  // .usernameParameter("username")
-                  // .passwordParameter("rawPassword")
+                  .loginPage("/api/v1/auth/webauthn/login")
+                  // .usernameParameter("phoneNumber")
+                  // .passwordParameter("password")
                   // .credentialIdParameter("credentialId")
                   // .clientDataJSONParameter("clientDataJSON")
                   // .authenticatorDataParameter("authenticatorData")
                   // .signatureParameter("signature")
                   // .clientExtensionsJSONParameter("clientExtensionsJSON")
                   .loginProcessingUrl("/api/v1/auth/webauthn/login")
+                  // The endpoint that returns attestation options when the user is registering
                   .attestationOptionsEndpoint()
                   .attestationOptionsProvider(attestationOptionsProvider)
                   .processingUrl("/api/v1/auth/webauthn/attestation/options")
@@ -158,21 +152,24 @@ public class SecurityConfig {
                       new PublicKeyCredentialParameters(
                           PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256),
                       new PublicKeyCredentialParameters(
-                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS256))
+                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS256),
+                      new PublicKeyCredentialParameters(
+                          PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.RS1))
                   .authenticatorSelection()
-                  .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
                   .authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
-                  .residentKey(ResidentKeyRequirement.PREFERRED)
-                  .userVerification(UserVerificationRequirement.PREFERRED)
+                  .residentKey(ResidentKeyRequirement.REQUIRED)
+                  .userVerification(UserVerificationRequirement.REQUIRED)
                   .and()
-                  .attestation(AttestationConveyancePreference.NONE)
+                  .attestation(AttestationConveyancePreference.DIRECT)
                   .extensions()
                   .credProps(true)
                   .uvm(true)
                   .and()
+                  // the endpoint that returns assertion options when the user is authenticating
                   .assertionOptionsEndpoint()
                   .assertionOptionsProvider(assertionOptionsProvider)
-                  .userVerification(UserVerificationRequirement.PREFERRED);
+                  .userVerification(UserVerificationRequirement.REQUIRED)
+                  .processingUrl("/api/v1/auth/webauthn/assertion/options");
             })
 
         // headers
@@ -190,8 +187,8 @@ public class SecurityConfig {
         // .csrf((csrf) -> csrf.disable())
         .csrf(
             customizer -> {
-              customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-              customizer.ignoringRequestMatchers("/api/v1/auth/webauthn/**");
+              // customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+              customizer.ignoringRequestMatchers("/api/**");
             })
 
         // exception handling

@@ -1,6 +1,9 @@
 package com.foodey.server.auth.fido2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foodey.server.auth.dto.JwtResponse;
+import com.foodey.server.utils.ConsoleUtils;
+import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.springframework.security.WebAuthnRegistrationRequestValidationResponse;
 import com.webauthn4j.springframework.security.WebAuthnRegistrationRequestValidator;
 import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecord;
@@ -15,27 +18,23 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class WebAuthnServiceImpl implements WebAuthnService {
-
-  // private UserDetailsManager userDetailsManager;
-
   private final WebAuthnCredentialRecordManager webAuthnAuthenticatorManager;
 
   private final WebAuthnRegistrationRequestValidator registrationRequestValidator;
 
   private final ObjectMapper objectMapper;
 
-  // private final ChallengeRepository challengeRepository;
+  private final PasswordEncoder passwordEncoder;
 
-  // private final PasswordEncoder passwordEncoder;
-
-  // private final AuthenticationTrustResolver authenticationTrustResolver =
-  //     new AuthenticationTrustResolverImpl();
+  //
+  // private final UserRepository userRepository;
 
   private void validateApkKeyHashOrigin(String origin) {
     if (origin.startsWith("android:apk-key-hash")
@@ -66,14 +65,8 @@ public class WebAuthnServiceImpl implements WebAuthnService {
 
   @Override
   @SneakyThrows
-  public boolean signUp(
+  public JwtResponse register(
       HttpServletRequest request, WebAuthnRegistrationRequest webAuthnRegistrationRequest) {
-    // System.out.println(
-    //     "clientDataObject: "
-    //         + new String(
-    //
-    // Base64UrlUtil.decode(webAuthnRegistrationRequest.getAttestationObjectBase64url()),
-    //             StandardCharsets.UTF_8));
 
     WebAuthnRegistrationRequestValidationResponse registrationRequestValidationResponse =
         registrationRequestValidator.validate(
@@ -83,35 +76,28 @@ public class WebAuthnServiceImpl implements WebAuthnService {
             webAuthnRegistrationRequest.getTransports(),
             webAuthnRegistrationRequest.getClientExtensionsJSON());
 
-    String username = webAuthnRegistrationRequest.getUsername();
+    String phoneNumber = webAuthnRegistrationRequest.getPhoneNumber();
+    String password = webAuthnRegistrationRequest.getPassword();
 
-    System.out.println("username: " + username);
+    AttestationObject attestationObject =
+        registrationRequestValidationResponse.getAttestationObject();
+    var authenticatorData = attestationObject.getAuthenticatorData();
 
-    // User user = new User();
+    ConsoleUtils.prettyPrint(attestationObject);
 
     WebAuthnCredentialRecord authenticator =
         new WebAuthnCredentialRecordImpl(
             "authenticator",
-            username,
-            registrationRequestValidationResponse
-                .getAttestationObject()
-                .getAuthenticatorData()
-                .getAttestedCredentialData(),
-            registrationRequestValidationResponse.getAttestationObject().getAttestationStatement(),
-            registrationRequestValidationResponse
-                .getAttestationObject()
-                .getAuthenticatorData()
-                .getSignCount(),
+            phoneNumber,
+            authenticatorData.getAttestedCredentialData(),
+            attestationObject.getAttestationStatement(),
+            authenticatorData.getSignCount(),
             registrationRequestValidationResponse.getTransports(),
             registrationRequestValidationResponse.getRegistrationExtensionsClientOutputs(),
-            registrationRequestValidationResponse
-                .getAttestationObject()
-                .getAuthenticatorData()
-                .getExtensions());
+            authenticatorData.getExtensions());
 
-    // new InMemoryUserDetailsManager().createUser(user);
-    // webAuthnAuthenticatorManager.createCredentialRecord(authenticator);
+    webAuthnAuthenticatorManager.createCredentialRecord(authenticator);
 
-    return true;
+    return null;
   }
 }

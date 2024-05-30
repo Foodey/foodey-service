@@ -9,7 +9,10 @@ import com.foodey.server.user.model.decorator.UserRole;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.Password;
 import com.foodey.server.validation.annotation.PhoneNumber;
+import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
+import com.webauthn4j.data.extension.authenticator.ExtensionAuthenticatorOutput;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Null;
 import java.time.Instant;
 import java.util.Collection;
@@ -69,6 +72,10 @@ public class User implements UserDetails, UserRole {
   @Schema(description = "The name of the account", required = true)
   private String name;
 
+  @Email
+  @Schema(description = "The email of the user", required = true)
+  private String email;
+
   @Default
   @Schema(description = "The avatar of the account")
   private String avatar = "";
@@ -96,6 +103,11 @@ public class User implements UserDetails, UserRole {
   @Schema(description = "The list of voucher that the user colleted")
   @Default
   private Set<String> voucherCodes = new HashSet<>();
+
+  @Schema(description = "The list of credential ids of the account")
+  @Getter
+  @Default
+  private Set<AuthenticatorData<ExtensionAuthenticatorOutput>> authenticatorDatas = new HashSet<>();
 
   @Default
   @CreatedDate
