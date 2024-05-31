@@ -11,6 +11,7 @@ import com.foodey.server.user.exceptions.NewRoleRequestAlreadySentException;
 import com.giffing.bucket4j.spring.boot.starter.context.RateLimitException;
 import com.webauthn4j.util.exception.WebAuthnException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Slf4j
 public class AppExceptionAdvice {
 
   @ExceptionHandler({ResourceAlreadyInUseException.class})
@@ -110,6 +112,7 @@ public class AppExceptionAdvice {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ExceptionResponse handleSMSNotificationException(
       SMSNotificationException ex, HttpServletRequest request) {
+    log.error("SMS Notification Exception: ", ex);
     return new ExceptionResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, null, request);
   }
 }
