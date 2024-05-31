@@ -1,8 +1,8 @@
 package com.foodey.server.notify.httpsms;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import java.time.Instant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,7 @@ public class HttpSMSPayload {
     @JsonAlias("last_heartbeat_timestamp")
     private String lastHeartbeatTimestamp;
 
-    @JsonDeserialize(using = InstantDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
     private Instant timestamp;
 
     @JsonAlias("user_id")
@@ -41,7 +41,7 @@ public class HttpSMSPayload {
   private String source;
   private String specversion;
 
-  @JsonDeserialize(using = InstantDeserializer.class)
+  @JsonSerialize(using = InstantSerializer.class)
   private Instant time;
 
   private String type;

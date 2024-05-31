@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-  <property name="LOG_PATH" value="logs"></property>
-  <property name="LOG_PATH_INFO" value="${LOG_PATH}/infos"></property>
-  <property name="LOG_PATH_DEBUG" value="${LOG_PATH}/debugs"></property>
-  <property name="LOG_PATH_ERROR" value="${LOG_PATH}/errors"></property>
-  <property name="LOG_PATH_WARN" value="${LOG_PATH}/warns"></property>
-  <property name="LOG_PATH_HTTP_REQUEST" value="${LOG_PATH}/https"></property>
-  <!-- Pattern -->
-  <property name="LOG_FILE_PATTERN" value="%d{dd-MM-yyyy HH:mm:ss.SSS} %-5level --- [%thread] %logger{36}.%M : %msg%n"></property>
-  <property name="LOG_DATEFORMAT_PATTERN" value="dd-MM-yyyy'T'HH:mm:ss.SSSXXX"></property>
-  <!-- Include -->
-  <include resource="org/springframework/boot/logging/logback/defaults.xml"></include>
-  <include resource="org/springframework/boot/logging/logback/console-appender.xml"></include>
-  <!-- Appender -->
-  <!-- Định nghĩa bộ mã hóa chung -->
+<included>
+  <property name="LOG_DIR" value="${LOG_DIR:-logs}"></property>
+  <property name="LOG_PATH_INFO" value="${LOG_DIR}/infos"></property>
+  <property name="LOG_PATH_DEBUG" value="${LOG_DIR}/debugs"></property>
+  <property name="LOG_PATH_ERROR" value="${LOG_DIR}/errors"></property>
+  <property name="LOG_PATH_WARN" value="${LOG_DIR}/warns"></property>
+  <property name="LOG_PATH_HTTP_REQUEST" value="${LOG_DIR}/https"></property>
+  <property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- %applicationName[%t] ${LOG_CORRELATION_PATTERN:-}%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"></property>
+  <property name="LOG_HISTORIC_MAX" value="${LOG_HISTORIC_MAX:-15}"></property>
   <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="INFO_FILE">
     <file>${LOG_PATH_INFO}/info.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_PATH_INFO}/info.%d{dd-MM-yyyy}.log</fileNamePattern>
-      <maxHistory>15</maxHistory>
+      <maxHistory>${LOG_INFO_HISTORIC_MAX:-${LOG_HISTORIC_MAX}}</maxHistory>
     </rollingPolicy>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -33,7 +27,7 @@
     <file>${LOG_PATH_DEBUG}/debug.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_PATH_DEBUG}/debug.%d{dd-MM-yyyy}.log</fileNamePattern>
-      <maxHistory>15</maxHistory>
+      <maxHistory>${LOG_DEBUG_HISTORIC_MAX:-${LOG_HISTORIC_MAX}}</maxHistory>
     </rollingPolicy>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -48,7 +42,7 @@
     <file>${LOG_PATH_WARN}/warn.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_PATH_WARN}/warn.%d{dd-MM-yyyy}.log</fileNamePattern>
-      <maxHistory>15</maxHistory>
+      <maxHistory>${LOG_WARN_HISTORIC_MAX:-${LOG_HISTORIC_MAX}}</maxHistory>
     </rollingPolicy>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -63,7 +57,7 @@
     <file>${LOG_PATH_ERROR}/error.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_PATH_ERROR}/error.%d{dd-MM-yyyy}.log</fileNamePattern>
-      <maxHistory>15</maxHistory>
+      <maxHistory>${LOG_ERROR_HISTORIC_MAX:-${LOG_HISTORIC_MAX}}</maxHistory>
     </rollingPolicy>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -78,7 +72,7 @@
     <file>${LOG_PATH_HTTP_REQUEST}/http.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_PATH_HTTP_REQUEST}/http.%d{dd-MM-yyyy}.log</fileNamePattern>
-      <maxHistory>7</maxHistory>
+      <maxHistory>${LOG_HTTP_REQUEST_HISTORIC_MAX:-${LOG_HISTORIC_MAX}}</maxHistory>
     </rollingPolicy>
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -100,15 +94,4 @@
   <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_HTTP_REQUEST_FILE">
     <appender-ref ref="HTTP_REQUEST_FILE"></appender-ref>
   </appender>
-  <property name="PROFILE_ACTIVE" value="${spring.profiles.active:-dev}"></property>
-  <root level="INFO">
-    <appender-ref ref="CONSOLE"></appender-ref>
-    <appender-ref ref="ASYNC_INFO_FILE"></appender-ref>
-    <appender-ref ref="ASYNC_WARN_FILE"></appender-ref>
-    <appender-ref ref="ASYNC_DEBUG_FILE"></appender-ref>
-    <appender-ref ref="ASYNC_ERROR_FILE"></appender-ref>
-  </root>
-  <logger additivity="false" level="INFO" name="com.foodey.server.logging.LoggingHttpRequestService">
-    <appender-ref ref="ASYNC_HTTP_REQUEST_FILE"></appender-ref>
-  </logger>
-</configuration>
+</included>

@@ -66,7 +66,7 @@ public class FallbackExceptionAdvice {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ResponseBody
   public ExceptionResponse handleUnwantedException(Exception e, HttpServletRequest request) {
-    log.error("Unexpected error", e);
+    log.error(e.getClass().getSimpleName() + ": " + e.getMessage());
     return new ExceptionResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, null, request);
   }
 }

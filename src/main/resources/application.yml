@@ -5,8 +5,10 @@ caching:
     userListTTL: 60000
 
 spring:
+  application:
+    name: "foodey-service"
   profiles:
-    active: prod
+    active: dev
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
