@@ -237,7 +237,7 @@ public class Menu {
     return productWrapper.hasCategory(categoryName);
   }
 
-  public boolean hasCategory(String shopId, String categoryName) {
+  public boolean hasCategoryInShop(String shopId, String categoryName) {
     // this shop don't use the brand menu
     if (isExcludedFromShop(shopId)) {
       return getProductWrapperInShop(shopId)
@@ -255,7 +255,7 @@ public class Menu {
     productWrapper.addProduct(categoryName, productId);
   }
 
-  public void addProduct(String shopId, String categoryName, String productId) {
+  public void addProductToShop(String shopId, String categoryName, String productId) {
     getSpecificShops()
         .computeIfAbsent(shopId, k -> new ProductWrapper())
         .addProduct(categoryName, productId);
@@ -265,7 +265,7 @@ public class Menu {
     productWrapper.addProduct(product);
   }
 
-  public void addProduct(String shopId, Product product) {
+  public void addProductToShop(String shopId, Product product) {
     getSpecificShops().computeIfAbsent(shopId, k -> new ProductWrapper()).addProduct(product);
   }
 
@@ -273,7 +273,7 @@ public class Menu {
     productWrapper.addProducts(products);
   }
 
-  public void addProducts(String shopId, List<Product> products) {
+  public void addProductsToShop(String shopId, List<Product> products) {
     getSpecificShops().computeIfAbsent(shopId, k -> new ProductWrapper()).addProducts(products);
   }
 
@@ -282,7 +282,7 @@ public class Menu {
     productWrapper.setCategorySortOrder(categorySortOrder);
   }
 
-  public void setCategorySortOrder(String shopId, List<String> categorySortOrder) {
+  public void setCategorySortOrderForShop(String shopId, List<String> categorySortOrder) {
     getSpecificShops()
         .computeIfAbsent(shopId, k -> new ProductWrapper())
         .setCategorySortOrder(categorySortOrder);
@@ -292,7 +292,7 @@ public class Menu {
     return productWrapper.getCategoryNames();
   }
 
-  public Set<String> getCategoryNames(String shopId) {
+  public Set<String> getCategoryNamesInShop(String shopId) {
     if (isExcludedFromShop(shopId)) {
       return getProductWrapperInShop(shopId)
           .map(ProductWrapper::getCategoryNames)
@@ -313,7 +313,7 @@ public class Menu {
     return productWrapper.getCategorySortOrder();
   }
 
-  public Set<String> getCategorySortOrder(String shopId) {
+  public Set<String> getCategorySortOrderInShop(String shopId) {
     if (isExcludedFromShop(shopId)) {
       return getProductWrapperInShop(shopId)
           .map(ProductWrapper::getCategorySortOrder)
@@ -335,7 +335,7 @@ public class Menu {
     return productWrapper.getProductIds(categoryName);
   }
 
-  public Set<String> getProductIds(String shopId, String categoryName) {
+  public Set<String> getProductIdsInShop(String shopId, String categoryName) {
 
     if (isExcludedFromShop(shopId)) {
       return getProductWrapperInShop(shopId)
@@ -378,7 +378,7 @@ public class Menu {
     return productWrapper.getNumberOfProducts();
   }
 
-  public int getNumberOfProducts(String shopId) {
+  public int getNumberOfProductsInShop(String shopId) {
     if (isExcludedFromShop(shopId)) {
       return getProductWrapperInShop(shopId).map(ProductWrapper::getNumberOfProducts).orElse(0);
     }
@@ -391,7 +391,7 @@ public class Menu {
     return productWrapper.getSortedCategoryNames();
   }
 
-  public Set<String> getSortedCategoryNames(String shopId) {
+  public Set<String> getSortedCategoryNamesInShop(String shopId) {
     if (isExcludedFromShop(shopId)) {
       return getProductWrapperInShop(shopId)
           .map(ProductWrapper::getSortedCategoryNames)
@@ -413,15 +413,15 @@ public class Menu {
         .orElseGet(this::getSortedCategoryNames);
   }
 
-  public void excludeProduct(String shopId, String productId) {
+  public void excludeProductFromShop(String shopId, String productId) {
     getSpecificShops().computeIfAbsent(shopId, k -> new ProductWrapper()).excludeProduct(productId);
   }
 
-  public void excludeProduct(String shopId, Product product) {
+  public void excludeProductFromShop(String shopId, Product product) {
     getSpecificShops().computeIfAbsent(shopId, k -> new ProductWrapper()).excludeProduct(product);
   }
 
-  public void excludeProducts(String shopId, List<String> productIds) {
+  public void excludeProductsFromShop(String shopId, List<String> productIds) {
     getSpecificShops()
         .computeIfAbsent(shopId, k -> new ProductWrapper())
         .excludeProducts(productIds);

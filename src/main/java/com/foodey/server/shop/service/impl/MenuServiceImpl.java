@@ -45,7 +45,7 @@ public class MenuServiceImpl implements MenuService {
     if (appliedToAllShops) {
       menu.addProducts(savedProducts);
     } else {
-      menu.addProducts(shopId, savedProducts);
+      menu.addProductsToShop(shopId, savedProducts);
     }
     shopBrandService.save(shopBrand);
 
@@ -71,7 +71,7 @@ public class MenuServiceImpl implements MenuService {
     if (appliedToAllShops) {
       menu.addProduct(product);
     } else {
-      menu.addProduct(shopId, savedProduct);
+      menu.addProductToShop(shopId, savedProduct);
     }
     shopBrandService.save(shopBrand);
 
@@ -94,7 +94,7 @@ public class MenuServiceImpl implements MenuService {
     List<Product> products = productRepository.findAllById(menu.getProductIdsInShop(shopId));
 
     return MenuView.builder()
-        .categoryNames(menu.getSortedCategoryNames(shopId))
+        .categoryNames(menu.getSortedCategoryNamesInShop(shopId))
         .products(products)
         .numberOfProducts(products.size())
         .build();
@@ -106,10 +106,10 @@ public class MenuServiceImpl implements MenuService {
     Menu menu = brand.getMenu();
 
     List<Product> products =
-        productRepository.findAllById(menu.getProductIds(shopId, categoryName));
+        productRepository.findAllById(menu.getProductIdsInShop(shopId, categoryName));
 
     return MenuView.builder()
-        .categoryNames(menu.getSortedCategoryNames(shopId))
+        .categoryNames(menu.getSortedCategoryNamesInShop(shopId))
         .products(products)
         .currentCategoryName(categoryName)
         .numberOfProducts(products.size())
