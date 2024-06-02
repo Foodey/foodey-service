@@ -1,6 +1,7 @@
 package com.foodey.server.user.service.impl;
 
 import com.foodey.server.auth.dto.RegistrationRequest;
+import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.model.Shop;
@@ -13,11 +14,17 @@ import com.foodey.server.user.model.decorator.SellerRoleRequest;
 import com.foodey.server.user.repository.NewRoleRequestRepository;
 import com.foodey.server.user.repository.UserRepository;
 import com.foodey.server.user.service.UserService;
+import com.foodey.server.utils.SortUtils;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindException;
@@ -128,14 +135,14 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void addFavoriteProduct(User user, String productId) {
-    user.getFavoriteProductIds().add(productId);
+  public void addFavoriteProduct(User user, String shopId, String productId) {
+    user.addFavoriteProduct(shopId, productId);
     userRepository.save(user);
   }
 
   @Override
-  public void removeFavoriteProduct(User user, String productId) {
-    user.getFavoriteProductIds().remove(productId);
+  public void removeFavoriteProduct(User user, String shopId, String productId) {
+    user.removeFavoriteProduct(shopId, productId);
     userRepository.save(user);
   }
 
@@ -145,7 +152,34 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Slice<Product> findFavoriteProducts(User user, Pageable pageable) {
-    return productRepository.findByIdIn(user.getFavoriteProductIds(), pageable);
+  public Slice<FavoriteProduct> findFavoriteProducts(User user, Pageable pageable) {
+
+    List<FavoriteProduct.Identity> fpis =
+        SortUtils.sort(new ArrayList<>(user.getFavoriteProductIds()), pageable);
+
+    List<FavoriteProduct.Identity> subList =
+        fpis.stream().skip(pageable.getOffset()).limit(pageable.getPageSize()).toList();
+
+    HashMap<String, Product> products =
+        productRepository
+            .findAllById(
+                subList.stream()
+                    .map(FavoriteProduct.Identity::getProductId)
+                    .collect(Collectors.toSet()))
+            .stream()
+            .collect(Collectors.toMap(Product::getId, p -> p, (p1, p2) -> p1, HashMap::new));
+
+    List<FavoriteProduct> favoriteProducts =
+        subList.stream()
+            .map(
+                fpi -> {
+                  Product product = products.get(fpi.getProductId());
+                  return product == null ? null : new FavoriteProduct(product, fpi);
+                })
+            .filter(f -> f != null)
+            .collect(Collectors.toList());
+
+    boolean hasNext = fpis.size() > pageable.getOffset() + pageable.getPageSize();
+    return new SliceImpl<>(favoriteProducts, pageable, hasNext);
   }
 }

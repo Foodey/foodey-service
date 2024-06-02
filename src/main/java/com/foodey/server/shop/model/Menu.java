@@ -1,8 +1,6 @@
 package com.foodey.server.shop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.utils.ConsoleUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -435,11 +433,9 @@ public class Menu {
     getExcludedShopIds().addAll(shopIds);
   }
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @CreatedDate
-  private Instant createdAt;
+  // @JsonSerialize(using = InstantSerializer.class)
+  @CreatedDate private Instant createdAt;
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @LastModifiedDate
-  private Instant updatedAt;
+  // @JsonSerialize(using = InstantSerializer.class)
+  @LastModifiedDate private Instant updatedAt;
 }

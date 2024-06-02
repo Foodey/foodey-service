@@ -3,6 +3,7 @@ package com.foodey.server.user.model;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.enums.UserStatus;
 import com.foodey.server.user.model.decorator.UserRole;
@@ -18,8 +19,10 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -92,9 +95,19 @@ public class User implements UserDetails, UserRole {
   @Schema(description = "The roles of the account")
   private Set<Role> roles = Set.of(new Role(RoleType.CUSTOMER));
 
-  @Schema(description = "The favorite product ids of the account")
   @Default
-  private Set<String> favoriteProductIds = new HashSet<>();
+  @Setter(AccessLevel.NONE)
+  @Schema(description = "The favorite product ids of the account")
+  private Set<FavoriteProduct.Identity> favoriteProductIds = new LinkedHashSet<>();
+
+  public boolean addFavoriteProduct(String shopId, String productId) {
+    return favoriteProductIds.add(new FavoriteProduct.Identity(productId, shopId));
+  }
+
+  public boolean removeFavoriteProduct(String shopId, String productId) {
+    return favoriteProductIds.removeIf(
+        fdi -> fdi.getProductId().equals(productId) && fdi.getShopId().equals(shopId));
+  }
 
   @Schema(description = "The favorite shop ids of the account")
   @Default

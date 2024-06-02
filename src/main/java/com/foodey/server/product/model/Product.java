@@ -2,8 +2,6 @@ package com.foodey.server.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -23,18 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "products")
 @NoArgsConstructor
 @JsonIgnoreProperties(
-    value = {
-      "id",
-      "createdAt",
-      "updatedAt",
-      "shopId",
-      "brandId",
-      "rating",
-      "soldQuantity",
-      "soldOut",
-      "brandVsShopId",
-      "excludedShopIds"
-    },
+    value = {"id", "createdAt", "updatedAt", "shopId", "brandId"},
     allowGetters = true)
 public class Product implements Persistable<String> {
 
@@ -72,25 +59,30 @@ public class Product implements Persistable<String> {
 
   private String brandId;
 
-  // private long rating = 0;
+  @CreatedDate private Instant createdAt;
 
-  // private long soldQuantity = 0;
-
-  // private boolean soldOut = false;
-
-  @JsonSerialize(using = InstantSerializer.class)
-  @CreatedDate
-  private Instant createdAt;
-
-  @JsonSerialize(using = InstantSerializer.class)
-  @LastModifiedDate
-  private Instant updatedAt;
+  @LastModifiedDate private Instant updatedAt;
 
   public Product(String name, long price, String image, String description) {
     this.name = name;
     this.price = price;
     this.image = image;
     this.description = description;
+  }
+
+  public Product(Product product) {
+    this.id = product.id;
+    this.name = product.name;
+    this.price = product.price;
+    this.image = product.image;
+    this.description = product.description;
+    this.menuId = product.menuId;
+    this.categoryId = product.categoryId;
+    this.categoryNameDisplayedOnMenu = product.categoryNameDisplayedOnMenu;
+    this.shopId = product.shopId;
+    this.brandId = product.brandId;
+    this.createdAt = product.createdAt;
+    this.updatedAt = product.updatedAt;
   }
 
   @Override

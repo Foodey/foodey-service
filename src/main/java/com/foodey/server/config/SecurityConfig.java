@@ -184,12 +184,12 @@ public class SecurityConfig {
               headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
             })
         .cors(cors -> cors.configurationSource(corsApiConfigurationSource()))
-        // .csrf((csrf) -> csrf.disable())
-        .csrf(
-            customizer -> {
-              // customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-              customizer.ignoringRequestMatchers("/api/**");
-            })
+        .csrf((csrf) -> csrf.disable())
+        // .csrf(
+        //     customizer -> {
+        //       // customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        //       customizer.ignoringRequestMatchers("/api/**");
+        //     })
 
         // exception handling
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

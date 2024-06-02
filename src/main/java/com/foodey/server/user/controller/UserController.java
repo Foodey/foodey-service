@@ -1,7 +1,7 @@
 package com.foodey.server.user.controller;
 
 import com.foodey.server.annotation.CurrentUser;
-import com.foodey.server.product.model.Product;
+import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
@@ -89,11 +89,13 @@ public class UserController {
     @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @PostMapping("/favorite/products/{productId}")
+  @PostMapping("/favorite/shops/{shopId}/products/{productId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void addFavoriteProduct(
-      @CurrentUser User user, @PathVariable(name = "productId", required = true) String productId) {
-    userService.addFavoriteProduct(user, productId);
+      @CurrentUser User user,
+      @PathVariable(name = "shopId", required = true) String shopId,
+      @PathVariable(name = "productId", required = true) String productId) {
+    userService.addFavoriteProduct(user, shopId, productId);
   }
 
   @Operation(summary = "Remove a product from the favorite list")
@@ -104,10 +106,12 @@ public class UserController {
     @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @DeleteMapping("/favorite/products/{productId}")
+  @DeleteMapping("/favorite/shops/{shopId}/products/{productId}")
   public void removeFavoriteProduct(
-      @CurrentUser User user, @PathVariable(name = "productId", required = true) String productId) {
-    userService.removeFavoriteProduct(user, productId);
+      @CurrentUser User user,
+      @PathVariable(name = "shopId", required = true) String shopId,
+      @PathVariable(name = "productId", required = true) String productId) {
+    userService.removeFavoriteProduct(user, shopId, productId);
   }
 
   @Operation(summary = "Get favorite shops")
@@ -137,7 +141,7 @@ public class UserController {
   })
   @GetMapping("/favorite/products")
   @ResponseStatus(HttpStatus.OK)
-  public Slice<Product> getFavoriteProducts(
+  public Slice<FavoriteProduct> getFavoriteProducts(
       @CurrentUser User user,
       @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.ASC)
           Pageable pageable) {
