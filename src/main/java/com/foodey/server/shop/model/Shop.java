@@ -1,18 +1,16 @@
 package com.foodey.server.shop.model;
 
+import com.esotericsoftware.kryo.serializers.FieldSerializer.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,34 +28,45 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @Document(collection = "shops")
 @JsonIgnoreProperties(
-    value = {"id", "menus", "ownerId", "createdAt", "updatedAt", "rating", "categoryIds"},
+    value = {"id", "ownerId", "createdAt", "updatedAt", "rating", "categoryIds"},
     allowGetters = true)
-@CompoundIndex(def = "{'name': 1, 'branchId': 1}", name = "shop_name_branch_id")
+@CompoundIndex(def = "{'name': 1, 'brandId': 1}", name = "shop_name_brand_id")
 @ToString
 @NoArgsConstructor
-public class Shop implements Persistable<String>, ShopMenusContainer {
+public class Shop implements Persistable<String> {
 
-  @Null @Id private String id;
+  @Schema(description = "The unique identifier of the shop")
+  @Id
+  private String id;
 
-  @NotBlank private String branchId;
+  @Schema(description = "The unique identifier of the brand that the shop belongs to")
+  @NotBlank
+  private String brandId;
 
-  @Null private String ownerId;
+  @Schema(description = "The unique identifier of the owner of the shop")
+  @NotNull
+  private String ownerId;
 
-  @OptimizedName private String name;
+  @Schema(description = "The name of the shop")
+  @OptimizedName
+  private String name;
 
+  @Schema(description = "The url of logo of the shop")
   private String logo;
+
+  @Schema(description = "The url of wallpaper of the shop")
   private String wallpaper;
 
+  @Schema(description = "The rating of the shop")
   private long rating = 0;
 
   @NotBlank
   @Size(min = 2, max = 100)
+  @Schema(description = "The address of the shop")
   private String address;
 
-  // This is a list of menus that the shop has in private
-  @JsonIgnore private List<@Valid ShopMenu> menus = new ArrayList<>();
-
   @Indexed(name = "shop_categories")
+  @Schema(description = "The category ids of the shop ")
   private Set<String> categoryIds = new HashSet<>();
 
   @JsonSerialize(using = InstantSerializer.class)
@@ -69,12 +78,12 @@ public class Shop implements Persistable<String>, ShopMenusContainer {
   private Instant updatedAt;
 
   public Shop(
-      String name, String address, String logo, String wallpaper, String branchId, String ownerId) {
+      String name, String address, String logo, String wallpaper, String brandId, String ownerId) {
     this.name = name;
     this.address = address;
     this.logo = logo;
     this.wallpaper = wallpaper;
-    this.branchId = branchId;
+    this.brandId = brandId;
   }
 
   @Override

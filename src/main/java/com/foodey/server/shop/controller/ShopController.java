@@ -39,14 +39,14 @@ public class ShopController {
         responseCode = "403",
         description =
             "User does not have permission to access this resource. Only sellers can create shops"),
-    @ApiResponse(responseCode = "404", description = "Branch not found"),
+    @ApiResponse(responseCode = "404", description = "Brand not found"),
     @ApiResponse(responseCode = "409", description = "Shop with the same name already exists"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @PostMapping({"/", ""})
   @ResponseStatus(HttpStatus.CREATED)
   @RolesAllowed(RoleType.Fields.SELLER)
-  public Shop addNewShopOfBranch(@Valid @RequestBody Shop shop, @CurrentUser User user) {
+  public Shop addNewShopOfBrand(@Valid @RequestBody Shop shop, @CurrentUser User user) {
     return shopService.createShop(shop, user);
   }
 
@@ -61,19 +61,6 @@ public class ShopController {
   @GetMapping("/{id}")
   public Shop findById(@PathVariable(required = true, name = "id") String id) {
     return shopService.findById(id);
-  }
-
-  @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Shop found successfully"),
-    @ApiResponse(responseCode = "400", description = "Bad request"),
-    @ApiResponse(responseCode = "404", description = "Shop not found"),
-    @ApiResponse(responseCode = "500", description = "Internal server error")
-  })
-  @PublicEndpoint
-  @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/enough/{id}")
-  public Shop findByIdWithEnoughMenu(@PathVariable(required = true, name = "id") String id) {
-    return shopService.findByIdAndAutoAddBranchMenus(id);
   }
 
   @ApiResponses({

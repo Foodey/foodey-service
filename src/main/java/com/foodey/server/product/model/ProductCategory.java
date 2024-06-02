@@ -2,7 +2,7 @@ package com.foodey.server.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foodey.server.validation.annotation.OptimizedName;
-import jakarta.validation.constraints.Null;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,12 +18,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class ProductCategory {
 
-  @Null @Id private String id;
+  @Id
+  @Schema(description = "The unique identifier of the category")
+  private String id;
 
-  @OptimizedName private String name;
+  @Schema(description = "The name of the category")
+  @OptimizedName
+  private String name;
 
+  @Schema(description = "The image url of the category")
   private String image = "";
 
+  @Schema(description = "The description of the category")
   private String description = "";
 
   public ProductCategory(String name, String image, String description) {

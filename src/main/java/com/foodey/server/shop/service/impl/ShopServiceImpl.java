@@ -4,9 +4,10 @@ import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.repository.ShopRepository;
-import com.foodey.server.shop.service.ShopBranchService;
+import com.foodey.server.shop.service.ShopBrandService;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.model.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,20 +19,20 @@ import org.springframework.stereotype.Service;
 public class ShopServiceImpl implements ShopService {
 
   private final ShopRepository shopRepository;
-  private final ShopBranchService shopBranchService;
+  private final ShopBrandService shopBrandService;
 
   @Override
   public Shop createShop(Shop shop, User user) {
+    String brandId = shop.getBrandId();
     String userId = user.getId();
-    String branchId = shop.getBranchId();
 
-    if (!shopBranchService.existsByIdAndOwnerId(branchId, userId))
-      throw new ResourceNotFoundException("ShopBranch", "id", branchId);
-    else if (shopRepository.existsByNameAndBranchId(shop.getName(), branchId))
+    shopBrandService.verifyOwner(brandId, userId);
+
+    if (shopRepository.existsByNameAndBrandId(shop.getName(), brandId))
       throw new ResourceAlreadyInUseException("Shop", "name", shop.getName());
 
-    shop.setOwnerId(user.getId());
-    shop.setBranchId(branchId);
+    shop.setOwnerId(userId);
+    shop.setBrandId(brandId);
 
     return shopRepository.save(shop);
   }
@@ -41,23 +42,6 @@ public class ShopServiceImpl implements ShopService {
     return shopRepository
         .findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
-  }
-
-  @Override
-  public Shop findByIdAndVerifyOwner(String id, User user) {
-    Shop shop = findById(id);
-
-    if (!shop.getOwnerId().equals(user.getId()))
-      throw new AccessDeniedException("You are not owner of this shop.");
-
-    return shop;
-  }
-
-  @Override
-  public Shop findByIdAndAutoAddBranchMenus(String id) {
-    Shop shop = findById(id);
-    shop.getMenus().addAll(shopBranchService.findById(shop.getBranchId()).getMenus());
-    return shop;
   }
 
   @Override
@@ -71,12 +55,30 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
+  public List<Shop> saveAll(List<Shop> shops) {
+    return shopRepository.saveAll(shops);
+  }
+
+  @Override
   public Slice<Shop> findByCategoryId(String category, Pageable pageable) {
     return shopRepository.findByCategoryIdsContaining(category, pageable);
   }
 
   @Override
-  public Slice<Shop> findByCategoryIdAndAutoAddBranchMenus(String category, Pageable pageable) {
-    return shopRepository.findByCategoryIdsContaining(category, pageable);
+  public Shop findByIdAndVerifyOwner(String id, String userId) {
+    Shop shop = findById(id);
+    if (!shop.getOwnerId().equals(userId))
+      throw new AccessDeniedException("You are not owner of this shop.");
+    return shop;
+  }
+
+  @Override
+  public List<Shop> findByBrandId(String brandId) {
+    return shopRepository.findByBrandId(brandId);
+  }
+
+  @Override
+  public Slice<Shop> findByBrandId(String brandId, Pageable pageable) {
+    return shopRepository.findByBrandId(brandId, pageable);
   }
 }

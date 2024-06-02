@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import java.time.Instant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,26 +23,54 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "products")
 @NoArgsConstructor
 @JsonIgnoreProperties(
-    value = {"id", "createdAt", "updatedAt", "rating", "soldQuantity", "soldOut"},
+    value = {
+      "id",
+      "createdAt",
+      "updatedAt",
+      "shopId",
+      "brandId",
+      "rating",
+      "soldQuantity",
+      "soldOut",
+      "brandVsShopId",
+      "excludedShopIds"
+    },
     allowGetters = true)
 public class Product implements Persistable<String> {
 
-  @Null @Id private String id;
+  @Schema(description = "The unique identifier of the product")
+  @Id
+  private String id;
 
-  @OptimizedName private String name;
+  @Schema(description = "The name of the product")
+  @OptimizedName
+  private String name;
 
   @Min(0)
+  @Schema(description = "The price of the product")
   private double price;
 
+  @Schema(description = "The image of the product")
   private String image = "";
 
+  @Schema(description = "The description of the product")
   private String description = "";
 
-  @NotBlank private String menuId;
+  @Schema(description = "The unique identifier of the menu that the product belongs to")
+  @NotBlank
+  private String menuId;
 
-  @NotBlank private String shopId;
+  @Schema(description = "The unique identifier of the category that the product belongs to")
+  @NotBlank
+  private String categoryId;
 
-  @NotBlank private String categoryId;
+  @Schema(
+      description = "The name of the category that the product belongs to when displayed in menu")
+  private String categoryNameDisplayedOnMenu = "-";
+
+  private String shopId;
+
+  private String brandId;
 
   // private long rating = 0;
 

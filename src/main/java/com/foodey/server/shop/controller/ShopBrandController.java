@@ -2,10 +2,8 @@ package com.foodey.server.shop.controller;
 
 import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.annotation.PublicEndpoint;
-import com.foodey.server.shop.model.ShopBranch;
-import com.foodey.server.shop.model.ShopMenu;
-import com.foodey.server.shop.service.ShopBranchService;
-import com.foodey.server.shop.service.ShopMenuService;
+import com.foodey.server.shop.model.ShopBrand;
+import com.foodey.server.shop.service.ShopBrandService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,90 +27,75 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/shop-branches")
+@RequestMapping("/api/v1/shop-brands")
 @RequiredArgsConstructor
-public class ShopBranchController {
+public class ShopBrandController {
 
-  private final ShopBranchService shopBranchService;
-  private final ShopMenuService shopMenuService;
+  private final ShopBrandService shopBrandService;
 
-  @Operation(summary = "Create a new shop branch for seller")
+  @Operation(summary = "Create a new shop brand for seller")
   @ApiResponses({
-    @ApiResponse(responseCode = "201", description = "Shop branch created"),
+    @ApiResponse(responseCode = "201", description = "Shop brand created"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized"),
     @ApiResponse(responseCode = "403", description = "User is not a seller"),
     @ApiResponse(
         responseCode = "409",
-        description = "Shop branch with the same name already exists"),
+        description = "Shop brand with the same name already exists"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @PostMapping({"", "/"})
   @ResponseStatus(HttpStatus.CREATED)
   @RolesAllowed(RoleType.Fields.SELLER)
-  public ShopBranch createShopBranch(
-      @RequestBody @Valid ShopBranch shopBranch, @CurrentUser User user) {
-    return shopBranchService.createShopBranch(shopBranch, user);
+  public ShopBrand createShopBrand(
+      @RequestBody @Valid ShopBrand shopBrand, @CurrentUser User user) {
+    return shopBrandService.createShopBrand(shopBrand, user);
   }
 
-  @Operation(summary = "Get shop branch by id")
+  @Operation(summary = "Get shop brand by id")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Shop branch found"),
+    @ApiResponse(responseCode = "200", description = "Shop brand found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-    @ApiResponse(responseCode = "404", description = "Shop branch not found"),
+    @ApiResponse(responseCode = "404", description = "Shop brand not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @GetMapping("/{id}")
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
-  public ShopBranch findById(@PathVariable(required = true, name = "id") String id) {
-    return shopBranchService.findById(id);
+  public ShopBrand findById(@PathVariable(required = true, name = "id") String id) {
+    return shopBrandService.findById(id);
   }
 
-  @GetMapping("/user")
-  @RolesAllowed(RoleType.Fields.SELLER)
-  @ResponseStatus(HttpStatus.OK)
-  public List<ShopBranch> findByOwnerId(@CurrentUser User user) {
-    return shopBranchService.findByOwnerId(user.getId());
-  }
-
-  @Operation(summary = "Add new menu into all shops of brand with brandId")
+  @Operation(summary = "Get shop brands of the current seller")
   @ApiResponses({
-    @ApiResponse(responseCode = "201", description = "Shop menu created successfully"),
+    @ApiResponse(responseCode = "200", description = "Shop brands found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-    @ApiResponse(
-        responseCode = "403",
-        description = "User cannot access this resource. Only seller can access this resource"),
-    @ApiResponse(responseCode = "404", description = "Shop not found"),
-    @ApiResponse(responseCode = "409", description = "Menu with the same name already exists"),
+    @ApiResponse(responseCode = "404", description = "Shop brand not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @PostMapping("/{branchId}/menus")
-  @ResponseStatus(HttpStatus.CREATED)
+  @GetMapping("/me")
   @RolesAllowed(RoleType.Fields.SELLER)
-  public ShopMenu addNewMenuIntoAllShopsOfBranch(
-      @PathVariable(required = true, name = "branchId") String branchId,
-      @Valid @RequestBody ShopMenu shopMenu,
-      @CurrentUser User user) {
-    return shopMenuService.createShopMenuInAllBranch(shopMenu, branchId, user);
+  @ResponseStatus(HttpStatus.OK)
+  public List<ShopBrand> findByOwnerId(@CurrentUser User user) {
+    return shopBrandService.findByOwnerId(user.getId());
   }
 
-  @Operation(summary = "Get all branches")
+  @Operation(summary = "Get all brands")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Shop branches found"),
+    @ApiResponse(responseCode = "200", description = "Shop brands found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-    @ApiResponse(responseCode = "404", description = "Shop branch not found"),
+    @ApiResponse(responseCode = "404", description = "Shop brand not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @GetMapping({"/", ""})
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
-  public Slice<ShopBranch> findAll(
+  public Slice<ShopBrand> findAll(
       @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
           Pageable pageable) {
-    return shopBranchService.findAll(pageable);
+    return shopBrandService.findAll(pageable);
   }
 }
