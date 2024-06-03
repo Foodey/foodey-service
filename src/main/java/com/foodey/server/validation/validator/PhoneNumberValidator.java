@@ -1,6 +1,7 @@
 package com.foodey.server.validation.validator;
 
 import com.foodey.server.common.regexp.PhoneNumberRegexp;
+import com.foodey.server.utils.PhoneNumberValidatorUtils;
 import com.foodey.server.validation.annotation.PhoneNumber;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -34,6 +35,6 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, St
         }
       }
     }
-    return com.foodey.server.utils.PhoneNumberValidator.validate(phoneNumber);
+    return PhoneNumberValidatorUtils.validate(phoneNumber);
   }
 }

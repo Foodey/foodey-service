@@ -34,7 +34,9 @@ public class Product implements Persistable<String> {
   @OptimizedName
   private String name;
 
-  @NonNull private String ownerId;
+  @Schema(description = "The unique identifier of the user owner of the product")
+  @NonNull
+  private String ownerId;
 
   @Min(0)
   @Schema(description = "The price of the product")

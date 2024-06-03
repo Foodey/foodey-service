@@ -21,46 +21,25 @@ public class HttpSMSEventServiceImpl implements HttpSMSEventService {
   private final JwtService jwtService;
 
   @Override
-  public void handleMessagePhoneReceived(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleMessagePhoneReceived'");
-  }
+  public void handleMessagePhoneReceived(HttpServletRequest request) {}
 
   @Override
-  public void handleMessagePhoneSent(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleMessagePhoneSent'");
-  }
+  public void handleMessagePhoneSent(HttpServletRequest request) {}
 
   @Override
-  public void handleMessagePhoneDelivered(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleMessagePhoneDelivered'");
-  }
+  public void handleMessagePhoneDelivered(HttpServletRequest request) {}
 
   @Override
-  public void handleMessagePhoneFailed(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleMessagePhoneFailed'");
-  }
+  public void handleMessagePhoneFailed(HttpServletRequest request) {}
 
   @Override
-  public void handleMessageSendExpired(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleMessageSendExpired'");
-  }
+  public void handleMessageSendExpired(HttpServletRequest request) {}
 
   @Override
-  public void handlePhoneHeartbeatOffline(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handlePhoneHeartbeatOffline'");
-  }
+  public void handlePhoneHeartbeatOffline(HttpServletRequest request) {}
 
   @Override
-  public void handlePhoneHeartbeatOnline(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handlePhoneHeartbeatOnline'");
-  }
+  public void handlePhoneHeartbeatOnline(HttpServletRequest request) {}
 
   @Override
   public void validateJWT(String jwt) {

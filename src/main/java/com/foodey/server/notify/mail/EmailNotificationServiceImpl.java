@@ -57,6 +57,7 @@ public class EmailNotificationServiceImpl implements NotificationService {
     message.setRecipients(Message.RecipientType.TO, to);
     message.setSubject(subject);
     message.setContent(text, "text/html");
+    message.setText(text); // for email clients that don't support HTML
 
     mailSender.send(message);
   }

@@ -28,14 +28,14 @@ spring:
       uri: mongodb+srv://${MONGO_USER:admin}:${MONGO_PASSWORD}@foodey.jdbhlen.mongodb.net/?retryWrites=true&w=majority&appName=Foodey
       autoIndexCreation: true
     redis:
-      host: ${REDIS_HOST:redis-19795.c82.us-east-1-2.ec2.redns.redis-cloud.com}
-      port: ${REDIS_PORT:19795}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
       # password: ${REDIS_PASSWORD:IxXNUvoIE4ZywfZ8PMZ0nmVxVzKwUeC3}
   mail:
     host: ${EMAIL_HOST:smtp.gmail.com}
     port: 587
     username: ${EMAIL_USERNAME:foodeysystem@gmail.com}
-    password: ${EMAIL_PASSWORD:shwsgjcuqmvygxmm}
+    password: ${EMAIL_PASSWORD}
     transport:
       protocol: smtp
     smtp:
