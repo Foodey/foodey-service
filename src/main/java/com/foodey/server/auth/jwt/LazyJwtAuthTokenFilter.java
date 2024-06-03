@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @Component
@@ -71,6 +72,8 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
           }
         }
       }
+    } catch (MissingServletRequestPartException e) {
+      throw new InvalidTokenRequestException(TokenType.BEARER, null, "Missing token");
     } catch (Exception e) {
       log.error("An error occurred while processing the authentication token", e);
       throw e;
