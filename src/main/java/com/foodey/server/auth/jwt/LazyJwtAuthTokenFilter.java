@@ -73,7 +73,7 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
         }
       }
     } catch (MissingServletRequestPartException e) {
-      throw new InvalidTokenRequestException(TokenType.BEARER, null, "Missing token");
+      throw new InvalidTokenRequestException(TokenType.BEARER, null, "Missing access token");
     } catch (Exception e) {
       log.error("An error occurred while processing the authentication token", e);
       throw e;
