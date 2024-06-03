@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class MenuSizeTooBigException extends RuntimeException {
 
   private int maxSize;
+  private String shopId;
 
-  public MenuSizeTooBigException(int maxSize) {
-    super(String.format("Menu size is too big, Max size allowed: %d", maxSize));
+  public MenuSizeTooBigException(int maxSize, String shopId) {
+    super("Menu size is too big for shop with id: " + shopId + ". Max size is: " + maxSize);
+
+    this.maxSize = maxSize;
+    this.shopId = shopId;
   }
 }

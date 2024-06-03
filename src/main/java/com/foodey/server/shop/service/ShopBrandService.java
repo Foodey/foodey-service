@@ -20,8 +20,6 @@ public interface ShopBrandService {
 
   boolean existsByIdAndOwnerId(String brandId, String ownerId);
 
-  // access control
-
   ShopBrand findByIdAndVerifyOwner(String id, String userId);
 
   default ShopBrand findByIdAndVerifyOwner(String id, User user) {

@@ -81,4 +81,16 @@ public class ShopServiceImpl implements ShopService {
   public Slice<Shop> findByBrandId(String brandId, Pageable pageable) {
     return shopRepository.findByBrandId(brandId, pageable);
   }
+
+  @Override
+  public Shop findByIdAndBrandIdAndVerifyOwner(String id, String brandId, String userId) {
+    Shop shop =
+        shopRepository
+            .findByIdAndBrandId(id, brandId)
+            .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
+
+    if (!shop.getOwnerId().equals(userId))
+      throw new AccessDeniedException("You are not owner of this shop.");
+    return shop;
+  }
 }

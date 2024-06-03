@@ -1,8 +1,6 @@
 package com.foodey.server.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.payment.Payment;
 import com.foodey.server.shop.model.Shop;
 import jakarta.validation.constraints.NotNull;
@@ -50,13 +48,9 @@ public class Order implements Persistable<String> {
 
   @NotNull private Payment payment;
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @CreatedDate
-  private Instant createdAt;
+  @CreatedDate private Instant createdAt;
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @LastModifiedDate
-  private Instant updatedAt;
+  @LastModifiedDate private Instant updatedAt;
 
   public Order(
       String userId,

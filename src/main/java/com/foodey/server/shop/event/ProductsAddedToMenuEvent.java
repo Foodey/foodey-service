@@ -9,14 +9,14 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 @Setter
-public class ProductAddedToMenuEvent extends ApplicationEvent {
+public class ProductsAddedToMenuEvent extends ApplicationEvent {
   private User user;
   private String brandId;
   private String shopId;
   private List<Product> products;
   private boolean appliedToAllShop;
 
-  public ProductAddedToMenuEvent(
+  public ProductsAddedToMenuEvent(
       Object source,
       User user,
       String brandId,

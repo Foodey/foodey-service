@@ -3,6 +3,7 @@ package com.foodey.server.product.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foodey.server.validation.annotation.OptimizedName;
+import com.mongodb.lang.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,7 +22,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "products")
 @NoArgsConstructor
 @JsonIgnoreProperties(
-    value = {"id", "createdAt", "updatedAt", "shopId", "brandId"},
+    value = {"id", "ownerId", "createdAt", "updatedAt", "shopId", "brandId"},
     allowGetters = true)
 public class Product implements Persistable<String> {
 
@@ -33,6 +34,8 @@ public class Product implements Persistable<String> {
   @OptimizedName
   private String name;
 
+  @NonNull private String ownerId;
+
   @Min(0)
   @Schema(description = "The price of the product")
   private double price;
@@ -43,10 +46,6 @@ public class Product implements Persistable<String> {
   @Schema(description = "The description of the product")
   private String description = "";
 
-  @Schema(description = "The unique identifier of the menu that the product belongs to")
-  @NotBlank
-  private String menuId;
-
   @Schema(description = "The unique identifier of the category that the product belongs to")
   @NotBlank
   private String categoryId;
@@ -55,9 +54,9 @@ public class Product implements Persistable<String> {
       description = "The name of the category that the product belongs to when displayed in menu")
   private String categoryNameDisplayedOnMenu = "-";
 
-  private String shopId;
+  @JsonIgnore private String shopId;
 
-  private String brandId;
+  @JsonIgnore private String brandId;
 
   @CreatedDate private Instant createdAt;
 
@@ -73,10 +72,10 @@ public class Product implements Persistable<String> {
   public Product(Product product) {
     this.id = product.id;
     this.name = product.name;
+    this.ownerId = product.ownerId;
     this.price = product.price;
     this.image = product.image;
     this.description = product.description;
-    this.menuId = product.menuId;
     this.categoryId = product.categoryId;
     this.categoryNameDisplayedOnMenu = product.categoryNameDisplayedOnMenu;
     this.shopId = product.shopId;

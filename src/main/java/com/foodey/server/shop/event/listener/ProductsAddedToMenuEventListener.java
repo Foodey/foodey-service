@@ -1,7 +1,7 @@
 package com.foodey.server.shop.event.listener;
 
 import com.foodey.server.product.model.Product;
-import com.foodey.server.shop.event.ProductAddedToMenuEvent;
+import com.foodey.server.shop.event.ProductsAddedToMenuEvent;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
 import java.util.List;
@@ -15,25 +15,28 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class ProductAddedToMenuEventListener {
+public class ProductsAddedToMenuEventListener {
 
   private final ShopService shopService;
 
   @Async
   @TransactionalEventListener
-  public void handleUpdateCategoryIdsForShop(ProductAddedToMenuEvent event) {
+  public void handleUpdateCategoryIdsForShop(ProductsAddedToMenuEvent event) {
+
     List<String> categoryIds =
         event.getProducts().stream().map(Product::getCategoryId).collect(Collectors.toList());
+
     if (event.isAppliedToAllShop()) {
       List<Shop> shops = shopService.findByBrandId(event.getBrandId());
       shops.forEach(shop -> shop.getCategoryIds().addAll(categoryIds));
       shopService.saveAll(shops);
-      log.info("Updating categoryIds for all shops of brandId: {}", event.getBrandId());
+      log.debug("Updating categoryIds for all shops of brandId: {}", event.getBrandId());
+
     } else {
       Shop shop = shopService.findById(event.getShopId());
       shop.getCategoryIds().addAll(categoryIds);
       shopService.save(shop);
-      log.info("Updating categoryIds for shopId: {}", event.getShopId());
+      log.debug("Updating categoryIds for shopId: {}", event.getShopId());
     }
   }
 }

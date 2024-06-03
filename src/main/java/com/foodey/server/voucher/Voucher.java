@@ -2,8 +2,6 @@ package com.foodey.server.voucher;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -64,40 +62,36 @@ public class Voucher implements Persistable<String> {
   @NotNull
   private VoucherMethod method;
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @Default
-  @FutureOrPresent
-  @DateTimeFormat
   @Schema(
       description =
           "The date when the voucher is activated, the voucher can be used after this date, default"
               + " is now. The seller can set this date to the future to activate the voucher"
               + " later.")
+  @Default
+  @FutureOrPresent
+  @DateTimeFormat
   private Instant activationDate = Instant.now();
 
-  @NotNull
-  @DateTimeFormat
-  @Future
-  @JsonSerialize(using = InstantSerializer.class)
   @Schema(
       description =
           "The date when the voucher is expired, the voucher cannot be used after this date.")
+  @NotNull
+  @Future
+  @DateTimeFormat
   private Instant expiryDate;
 
   @CreatedDate
-  @JsonSerialize(using = InstantSerializer.class)
   @Schema(description = "The time the voucher is created")
   private Instant createdAt;
 
   @LastModifiedDate
-  @JsonSerialize(using = InstantSerializer.class)
   @Schema(description = "The last time the voucher is updated")
   private Instant updatedAt;
 
   // constraints
 
   @Schema(description = "The shop or brand id that this voucher can be used. If null, then all")
-  private String shopOrBrandId;
+  private String shopVsBrandId;
 
   @Schema(description = "The list of category ids that this voucher can be used")
   private Set<String> appliedCategoryIds;
@@ -140,7 +134,7 @@ public class Voucher implements Persistable<String> {
   }
 
   private boolean isApplicableToStore(String storeId) {
-    return !StringUtils.hasText(this.shopOrBrandId) || this.shopOrBrandId.equals(storeId);
+    return !StringUtils.hasText(this.shopVsBrandId) || this.shopVsBrandId.equals(storeId);
   }
 
   public boolean isApplicableToStore(String storeId, String brandId) {

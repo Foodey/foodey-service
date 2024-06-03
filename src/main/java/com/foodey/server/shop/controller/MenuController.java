@@ -79,7 +79,7 @@ public class MenuController {
     return menuService.addProductsToMenu(user, brandId, shopId, products, appliedToAllShops);
   }
 
-  @Operation(summary = "Get full menu details in shop")
+  @Operation(summary = "Get menu with enough products in shop")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Shop menus found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -94,9 +94,9 @@ public class MenuController {
     return menuService.getMenuInShop(brandId, shopId);
   }
 
-  @Operation(summary = "Get menu details in shop by category name")
+  @Operation(summary = "Get menu with all products that has displayed category name in shop")
   @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Shop menus found"),
+    @ApiResponse(responseCode = "200", description = "Shop menu found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "404", description = "Shop not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -110,7 +110,7 @@ public class MenuController {
     return menuService.getMenuInShop(brandId, shopId, categoryName);
   }
 
-  @Operation(summary = "Get full menu details in brand")
+  @Operation(summary = "Get the menu with full products for whole brand")
   @ApiResponses({
     @ApiResponse(responseCode = "201", description = "Menu found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -128,10 +128,10 @@ public class MenuController {
   @PublicEndpoint
   @ResponseStatus(HttpStatus.CREATED)
   public MenuView getMenuInBrand(@PathVariable(required = true, name = "brandId") String brandId) {
-    return menuService.getMenuInBrand(brandId);
+    return menuService.getMenuForWholeBrand(brandId);
   }
 
-  @Operation(summary = "Get full menu details in brand")
+  @Operation(summary = "Get the menu for whole brand has category name displayed on menu")
   @ApiResponses({
     @ApiResponse(responseCode = "201", description = "Menu found"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -151,6 +151,6 @@ public class MenuController {
   public MenuView getMenuInBrandByCategoryName(
       @PathVariable(required = true, name = "brandId") String brandId,
       @RequestParam(required = true) String categoryName) {
-    return menuService.getMenuInBrand(brandId, categoryName);
+    return menuService.getMenuForWholeBrand(brandId, categoryName);
   }
 }

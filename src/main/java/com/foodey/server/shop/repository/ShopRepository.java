@@ -15,11 +15,15 @@ public interface ShopRepository extends MongoRepository<Shop, String> {
 
   Optional<Shop> findByIdAndOwnerId(String id, String ownerId);
 
-  Slice<Shop> findByCategoryIdsContaining(String categoryId, Pageable pageable);
+  Optional<Shop> findByIdAndBrandIdAndOwnerId(String id, String brandId, String ownerId);
 
-  Slice<Shop> findByIdIn(Iterable<String> ids, Pageable pageable);
+  Optional<Shop> findByIdAndBrandId(String id, String brandId);
 
   List<Shop> findByBrandId(String brandId);
 
   Slice<Shop> findByBrandId(String brandId, Pageable pageable);
+
+  Slice<Shop> findByCategoryIdsContaining(String categoryId, Pageable pageable);
+
+  Slice<Shop> findByIdIn(Iterable<String> ids, Pageable pageable);
 }

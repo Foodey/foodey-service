@@ -19,6 +19,8 @@ public class ShopBrandServiceImpl implements ShopBrandService {
 
   private final ShopBrandRepository shopBrandRepository;
 
+  // Create
+
   @Override
   public ShopBrand createShopBrand(ShopBrand shopBrand, User user) {
     if (shopBrandRepository.existsByNameAndOwnerId(shopBrand.getName(), user.getId())) {
@@ -30,31 +32,13 @@ public class ShopBrandServiceImpl implements ShopBrandService {
     return shopBrandRepository.save(shopBrand);
   }
 
+  // Find
+
   @Override
   public ShopBrand findById(String id) {
     return shopBrandRepository
         .findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("ShopBrand", "id", id));
-  }
-
-  @Override
-  public List<ShopBrand> findByOwnerId(String ownerId) {
-    return shopBrandRepository.findByOwnerId(ownerId);
-  }
-
-  @Override
-  public boolean existsByIdAndOwnerId(String id, String ownerId) {
-    return shopBrandRepository.existsByIdAndOwnerId(id, ownerId);
-  }
-
-  @Override
-  public ShopBrand save(ShopBrand shopBrand) {
-    return shopBrandRepository.save(shopBrand);
-  }
-
-  @Override
-  public Slice<ShopBrand> findAll(Pageable pageable) {
-    return shopBrandRepository.findAll(pageable);
   }
 
   @Override
@@ -71,5 +55,26 @@ public class ShopBrandServiceImpl implements ShopBrandService {
       throw new AccessDeniedException("You are not owner of this brand.");
     }
     return shopBrand;
+  }
+
+  @Override
+  public List<ShopBrand> findByOwnerId(String ownerId) {
+    return shopBrandRepository.findByOwnerId(ownerId);
+  }
+
+  @Override
+  public boolean existsByIdAndOwnerId(String id, String ownerId) {
+    return shopBrandRepository.existsByIdAndOwnerId(id, ownerId);
+  }
+
+  @Override
+  public Slice<ShopBrand> findAll(Pageable pageable) {
+    return shopBrandRepository.findAll(pageable);
+  }
+
+  // update
+  @Override
+  public ShopBrand save(ShopBrand shopBrand) {
+    return shopBrandRepository.save(shopBrand);
   }
 }

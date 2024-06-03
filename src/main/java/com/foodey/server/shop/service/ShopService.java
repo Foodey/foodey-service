@@ -12,17 +12,19 @@ public interface ShopService {
 
   Shop findById(String id);
 
+  Shop findByIdAndBrandIdAndVerifyOwner(String id, String brandId, String userId);
+
   Slice<Shop> findAll(Pageable pageable);
 
   Shop save(Shop shop);
 
   List<Shop> saveAll(List<Shop> shops);
 
+  Shop findByIdAndVerifyOwner(String id, String userId);
+
   default Shop findByIdAndVerifyOwner(String id, User user) {
     return findByIdAndVerifyOwner(id, user.getId());
   }
-
-  Shop findByIdAndVerifyOwner(String id, String userId);
 
   Slice<Shop> findByCategoryId(String category, Pageable pageable);
 

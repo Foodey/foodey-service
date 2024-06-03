@@ -1,11 +1,9 @@
 package com.foodey.server.shop.model;
 
-import com.esotericsoftware.kryo.serializers.FieldSerializer.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
+import com.mongodb.lang.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -40,11 +38,11 @@ public class Shop implements Persistable<String> {
   private String id;
 
   @Schema(description = "The unique identifier of the brand that the shop belongs to")
-  @NotBlank
+  @NonNull
   private String brandId;
 
   @Schema(description = "The unique identifier of the owner of the shop")
-  @NotNull
+  @NonNull
   private String ownerId;
 
   @Schema(description = "The name of the shop")
@@ -69,13 +67,9 @@ public class Shop implements Persistable<String> {
   @Schema(description = "The category ids of the shop ")
   private Set<String> categoryIds = new HashSet<>();
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @CreatedDate
-  private Instant createdAt;
+  @CreatedDate private Instant createdAt;
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @LastModifiedDate
-  private Instant updatedAt;
+  @LastModifiedDate private Instant updatedAt;
 
   public Shop(
       String name, String address, String logo, String wallpaper, String brandId, String ownerId) {

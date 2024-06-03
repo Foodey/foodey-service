@@ -3,8 +3,6 @@ package com.foodey.server.shop.model;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.PhoneNumber;
 import com.mongodb.lang.NonNull;
@@ -70,13 +68,9 @@ public class ShopBrand implements Persistable<String> {
   @JsonIgnore
   private Menu menu = new Menu();
 
-  @JsonSerialize(using = InstantSerializer.class)
-  @CreatedDate
-  private Instant createdAt;
+  @CreatedDate private Instant createdAt;
 
-  @LastModifiedDate
-  @JsonSerialize(using = InstantSerializer.class)
-  private Instant updatedAt;
+  @LastModifiedDate private Instant updatedAt;
 
   @Override
   @JsonIgnore
