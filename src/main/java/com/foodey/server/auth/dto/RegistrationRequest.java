@@ -21,4 +21,19 @@ public class RegistrationRequest {
   @OptimizedName private String name;
 
   @Email private String email;
+
+  public RegistrationRequest() {}
+
+  public RegistrationRequest(String phoneNumber, String password, String name) {
+    this.phoneNumber = phoneNumber;
+    this.password = password;
+    this.name = name;
+  }
+
+  public RegistrationRequest(String phoneNumber, String password, String name, String email) {
+    this.phoneNumber = phoneNumber;
+    this.password = password;
+    this.name = name;
+    this.email = email;
+  }
 }

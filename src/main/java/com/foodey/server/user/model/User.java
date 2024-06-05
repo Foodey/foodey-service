@@ -32,6 +32,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,7 +46,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Document(collection = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class User implements UserDetails, UserRole {
+public class User implements UserDetails, UserRole, Persistable<String> {
 
   @Null @JsonIgnore @Id private String id;
 
@@ -122,15 +123,13 @@ public class User implements UserDetails, UserRole {
   @Default
   private Set<AuthenticatorData<ExtensionAuthenticatorOutput>> authenticatorDatas = new HashSet<>();
 
-  @Default
   @CreatedDate
   @Schema(description = "The created time of the account")
-  private Instant createdAt = Instant.now();
+  private Instant createdAt;
 
-  @Default
   @LastModifiedDate
   @Schema(description = "The updated time of the account")
-  private Instant updatedAt = Instant.now();
+  private Instant updatedAt;
 
   @JsonIgnore @Transient private Collection<? extends GrantedAuthority> authorities;
 
@@ -218,5 +217,10 @@ public class User implements UserDetails, UserRole {
     if (this == obj) return true;
     else if (obj instanceof User) return id.equals(((User) obj).id);
     return false;
+  }
+
+  @Override
+  public boolean isNew() {
+    return createdAt == null || id == null;
   }
 }

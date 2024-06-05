@@ -11,9 +11,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,18 +21,31 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
 
   @SuppressWarnings("unused")
   private static final long serialVersionUID = 1L;
 
-  private final JwtService jwtService;
-  private final UserRepository userRepository;
-  private final ApiEndpointSecurityInspector apiEndpointSecurityInspector;
+  private JwtService jwtService;
+  private UserRepository userRepository;
+  private ApiEndpointSecurityInspector apiEndpointSecurityInspector;
+  private HandlerExceptionResolver resolver;
+
+  public LazyJwtAuthTokenFilter(
+      JwtService jwtService,
+      UserRepository userRepository,
+      ApiEndpointSecurityInspector apiEndpointSecurityInspector,
+      @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    this.jwtService = jwtService;
+    this.userRepository = userRepository;
+    this.apiEndpointSecurityInspector = apiEndpointSecurityInspector;
+    this.resolver = resolver;
+  }
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -48,6 +61,7 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
     try {
       SecurityContext context = SecurityContextHolder.getContext();
       if (context.getAuthentication() == null) {
+
         String jwtToken = HttpHeaderUtils.extractBearerToken(request);
 
         String userPubId = jwtService.extractSubject(jwtToken);
@@ -69,16 +83,15 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             context.setAuthentication(authentication);
+            log.debug("User {} successfully authenticated with pubId {}", user.getId(), userPubId);
           }
         }
       }
+      filterChain.doFilter(request, response);
     } catch (MissingServletRequestPartException e) {
-      throw new InvalidTokenRequestException(TokenType.BEARER, null, "Missing access token");
+      resolver.resolveException(request, response, null, e);
     } catch (Exception e) {
-      log.error("An error occurred while processing the authentication token", e);
-      throw e;
+      resolver.resolveException(request, response, null, e);
     }
-
-    filterChain.doFilter(request, response);
   }
 }

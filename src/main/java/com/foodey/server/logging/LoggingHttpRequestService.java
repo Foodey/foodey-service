@@ -30,10 +30,10 @@ public class LoggingHttpRequestService {
 
       StringBuilder data = createRequestInfo(httpServletRequest);
 
-      if (body == null) data.append("[BODY REQUEST]: ").append("<empty>");
+      data.append("[BODY REQUEST]: ");
+      if (body == null) data.append("<empty>");
       else
-        data.append("[BODY REQUEST]: ")
-            .append("\n\n")
+        data.append("\n\n")
             .append(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(body));
 
       log.info(data.toString());
@@ -84,14 +84,14 @@ public class LoggingHttpRequestService {
           .append("\n")
           .append("[STATUS]: ")
           .append(response.getStatus())
-          .append("\n");
+          .append("\n")
+          .append("[BODY RESPONSE]: ");
 
       if (body != null) {
-        data.append("[BODY RESPONSE]: ")
-            .append("\n\n")
+        data.append("\n\n")
             .append(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(body));
       } else {
-        data.append("[BODY RESPONSE]: <empty>");
+        data.append("<empty>");
       }
 
       data.append("\n---------------END LOGGING RESPONSE----------------\n");

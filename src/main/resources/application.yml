@@ -134,8 +134,8 @@ foodey:
     rp:
       name: "Foodey"
     user:
-      name: "FoodeyPasskeyUser"
-      displayName: "Foodey Passkey User"
+      name: "foodey_user"
+      displayName: "Foodey User"
 
 twilio:
   account:

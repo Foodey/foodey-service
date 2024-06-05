@@ -63,7 +63,7 @@ public final class HttpHeaderUtils {
   private static void validateHeaderPresence(String headerValue, String headerName)
       throws MissingServletRequestPartException {
     if (!StringUtils.hasText(headerValue)) {
-      log.error("Header {} is missing", headerName);
+      log.warn("Header {} is missing", headerName);
       throw new MissingServletRequestPartException("Header " + headerName);
     }
   }
@@ -80,7 +80,7 @@ public final class HttpHeaderUtils {
   private static void validateHeaderPrefix(String headerValue, String headerName, String prefix)
       throws MissingServletRequestPartException {
     if (!headerValue.startsWith(prefix)) {
-      log.error("Header {} does not start with {}", headerName, prefix);
+      log.warn("Header {} does not start with {}", headerName, prefix);
       throw new MissingServletRequestPartException(
           "Header " + headerName + " with prefix " + prefix);
     }

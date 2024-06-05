@@ -30,12 +30,10 @@ public class RefreshToken {
   @Id private String id;
 
   @JsonIgnore
-  @Schema(
-      description = "User public ID of the user associated with the refresh token",
-      required = true)
+  @Schema(description = "User public ID of the user associated with the refresh token")
   private String userPubId;
 
-  @Schema(description = "Refresh token value", required = true)
+  @Schema(description = "Refresh token value")
   @Indexed
   private String token;
 

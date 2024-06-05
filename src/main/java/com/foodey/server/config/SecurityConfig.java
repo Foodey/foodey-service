@@ -131,7 +131,7 @@ public class SecurityConfig {
             WebAuthnLoginConfigurer.webAuthnLogin(),
             (customizer) -> {
               customizer
-                  .loginPage("/api/v1/auth/webauthn/login")
+                  // .loginPage("/api/v1/auth/webauthn/login")
                   // .usernameParameter("phoneNumber")
                   // .passwordParameter("password")
                   // .credentialIdParameter("credentialId")
@@ -139,7 +139,9 @@ public class SecurityConfig {
                   // .authenticatorDataParameter("authenticatorData")
                   // .signatureParameter("signature")
                   // .clientExtensionsJSONParameter("clientExtensionsJSON")
-                  .loginProcessingUrl("/api/v1/auth/webauthn/login")
+                  // .loginProcessingUrl("/api/v1/auth/webauthn/login")
+                  // .permitAll()
+
                   // The endpoint that returns attestation options when the user is registering
                   .attestationOptionsEndpoint()
                   .attestationOptionsProvider(attestationOptionsProvider)
@@ -184,12 +186,12 @@ public class SecurityConfig {
               headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
             })
         .cors(cors -> cors.configurationSource(corsApiConfigurationSource()))
-        .csrf((csrf) -> csrf.disable())
-        // .csrf(
-        //     customizer -> {
-        //       // customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        //       customizer.ignoringRequestMatchers("/api/**");
-        //     })
+        // .csrf((csrf) -> csrf.disable())
+        .csrf(
+            customizer -> {
+              // customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+              customizer.ignoringRequestMatchers("/api/**");
+            })
 
         // exception handling
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

@@ -1,94 +1,75 @@
-package com.foodey.server.auth.fido2;
+// package com.foodey.server.auth.fido2;
 
-import com.foodey.server.user.repository.UserRepository;
-import com.webauthn4j.springframework.security.credential.InMemoryWebAuthnCredentialRecordManager;
-import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecord;
-import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecordManager;
-import com.webauthn4j.springframework.security.exception.CredentialIdNotFoundException;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
+// import com.foodey.server.exceptions.ResourceNotFoundException;
+// import com.foodey.server.user.model.User;
+// import com.foodey.server.user.model.UserCredentialRecord;
+// import com.foodey.server.user.repository.UserCredentialRecordRepository;
+// import com.foodey.server.user.repository.UserRepository;
+// import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecord;
+// import com.webauthn4j.springframework.security.credential.WebAuthnCredentialRecordService;
+// import com.webauthn4j.springframework.security.exception.CredentialIdNotFoundException;
+// import com.webauthn4j.util.Base64UrlUtil;
+// import java.util.ArrayList;
+// import java.util.Collections;
+// import java.util.List;
+// import lombok.RequiredArgsConstructor;
+// import org.springframework.security.core.Authentication;
+// import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-@Primary
-public class WebAuthnCredentialRecordManagerImpl implements WebAuthnCredentialRecordManager {
+// @Service
+// @RequiredArgsConstructor
+// public class WebAuthnCredentialRecordManagerImpl implements WebAuthnCredentialRecordService {
 
-  private final UserRepository userRepository;
+//   private final UserCredentialRecordRepository userCredentialRecordRepository;
+//   private final UserRepository userRepository;
 
-  private WebAuthnCredentialRecordManager webAuthnAuthenticatorManager() {
-    return new InMemoryWebAuthnCredentialRecordManager();
-  }
+//   @Override
+//   public void updateCounter(byte[] credentialId, long counter)
+//       throws CredentialIdNotFoundException {
+//     UserCredentialRecord authenticatorEntity =
+//         userCredentialRecordRepository
+//             .findByCredentialId(Base64UrlUtil.encodeToString(credentialId))
+//             .orElseThrow(() -> new CredentialIdNotFoundException("AuthenticatorEntity not
+// found"));
+//     authenticatorEntity.setCounter(counter);
+//     userCredentialRecordRepository.save(authenticatorEntity);
+//   }
 
-  @Override
-  public void updateCounter(byte[] credentialId, long counter)
-      throws CredentialIdNotFoundException {
-    return;
-  }
+//   @Override
+//   public WebAuthnCredentialRecord loadCredentialRecordByCredentialId(byte[] credentialId) {
+//     return userCredentialRecordRepository
+//         .findByCredentialId(Base64UrlUtil.encodeToString(credentialId))
+//         .orElseThrow(() -> new CredentialIdNotFoundException("AuthenticatorEntity not found"));
+//   }
 
-  @Override
-  public WebAuthnCredentialRecord loadCredentialRecordByCredentialId(byte[] credentialId)
-      throws CredentialIdNotFoundException {
-    return null;
-    // String credentialIdBase64Url = Base64UrlUtil.encodeToString(credentialId);
+//   @Override
+//   public List<WebAuthnCredentialRecord> loadCredentialRecordsByUserPrincipal(Object principal) {
+//     String phoneNumber;
+//     if (principal == null) {
+//       return Collections.emptyList();
+//     } else if (principal instanceof User) {
+//       return new ArrayList<>(
+//           userCredentialRecordRepository.findByUserId(((User) principal).getId()));
+//     } else if (principal instanceof UserDetails) {
+//       phoneNumber = ((UserDetails) principal).getUsername();
+//     } else if (principal instanceof String) {
+//       phoneNumber = (String) principal;
+//     } else if (principal instanceof Authentication) {
+//       phoneNumber = ((Authentication) principal).getName();
+//     } else {
+//       throw new IllegalArgumentException("unexpected principal is specified.");
+//     }
 
-    // User user =
-    //     userRepository
-    //         .findByAuthenticatorsCredentialId(credentialIdBase64Url)
-    //         .orElseThrow(
-    //             () ->
-    //                 new ResourceNotFoundException(
-    //                     "User", "authenticators.credentialId", credentialIdBase64Url));
-
-    // return user.getAuthenticators().stream()
-    //     .filter(auth -> auth.getCredentialId().equals(credentialIdBase64Url))
-    //     .findFirst()
-    //     .orElseThrow(() -> new CredentialIdNotFoundException("CredentialId not found."))
-    //     .getWebAuthnCredentialRecord();
-  }
-
-  @Override
-  public List<WebAuthnCredentialRecord> loadCredentialRecordsByUserPrincipal(Object principal) {
-    return null;
-    // User user = (User) principal;
-    // return userRepository
-    //     .findById(user.getId())
-    //     .orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getId()))
-    //     .getAuthenticators()
-    //     .stream()
-    //     .map(auth -> auth.getWebAuthnCredentialRecord())
-    //     .toList();
-  }
-
-  @Override
-  public void createCredentialRecord(WebAuthnCredentialRecord webAuthnCredentialRecord) {
-    // User user = (User) webAuthnCredentialRecord.getUserPrincipal();
-
-    // // user.getAuthenticatorDatas().add(webAuthnCredentialRecord.getAttestedCredentialData())
-
-    // userRepository.save(user);
-  }
-
-  @Override
-  public void deleteCredentialRecord(byte[] credentialId) throws CredentialIdNotFoundException {
-    // String base64UrlCredentialId = Base64UrlUtil.encodeToString(credentialId);
-    // userRepository
-    //     .findByAuthenticatorsCredentialId(base64UrlCredentialId)
-    //     .ifPresent(
-    //         user -> {
-    //           user.getAuthenticatorDatas()
-    //               .removeIf(auth -> auth.getCredentialId().equals(base64UrlCredentialId));
-    //           userRepository.save(user);
-    //         });
-    throw new UnsupportedOperationException("Not implemented yet.");
-  }
-
-  @Override
-  public boolean credentialRecordExists(byte[] credentialId) {
-    return true;
-    // return userRepository
-    //     .findByAuthenticatorsCredentialId(Base64UrlUtil.encodeToString(credentialId))
-    //     .isPresent();
-  }
-}
+//     User user =
+//         userRepository
+//             .findByPhoneNumber(phoneNumber)
+//             .orElseThrow(() -> new ResourceNotFoundException("User", "phoneNumber",
+// phoneNumber));
+//     return new ArrayList<>(userCredentialRecordRepository.findByUserId(user.getId()));
+//     // return new ArrayList<>(
+//     //     userCredentialRecordRepository.findByUserId(user.getId()).stream()
+//     //         .map(UserCredentialRecord::getWebAuthnCredentialRecord)
+//     //         .toList());
+//   }
+// }

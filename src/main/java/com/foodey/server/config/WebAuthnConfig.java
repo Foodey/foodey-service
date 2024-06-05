@@ -2,6 +2,7 @@ package com.foodey.server.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.webauthn4j.WebAuthnManager;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.metadata.converter.jackson.WebAuthnMetadataJSONModule;
@@ -88,8 +89,9 @@ public class WebAuthnConfig {
     ObjectMapper jsonMapper = new ObjectMapper();
     jsonMapper.registerModule(new WebAuthnMetadataJSONModule());
     jsonMapper.registerModule(new WebAuthn4JSpringSecurityJSONModule());
-
+    jsonMapper.registerModule(new JavaTimeModule());
     ObjectMapper cborMapper = new ObjectMapper(new CBORFactory());
+
     return new ObjectConverter(jsonMapper, cborMapper);
   }
 

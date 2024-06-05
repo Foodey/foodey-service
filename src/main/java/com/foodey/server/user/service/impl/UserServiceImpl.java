@@ -27,18 +27,19 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final NewRoleRequestRepository newRoleRequestRepository;
   private final ShopRepository shopRepository;
   private final ProductRepository productRepository;
-
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -73,6 +74,15 @@ public class UserServiceImpl implements UserService {
         .password(passwordEncoder.encode(request.getPassword()))
         .name(request.getName())
         .email(request.getEmail())
+        .build();
+  }
+
+  @Override
+  public User createBasicUser(String phoneNumber, String password, String name) {
+    return User.builder()
+        .phoneNumber(phoneNumber)
+        .password(passwordEncoder.encode(password))
+        .name(name)
         .build();
   }
 

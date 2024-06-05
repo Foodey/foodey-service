@@ -28,4 +28,15 @@ public class RateLimiterService {
     }
     return null;
   }
+
+  public String getClientIp(HttpServletRequest request) {
+    String ipAddress = request.getHeader("X-Forwarded-For");
+    if (ipAddress == null || ipAddress.isEmpty()) {
+      ipAddress = request.getRemoteAddr();
+    } else {
+      // In case of multiple IPs, take the first one
+      ipAddress = ipAddress.split(",")[0].trim();
+    }
+    return ipAddress;
+  }
 }

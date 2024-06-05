@@ -5,6 +5,7 @@ import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;
+import com.foodey.server.utils.PrincipalUtils;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,6 +24,8 @@ public interface UserService {
 
   User createBasicUser(RegistrationRequest registerRequest);
 
+  User createBasicUser(String phoneNumber, String password, String name);
+
   void requestNewRole(User user, NewRoleRequest request);
 
   void upgradeRole(User user, NewRoleRequest request);
@@ -38,4 +41,8 @@ public interface UserService {
   Slice<Shop> findFavoriteShops(User user, Pageable pageable);
 
   Slice<FavoriteProduct> findFavoriteProducts(User user, Pageable pageable);
+
+  default User getCurrentUser() {
+    return PrincipalUtils.getUser();
+  }
 }
