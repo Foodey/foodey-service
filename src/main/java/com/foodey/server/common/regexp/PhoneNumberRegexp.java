@@ -71,6 +71,22 @@ public enum PhoneNumberRegexp {
   SWEDEN("^(\\+46|0046)\\d{9}$"),
   DENMARK("^(\\+45|0045)\\d{8}$"),
   NEITHERLAND("^(\\+31|0031)\\d{9}$"),
+  BELGIUM("^(\\+32|0032)\\d{9}$"),
+  SWITZERLAND("^(\\+41|0041)\\d{9}$"),
+  AUSTRIA("^(\\+43|0043)\\d{10}$"),
+  NORWAY("^(\\+47|0047)\\d{8}$"),
+  POLAND("^(\\+48|0048)\\d{9}$"),
+  GREECE("^(\\+30|0030)\\d{10}$"),
+  PORTUGAL("^(\\+351|00351)\\d{9}$"),
+  IRELAND("^(\\+353|00353)\\d{9}$"),
+  FINLAND("^(\\+358|00358)\\d{10}$"),
+  UKRAINE("^(\\+380|00380)\\d{9}$"),
+  HUNGARY("^(\\+36|0036)\\d{9}$"),
+  CZECH_REPUBLIC("^(\\+420|00420)\\d{9}$"),
+  SLOVAKIA("^(\\+421|00421)\\d{9}$"),
+  CROATIA("^(\\+385|00385)\\d{9}$"),
+  BOSNIA_HERZEGOVINA("^(\\+387|00387)\\d{8}$"),
+  SERBIA("^(\\+381|00381)\\d{9}$"),
   ;
 
   private final String regexp;
