@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FavoriteProduct {
+public class FavoriteProduct implements Serializable {
 
   @AllArgsConstructor
   @Getter
@@ -24,8 +24,8 @@ public class FavoriteProduct {
     public boolean equals(Object obj) {
       if (this == obj) return true;
       else if (obj instanceof Identity) {
-        Identity other = (Identity) obj;
-        return productId.equals(other.productId) && shopId.equals(other.shopId);
+        Identity that = (Identity) obj;
+        return productId.equals(that.productId) && shopId.equals(that.shopId);
       }
       return false;
     }

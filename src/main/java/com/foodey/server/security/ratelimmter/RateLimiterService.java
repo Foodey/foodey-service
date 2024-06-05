@@ -1,17 +1,14 @@
 package com.foodey.server.security.ratelimmter;
 
+import com.foodey.server.utils.HttpServletRequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class RateLimiterService {
 
   public String username() {
@@ -20,23 +17,20 @@ public class RateLimiterService {
   }
 
   public String getRemoteAddress() {
-    RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-    if (attributes != null) {
-      HttpServletRequest request = ((ServletRequestAttributes) attributes).getRequest();
-      log.info("Remote address: {}", request.getRemoteAddr());
-      return request.getRemoteAddr();
-    }
-    return null;
+    HttpServletRequest request =
+        HttpServletRequestUtils.getRequest()
+            .orElseThrow(() -> new RuntimeException("Request not found"));
+    return request.getRemoteAddr();
   }
 
-  public String getClientIp(HttpServletRequest request) {
+  public String getClientIP() {
+    HttpServletRequest request =
+        HttpServletRequestUtils.getRequest()
+            .orElseThrow(() -> new RuntimeException("Request not found"));
+
     String ipAddress = request.getHeader("X-Forwarded-For");
-    if (ipAddress == null || ipAddress.isEmpty()) {
-      ipAddress = request.getRemoteAddr();
-    } else {
-      // In case of multiple IPs, take the first one
-      ipAddress = ipAddress.split(",")[0].trim();
-    }
-    return ipAddress;
+    return StringUtils.hasText(ipAddress)
+        ? ipAddress.split(",")[0].trim()
+        : request.getRemoteAddr();
   }
 }

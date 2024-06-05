@@ -42,7 +42,7 @@ public class Product implements Persistable<String> {
   @Schema(description = "The price of the product")
   private double price;
 
-  @Schema(description = "The image of the product")
+  @Schema(description = "The url image of the product")
   private String image = "";
 
   @Schema(description = "The description of the product")

@@ -31,4 +31,6 @@ public interface ShopService {
   List<Shop> findByBrandId(String brandId);
 
   Slice<Shop> findByBrandId(String brandId, Pageable pageable);
+
+  Slice<Shop> searchByName(String query, Pageable pageable);
 }

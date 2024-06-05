@@ -93,4 +93,9 @@ public class ShopServiceImpl implements ShopService {
       throw new AccessDeniedException("You are not owner of this shop.");
     return shop;
   }
+
+  @Override
+  public Slice<Shop> searchByName(String query, Pageable pageable) {
+    return shopRepository.findByNameContainingIgnoreCase(query, pageable);
+  }
 }

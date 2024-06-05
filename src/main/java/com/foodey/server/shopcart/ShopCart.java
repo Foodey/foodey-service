@@ -8,16 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.redis.core.RedisHash;
 
-/** ShopCart */
 @Getter
 @Setter
-@Document(collection = "shopcarts")
 @NoArgsConstructor
-@RedisHash(value = "shopcart", timeToLive = 24 * 60 * 60)
 @ToString
+@RedisHash(value = "shopcart", timeToLive = 24 * 60 * 60)
+// @Document(collection = "shopcarts")
 public class ShopCart {
   @Id private String id;
 

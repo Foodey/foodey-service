@@ -19,7 +19,6 @@ spring:
       spec: maximumSize=100000,expireAfterAccess=3600s
     cache-names:
       - rate-limit-buckets
-      - filterConfigCache
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
   data:
@@ -60,10 +59,10 @@ management:
 bucket4j:
   enabled: true
   filter-config-caching-enabled: true
-  filter-config-cache-name: filterConfigCache
+  filter-config-cache-name: rate-limit-buckets
   methods:
     - name: default
-      cache-name: buckets
+      cache-name: rate-limit-buckets
       rate-limit:
         cache-key: 1
         bandwidths:
@@ -81,7 +80,7 @@ bucket4j:
       url: /api/v1/auth/otp/.*
       http-response-body: '{ "status": 429, "error": "Too Many Requests", "message": "You have exhausted your API Request" }'
       rate-limits:
-        - cache-key: "getRemoteAddr()"
+        - cache-key: "@rateLimiterService.getClientIP()"
           bandwidths:
             - capacity: 2
               time: 60
@@ -93,7 +92,7 @@ bucket4j:
       url: /api/v1/auth/.*
       http-response-body: '{ "status": 429, "error": "Too Many Requests", "message": "You have exhausted your API Request" }'
       rate-limits:
-        - cache-key: "getRemoteAddr()"
+        - cache-key: "@rateLimiterService.getClientIP()"
           bandwidths:
             - capacity: ${REQUESTS_PER_SECOND_AUTH_DEV:1}
               time: 5
@@ -105,9 +104,9 @@ bucket4j:
       url: /.*
       http-response-body: '{ "status": 429, "error": "Too Many Requests", "message": "You have exhausted your API Request" }'
       rate-limits:
-        - cache-key: "@rateLimiterService.username()?: getRemoteAddr()" # use the username as key. if authenticated use the ip address
+        - cache-key: "@rateLimiterService.username()?: @rateLimiterService.getClientIP()" # use the username as key. if authenticated use the ip address
           bandwidths:
-            - capacity: 7
+            - capacity: 5
               time: 1
               unit: seconds
 

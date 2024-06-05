@@ -36,7 +36,12 @@ public class PublicKeyCredentialUserEntityProviderImpl
   @Override
   @SneakyThrows
   public PublicKeyCredentialUserEntity provide(Authentication authentication) {
-    HttpServletRequest request = HttpServletRequestUtils.getRequest();
+    HttpServletRequest request =
+        HttpServletRequestUtils.getRequest()
+            .orElseThrow(
+                () ->
+                    new HttpRequestException(
+                        HttpMethod.GET, HttpStatus.NOT_ACCEPTABLE, "Request not found."));
 
     if (request.getMethod().equals("POST")) {
       if (authentication != null) {
