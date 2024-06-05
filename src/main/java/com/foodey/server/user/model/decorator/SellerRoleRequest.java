@@ -2,13 +2,21 @@ package com.foodey.server.user.model.decorator;
 
 import com.foodey.server.user.enums.RoleType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Schema(description = "Seller role request model", name = "SellerRoleRequest")
 public class SellerRoleRequest extends NewRoleRequest {
 
   private String identifyImageFront;
 
   private String identifyImageBack;
+
+  public SellerRoleRequest() {
+    super(RoleType.SELLER);
+  }
 
   public SellerRoleRequest(String userId, String identifyImageFront, String identifyImageBack) {
     super(userId, RoleType.SELLER);

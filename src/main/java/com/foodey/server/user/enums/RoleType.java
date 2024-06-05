@@ -2,7 +2,7 @@ package com.foodey.server.user.enums;
 
 import lombok.experimental.FieldNameConstants;
 
-@FieldNameConstants(onlyExplicitlyIncluded = true)
+@FieldNameConstants
 public enum RoleType {
   @FieldNameConstants.Include
   ADMIN,
