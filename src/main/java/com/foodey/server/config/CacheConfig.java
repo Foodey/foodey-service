@@ -58,6 +58,7 @@ public class CacheConfig {
   @Primary
   @Bean("caffeineCacheManager")
   public CacheManager caffeineCacheManager() {
+    // SimpleCacheManager cacheManager = new SimpleCacheManager();
     CaffeineCacheManager cacheManager =
         new CaffeineCacheManager("product", "products", "shop", "shops");
     cacheManager.setCaffeineSpec(CaffeineSpec.parse("maximumSize=3000,expireAfterAccess=30000s"));

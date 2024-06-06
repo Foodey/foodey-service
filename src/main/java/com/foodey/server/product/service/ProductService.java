@@ -6,8 +6,6 @@ import org.springframework.data.domain.Slice;
 
 public interface ProductService {
 
-  // Product createProduct(Product product, User user);
-
   Product findById(String id);
 
   Slice<Product> findAll(Pageable pageable);

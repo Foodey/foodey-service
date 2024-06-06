@@ -11,10 +11,11 @@ import com.foodey.server.otp.OTPValidatedEvent;
 import com.foodey.server.user.enums.UserStatus;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.service.UserService;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
@@ -50,22 +51,20 @@ public class AuthEventListener {
     }
   }
 
-  @TransactionalEventListener
   @Async
-  @SneakyThrows
-  public void onUserRegistrationSuccessfulEvent(UserRegistrationSuccessfulEvent event) {
+  @TransactionalEventListener
+  public void onUserRegistrationSuccessfulEvent(UserRegistrationSuccessfulEvent event)
+      throws IOException {
     String userEmail = event.getUser().getEmail();
 
     if (StringUtils.hasText(userEmail)) {
-
       String htmlContent =
           Files.readString(
-              Paths.get("src/main/resources/templates/email/html/greeting/greeting.html"));
-      htmlContent.replace("{USER_NAME}", event.getUser().getName());
+                  Paths.get("src/main/resources/templates/email/html/greeting/greeting.html"))
+              .replaceAll(Pattern.quote("${USER_NAME}"), event.getUser().getName());
 
-      EmailRequest emailRequest =
-          new EmailRequest(userEmail, htmlContent, "Registration Successful", EmailType.HTML);
-      emailNotificationService.sendNotification(emailRequest);
+      emailNotificationService.sendNotification(
+          new EmailRequest(userEmail, htmlContent, "Registration Successful", EmailType.HTML));
     }
   }
 }
