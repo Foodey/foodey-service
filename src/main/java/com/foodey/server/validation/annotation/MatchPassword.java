@@ -18,8 +18,8 @@ public @interface MatchPassword {
 
   Class<?>[] groups() default {};
 
-  // The password can be empty (no need password)
-  boolean allowedEmpty() default false;
-
   Class<? extends Payload>[] payload() default {};
+
+  // The password can be empty (no need password, user can leave it blank)
+  boolean allowedEmpty() default false;
 }

@@ -19,6 +19,7 @@ spring:
       spec: maximumSize=100000,expireAfterAccess=3600s
     cache-names:
       - rate-limit-buckets
+      - rate-limit-filter
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
   data:
@@ -59,7 +60,7 @@ management:
 bucket4j:
   enabled: true
   filter-config-caching-enabled: true
-  filter-config-cache-name: rate-limit-buckets
+  filter-config-cache-name: rate-limit-filter
   methods:
     - name: default
       cache-name: rate-limit-buckets
@@ -78,6 +79,7 @@ bucket4j:
       filter-method: servlet
       filter-order: 1
       url: /api/v1/auth/otp/.*
+      http-status-code: TOO_MANY_REQUESTS
       http-response-body: '{ "status": 429, "error": "Too Many Requests", "message": "You have exhausted your API Request" }'
       rate-limits:
         - cache-key: "@rateLimiterService.getClientIP()"
@@ -106,7 +108,7 @@ bucket4j:
       rate-limits:
         - cache-key: "@rateLimiterService.username()?: @rateLimiterService.getClientIP()" # use the username as key. if authenticated use the ip address
           bandwidths:
-            - capacity: 5
+            - capacity: 4
               time: 1
               unit: seconds
 

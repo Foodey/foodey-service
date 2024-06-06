@@ -13,4 +13,6 @@ public interface ProductService {
   Slice<Product> findAll(Pageable pageable);
 
   Product save(Product product);
+
+  void deleteById(String id);
 }
