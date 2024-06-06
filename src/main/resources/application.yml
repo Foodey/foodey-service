@@ -96,7 +96,7 @@ bucket4j:
       rate-limits:
         - cache-key: "@rateLimiterService.getClientIP()"
           bandwidths:
-            - capacity: ${REQUESTS_PER_SECOND_AUTH_DEV:1}
+            - capacity: ${REQUESTS_PER_SECOND_DEV:1}
               time: 5
               unit: seconds
     - cache-name: rate-limit-buckets
@@ -108,7 +108,7 @@ bucket4j:
       rate-limits:
         - cache-key: "@rateLimiterService.username()?: @rateLimiterService.getClientIP()" # use the username as key. if authenticated use the ip address
           bandwidths:
-            - capacity: 4
+            - capacity: ${REQUESTS_PER_SECOND_DEV:4}
               time: 1
               unit: seconds
 

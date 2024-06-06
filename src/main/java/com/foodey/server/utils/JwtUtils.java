@@ -1,7 +1,7 @@
 package com.foodey.server.utils;
 
 import com.foodey.server.auth.enums.TokenType;
-import com.foodey.server.exceptions.InvalidTokenRequestException;
+import com.foodey.server.auth.jwt.JwtTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -82,24 +82,23 @@ public class JwtUtils {
 
     } catch (MalformedJwtException ex) {
       log.info("Malformed JWT token");
-      throw new InvalidTokenRequestException(TokenType.BEARER, token, "Malformed jwt token");
+      throw new JwtTokenException(TokenType.BEARER, token, "Malformed jwt token");
 
     } catch (ExpiredJwtException ex) {
       log.info("JWT token expired");
-      throw new InvalidTokenRequestException(
-          TokenType.BEARER, token, "Token expired. Refresh required");
+      throw new JwtTokenException(TokenType.BEARER, token, "Token expired. Refresh required");
 
     } catch (UnsupportedJwtException ex) {
       log.info("Unsupported JWT token");
-      throw new InvalidTokenRequestException(TokenType.BEARER, token, "Unsupported JWT token");
+      throw new JwtTokenException(TokenType.BEARER, token, "Unsupported JWT token");
 
     } catch (IllegalArgumentException ex) {
       log.info("Illegal argument token");
-      throw new InvalidTokenRequestException(TokenType.BEARER, token, "Illegal argument token");
+      throw new JwtTokenException(TokenType.BEARER, token, "Illegal argument token");
 
     } catch (JwtException ex) {
       log.info("Invalid JWT token");
-      throw new InvalidTokenRequestException(TokenType.BEARER, token, "Invalid JWT token");
+      throw new JwtTokenException(TokenType.BEARER, token, "Invalid JWT token");
     }
   }
 

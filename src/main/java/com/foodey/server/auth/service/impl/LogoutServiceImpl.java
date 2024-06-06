@@ -1,9 +1,9 @@
 package com.foodey.server.auth.service.impl;
 
 import com.foodey.server.auth.enums.TokenType;
+import com.foodey.server.auth.jwt.JwtTokenException;
 import com.foodey.server.auth.model.RefreshToken;
 import com.foodey.server.auth.repository.RefreshTokenRepository;
-import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.utils.HttpHeaderUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ public class LogoutServiceImpl implements LogoutHandler {
               .findByToken(refreshToken)
               .orElseThrow(
                   () ->
-                      new InvalidTokenRequestException(
+                      new JwtTokenException(
                           TokenType.BEARER, refreshToken, "Invalid refresh token"));
 
       refreshTokenRepository.save(savedRefreshToken.revoke());

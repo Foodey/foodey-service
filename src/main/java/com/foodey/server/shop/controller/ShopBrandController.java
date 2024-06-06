@@ -6,12 +6,12 @@ import com.foodey.server.shop.model.ShopBrand;
 import com.foodey.server.shop.service.ShopBrandService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
+import com.foodey.server.utils.ConsoleUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -75,11 +75,16 @@ public class ShopBrandController {
     @ApiResponse(responseCode = "404", description = "Shop brand not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @GetMapping("/me")
-  @RolesAllowed(RoleType.Fields.SELLER)
+  @GetMapping("/user")
   @ResponseStatus(HttpStatus.OK)
-  public List<ShopBrand> findByOwnerId(@CurrentUser User user) {
-    return shopBrandService.findByOwnerId(user.getId());
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Slice<ShopBrand> findByOwnerId(
+      @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
+          Pageable pageable,
+      @CurrentUser User user) {
+    ConsoleUtils.prettyPrint(user);
+
+    return shopBrandService.findByOwnerId(user.getId(), pageable);
   }
 
   @Operation(summary = "Get all brands")

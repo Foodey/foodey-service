@@ -13,8 +13,8 @@ import com.foodey.server.validation.annotation.PhoneNumber;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.extension.authenticator.ExtensionAuthenticatorOutput;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Null;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +48,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 public class User implements UserDetails, UserRole, Persistable<String> {
 
-  @Null @JsonIgnore @Id private String id;
+  @JsonIgnore @Id private String id;
 
   // Why we need this?
   // The public id is a unique identifier for the account.
@@ -64,25 +64,28 @@ public class User implements UserDetails, UserRole, Persistable<String> {
 
   @PhoneNumber
   @Indexed(unique = true)
-  @Schema(description = "The phone number of the account", required = true)
+  @Schema(description = "The phone number of the account", requiredMode = RequiredMode.REQUIRED)
   private String phoneNumber;
 
   @JsonIgnore
   @Password
-  @Schema(description = "The password of the account", required = true)
+  @Schema(description = "The password of the account", requiredMode = RequiredMode.REQUIRED)
   private String password;
 
   @OptimizedName
-  @Schema(description = "The name of the account", required = true)
+  @Schema(description = "The name of the account", requiredMode = RequiredMode.REQUIRED)
   private String name;
 
   @Email
-  @Schema(description = "The email of the user", required = true)
+  @Schema(description = "The email of the user", requiredMode = RequiredMode.REQUIRED)
   private String email;
 
   @Default
   @Schema(description = "The avatar of the account")
   private String avatar = "";
+
+  @Schema(description = "The last logout time of the account")
+  private Instant lastLogoutAt;
 
   @Schema(description = "Some new neccecary fields when adding new role")
   private Map<String, Object> profiles;
@@ -101,10 +104,12 @@ public class User implements UserDetails, UserRole, Persistable<String> {
   @Schema(description = "The favorite product ids of the account")
   private Set<FavoriteProduct.Identity> favoriteProductIds = new LinkedHashSet<>();
 
+  @JsonIgnore
   public boolean addFavoriteProduct(String shopId, String productId) {
     return favoriteProductIds.add(new FavoriteProduct.Identity(productId, shopId));
   }
 
+  @JsonIgnore
   public boolean removeFavoriteProduct(String shopId, String productId) {
     return favoriteProductIds.removeIf(
         fdi -> fdi.getProductId().equals(productId) && fdi.getShopId().equals(shopId));
@@ -215,11 +220,15 @@ public class User implements UserDetails, UserRole, Persistable<String> {
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;
-    else if (obj instanceof User) return id.equals(((User) obj).id);
+    else if (obj instanceof User) {
+      User that = (User) obj;
+      return id.equals(that.id) || phoneNumber.equals(that.phoneNumber) || pubId.equals(that.pubId);
+    }
     return false;
   }
 
   @Override
+  @JsonIgnore
   public boolean isNew() {
     return createdAt == null || id == null;
   }

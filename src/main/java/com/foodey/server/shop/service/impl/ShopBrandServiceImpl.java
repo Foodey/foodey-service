@@ -6,7 +6,6 @@ import com.foodey.server.shop.model.ShopBrand;
 import com.foodey.server.shop.repository.ShopBrandRepository;
 import com.foodey.server.shop.service.ShopBrandService;
 import com.foodey.server.user.model.User;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -58,8 +57,8 @@ public class ShopBrandServiceImpl implements ShopBrandService {
   }
 
   @Override
-  public List<ShopBrand> findByOwnerId(String ownerId) {
-    return shopBrandRepository.findByOwnerId(ownerId);
+  public Slice<ShopBrand> findByOwnerId(String ownerId, Pageable pageable) {
+    return shopBrandRepository.findByOwnerId(ownerId, pageable);
   }
 
   @Override

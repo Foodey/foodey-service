@@ -1,10 +1,8 @@
 package com.foodey.server.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class ResourceAlreadyInUseException extends HttpException {
+public class ResourceAlreadyInUseException extends BaseException {
 
   private final String resourceName;
   private final String fieldName;

@@ -36,8 +36,8 @@ public class ApiEndpointSecurityInspector {
   private Set<String> publicGetEndpoints =
       new HashSet<>() {
         {
-          add("/swagger-ui**/**");
           add("/v3/api-docs**/**");
+          add("/swagger-ui**/**");
           add("/.well-known/**");
         }
       };

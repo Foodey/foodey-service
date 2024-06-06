@@ -86,9 +86,14 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsApiConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOriginPattern("*");
-    configuration.addAllowedHeader("*");
-    configuration.addAllowedMethod("*");
+    configuration.setAllowedOrigins(
+        List.of(
+            "http://localhost:8080",
+            // accept ngrok.io for testing
+            "*.ngrok-free.app"));
+    // configuration.addAllowedOriginPattern("*");
+    // configuration.addAllowedHeader("*");
+    // configuration.addAllowedMethod("*");
     configuration.setAllowCredentials(true);
     configuration.setMaxAge(3600L);
     configuration.setAllowedMethods(
@@ -101,6 +106,8 @@ public class SecurityConfig {
             "Cache-Control",
             "Content-Type",
             "Accept",
+            "X-Api-Key",
+            "X-Forwarded-For",
             "X-Requested-With",
             "Access-Control-Allow-Origin",
             "Access-Control-Allow-Headers",
@@ -216,8 +223,6 @@ public class SecurityConfig {
                     .anyRequest()
                     .authenticated())
         .authenticationProvider(authenticationProvider())
-
-        // filter
         .addFilterBefore(lazyJwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class)
         .logout(
             logout ->

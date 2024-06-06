@@ -1,17 +1,15 @@
 package com.foodey.server.auth.jwt;
 
-import com.foodey.server.auth.enums.TokenType;
-import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.repository.UserRepository;
 import com.foodey.server.utils.ApiEndpointSecurityInspector;
+import com.foodey.server.utils.ConsoleUtils;
 import com.foodey.server.utils.HttpHeaderUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Slf4j
@@ -53,17 +50,15 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
   }
 
   @Override
-  @SneakyThrows
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
     try {
       SecurityContext context = SecurityContextHolder.getContext();
+      ConsoleUtils.prettyPrint(context.getAuthentication());
       if (context.getAuthentication() == null) {
-
         String jwtToken = HttpHeaderUtils.extractBearerToken(request);
-
         String userPubId = jwtService.extractSubject(jwtToken);
 
         if (userPubId != null) {
@@ -72,10 +67,7 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
           User user =
               userRepository
                   .findByPubId(userPubId)
-                  .orElseThrow(
-                      () ->
-                          new InvalidTokenRequestException(
-                              TokenType.BEARER, jwtToken, "User not found"));
+                  .orElseThrow(() -> new JwtTokenException(jwtToken, "User not found"));
 
           if (jwtService.isAccessTokenValid(jwtToken, user)) {
             UsernamePasswordAuthenticationToken authentication =
@@ -88,8 +80,6 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
         }
       }
       filterChain.doFilter(request, response);
-    } catch (MissingServletRequestPartException e) {
-      resolver.resolveException(request, response, null, e);
     } catch (Exception e) {
       resolver.resolveException(request, response, null, e);
     }

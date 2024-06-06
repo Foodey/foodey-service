@@ -2,7 +2,6 @@ package com.foodey.server.shop.service;
 
 import com.foodey.server.shop.model.ShopBrand;
 import com.foodey.server.user.model.User;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -14,7 +13,7 @@ public interface ShopBrandService {
 
   ShopBrand findById(String brandId);
 
-  List<ShopBrand> findByOwnerId(String ownerId);
+  Slice<ShopBrand> findByOwnerId(String ownerId, Pageable pageable);
 
   Slice<ShopBrand> findAll(Pageable pageable);
 

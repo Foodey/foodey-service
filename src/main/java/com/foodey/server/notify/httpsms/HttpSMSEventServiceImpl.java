@@ -2,7 +2,7 @@ package com.foodey.server.notify.httpsms;
 
 import com.foodey.server.auth.enums.TokenType;
 import com.foodey.server.auth.jwt.JwtService;
-import com.foodey.server.exceptions.InvalidTokenRequestException;
+import com.foodey.server.auth.jwt.JwtTokenException;
 import com.foodey.server.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +47,7 @@ public class HttpSMSEventServiceImpl implements HttpSMSEventService {
 
     if (!signingKey.equals(SECRET_KEY)) {
       log.warn("Invalid JWT token in request header for verify request from httpSMS server");
-      throw new InvalidTokenRequestException(
-          TokenType.BEARER, jwt, "Token send by httpSMS server is invalid");
+      throw new JwtTokenException(TokenType.BEARER, jwt, "Token send by httpSMS server is invalid");
     }
   }
 

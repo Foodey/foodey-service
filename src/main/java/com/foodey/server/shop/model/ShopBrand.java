@@ -1,6 +1,5 @@
 package com.foodey.server.shop.model;
 
-import com.esotericsoftware.kryo.serializers.FieldSerializer.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foodey.server.validation.annotation.OptimizedName;
@@ -52,7 +51,6 @@ public class ShopBrand implements Persistable<String> {
 
   @JsonIgnore
   @Schema(description = "The address of the shop brand.")
-  @NotNull
   @NonNull
   private String ownerId;
 

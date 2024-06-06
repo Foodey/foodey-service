@@ -3,7 +3,7 @@ package com.foodey.server.notify.httpsms;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodey.server.annotation.PublicEndpoint;
 import com.foodey.server.auth.enums.TokenType;
-import com.foodey.server.exceptions.InvalidTokenRequestException;
+import com.foodey.server.auth.jwt.JwtTokenException;
 import com.foodey.server.utils.HttpHeaderUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +45,7 @@ public class HttpSMSWebhookController {
       log.warn(
           "Missing JWT token in request header for verify request from httpSMS server with ip: {}",
           request.getRemoteAddr());
-      throw new InvalidTokenRequestException(
-          TokenType.BEARER, null, "Missing JWT token in request header");
+      throw new JwtTokenException(TokenType.BEARER, null, "Missing JWT token in request header");
     }
   }
 }

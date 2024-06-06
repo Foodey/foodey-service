@@ -4,15 +4,13 @@ import com.foodey.server.auth.dto.JwtResponse;
 import com.foodey.server.auth.dto.LoginRequest;
 import com.foodey.server.auth.dto.LoginResponse;
 import com.foodey.server.auth.dto.RegistrationRequest;
-import com.foodey.server.auth.enums.TokenType;
 import com.foodey.server.auth.event.UserWaitingOTPValidationEvent;
 import com.foodey.server.auth.jwt.JwtService;
+import com.foodey.server.auth.jwt.JwtTokenException;
 import com.foodey.server.auth.model.RefreshToken;
 import com.foodey.server.auth.repository.RefreshTokenRepository;
 import com.foodey.server.auth.service.AuthService;
-import com.foodey.server.exceptions.InvalidTokenRequestException;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
-import com.foodey.server.exceptions.UserLoginException;
 import com.foodey.server.notify.NotificationType;
 import com.foodey.server.otp.OTPExpiration;
 import com.foodey.server.otp.OTPProperties;
@@ -54,13 +52,12 @@ public class AuthServiceImpl implements AuthService {
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getPhoneNumber(), loginRequest.getPassword()));
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-
     User user = (User) authentication.getPrincipal();
+    // if (user == null)
+    //   throw new UsernameNotFoundException(
+    //       "User not found with phone number " + loginRequest.getPhoneNumber());
 
-    if (user == null)
-      throw new UserLoginException(
-          "User not found with phone number " + loginRequest.getPhoneNumber());
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
     final String accessToken = jwtService.generateAccessToken(user);
     final RefreshToken refreshToken = jwtService.generateRefreshToken(user);
@@ -85,17 +82,14 @@ public class AuthServiceImpl implements AuthService {
             .orElseThrow(
                 () -> {
                   log.error("Refresh token {} not found", refreshToken);
-                  return new InvalidTokenRequestException(
-                      TokenType.BEARER, refreshToken, "Invalid refresh token");
+                  return new JwtTokenException(refreshToken, "Invalid refresh token");
                 });
 
     if (savedRefreshToken.isRevoked()) {
-      throw new InvalidTokenRequestException(
-          TokenType.BEARER, refreshToken, "Refresh token revoked");
+      throw new JwtTokenException(refreshToken, "Refresh token revoked");
     } else if (savedRefreshToken.isExpired()) {
       refreshTokenRepository.save(savedRefreshToken.revoke());
-      throw new InvalidTokenRequestException(
-          TokenType.BEARER, refreshToken, "Refresh token expired");
+      throw new JwtTokenException(refreshToken, "Refresh token expired");
     }
 
     String newAccessToken = jwtService.generateAccessToken(savedRefreshToken.getUserPubId());

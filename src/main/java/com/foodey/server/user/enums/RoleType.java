@@ -1,19 +1,15 @@
 package com.foodey.server.user.enums;
 
-import lombok.experimental.FieldNameConstants;
-
-@FieldNameConstants
 public enum RoleType {
-  @FieldNameConstants.Include
   ADMIN,
-
-  @FieldNameConstants.Include
   CUSTOMER,
-
-  @FieldNameConstants.Include
   SELLER,
+  SHIPPER;
 
-  @FieldNameConstants.Include
-  SHIPPER,
-  ;
+  public static class Fields {
+    public static final String ADMIN = "ADMIN";
+    public static final String CUSTOMER = "CUSTOMER";
+    public static final String SELLER = "SELLER";
+    public static final String SHIPPER = "SHIPPER";
+  }
 }

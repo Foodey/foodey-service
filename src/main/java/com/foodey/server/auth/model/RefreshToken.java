@@ -13,7 +13,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,8 +24,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Document(collection = "refresh_tokens")
 @Schema(name = "RefreshToken", description = "Refresh token")
-public class RefreshToken {
-  @Transient private static final long serialVersionUID = 1L;
+public class RefreshToken implements Persistable<String> {
 
   @Id private String id;
 
@@ -47,8 +46,8 @@ public class RefreshToken {
   @Schema(description = "Date and time when the refresh token was revoked")
   private Instant revokedAt;
 
-  @Default @CreatedDate private Instant createdAt = Instant.now();
-  @Default @LastModifiedDate private Instant updatedAt = Instant.now();
+  @CreatedDate private Instant createdAt;
+  @LastModifiedDate private Instant updatedAt;
 
   public RefreshToken(String userPubId, Instant expiresAt) {
     this.revoked = false;
@@ -80,5 +79,11 @@ public class RefreshToken {
       revokedAt = Instant.now();
     }
     return this;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isNew() {
+    return createdAt == null || id == null;
   }
 }

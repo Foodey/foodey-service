@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -68,9 +69,9 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  @Cacheable(value = "shops", key = "#category.concat('-').concat(#pageable.pageNumber)")
-  public Slice<Shop> findByCategoryId(String category, Pageable pageable) {
-    return shopRepository.findByCategoryIdsContaining(category, pageable);
+  // @Cacheable(value = "shops", key = "#category.concat('-').concat(#pageable.pageNumber)")
+  public Slice<Shop> findByCategoryId(String categoryId, Pageable pageable) {
+    return shopRepository.findByCategoryIdsContaining(categoryId, pageable);
   }
 
   @Override
@@ -88,13 +89,13 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  @Cacheable(value = "shops", key = "#brandId.concat('-').concat(#pageable.pageNumber)")
+  // @Cacheable(value = "shops", key = "#brandId.concat('-').concat(#pageable.pageNumber)")
   public Slice<Shop> findByBrandId(String brandId, Pageable pageable) {
     return shopRepository.findByBrandId(brandId, pageable);
   }
 
   @Override
-  @Cacheable(value = "shop", key = "#id.concat('-').concat(#brandId)")
+  // @Cacheable(value = "shop", key = "#id.concat('-').concat(#brandId)")
   public Shop findByIdAndBrandIdAndVerifyOwner(String id, String brandId, String userId) {
     Shop shop =
         shopRepository
@@ -107,8 +108,11 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  @Cacheable(value = "shops", key = "#query.concat('-').concat(#pageable.pageNumber)")
+  // @Cacheable(value = "shops", key = "#query.concat('-').concat(#pageable.pageNumber)")
   public Slice<Shop> searchByName(String query, Pageable pageable) {
+    if (query.isEmpty()) {
+      return new SliceImpl<>(List.of(), pageable, false);
+    }
     return shopRepository.findByNameContainingIgnoreCase(query, pageable);
   }
 }

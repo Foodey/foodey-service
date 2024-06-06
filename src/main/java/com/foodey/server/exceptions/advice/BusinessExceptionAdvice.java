@@ -19,8 +19,8 @@ public class BusinessExceptionAdvice {
   @ExceptionHandler({MenuSizeTooBigException.class})
   @ResponseStatus(HttpStatus.FORBIDDEN)
   @ResponseBody
-  public ExceptionResponse handleBadRequestException(
+  public ExceptionResponse handleMenuSizeTooBigException(
       BadRequestException ex, HttpServletRequest request) {
-    return new ExceptionResponse(ex, HttpStatus.BAD_REQUEST, null, request);
+    return new ExceptionResponse(ex, HttpStatus.FORBIDDEN, null, request);
   }
 }
