@@ -12,12 +12,9 @@ public class HttpRequestException extends RuntimeException {
 
   public HttpRequestException(HttpMethod method, HttpStatus responseStatus, String message) {
     super(
-        "Failed to request with method: "
-            + method
-            + " response status: "
-            + responseStatus
-            + " response: "
-            + message);
+        String.format(
+            "Failed to request with method: %s response status: %s response: %s",
+            method, responseStatus, message));
     this.method = method;
     this.responseStatus = responseStatus;
   }

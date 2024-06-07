@@ -31,6 +31,7 @@
       <version>4.11.1</version>
     </dependency>
     <!-- Core -->
+    <!-- logging -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-logging</artifactId>
@@ -43,6 +44,7 @@
       <groupId>org.eclipse.angus</groupId>
       <artifactId>angus-mail</artifactId>
     </dependency>
+    <!-- ratelimiter -->
     <dependency>
       <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>
       <artifactId>bucket4j-spring-boot-starter</artifactId>

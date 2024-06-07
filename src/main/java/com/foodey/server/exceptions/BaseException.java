@@ -2,7 +2,6 @@ package com.foodey.server.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-/** HttpException */
 public abstract class BaseException extends RuntimeException {
 
   protected HttpStatus status;
@@ -17,7 +16,15 @@ public abstract class BaseException extends RuntimeException {
     this.status = status;
   }
 
+  public BaseException(Exception ex, HttpStatus status) {
+    this(status, ex.getMessage(), ex.getCause());
+  }
+
   public HttpStatus getStatus() {
     return status;
+  }
+
+  public int getStatusCode() {
+    return status.value();
   }
 }

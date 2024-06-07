@@ -50,14 +50,11 @@ public class EmailNotificationServiceImpl implements NotificationService {
 
   @SneakyThrows
   private void sendHtmlMessage(String to, String subject, String text) {
-
     MimeMessage message = mailSender.createMimeMessage();
-
     message.setFrom(sender);
     message.setRecipients(Message.RecipientType.TO, to);
     message.setSubject(subject);
     message.setContent(text, "text/html");
-
     mailSender.send(message);
   }
 }

@@ -20,6 +20,7 @@ import org.springframework.cache.interceptor.CacheInterceptor;
 import org.springframework.cache.interceptor.CacheOperationSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -37,6 +38,7 @@ public class CacheConfig {
   // https://stackoverflow.com/questions/77973235/why-is-bucket4j-not-working-with-caffeine
   // Implementing a cache manager for bucket4j
   @Bean
+  @Lazy
   public javax.cache.CacheManager cacheManagerForBucket() {
     CacheManagerImpl impl =
         new CacheManagerImpl(
@@ -55,15 +57,35 @@ public class CacheConfig {
     return impl;
   }
 
+  // @Bean
+  // @Primary
+  // public CacheManager caffeineCacheManager(CaffeineCache caffeineCache) {
+  //   SimpleCacheManager manager = new SimpleCacheManager();
+  //   manager.setCaches(Arrays.asList(caffeineCache));
+  //   return manager;
+  // }
+
   @Primary
   @Bean("caffeineCacheManager")
   public CacheManager caffeineCacheManager() {
     // SimpleCacheManager cacheManager = new SimpleCacheManager();
     CaffeineCacheManager cacheManager =
         new CaffeineCacheManager("product", "products", "shop", "shops");
+
     cacheManager.setCaffeineSpec(CaffeineSpec.parse("maximumSize=3000,expireAfterAccess=30000s"));
     return cacheManager;
   }
+
+  // @Bean
+  // public CaffeineCache caffeineCacheConfig() {
+  //   return new CaffeineCache(
+  //       "product",
+  //       Caffeine.newBuilder()
+  //           .expireAfterWrite(Duration.ofSeconds(3))
+  //           .initialCapacity(1)
+  //           .maximumSize(2000)
+  //           .build());
+  // }
 
   // @Bean
   // public CacheManager caffeineCacheManager(CaffeineCache caffeineCache) {
@@ -100,7 +122,7 @@ public class CacheConfig {
   }
 
   @Bean
-  public CacheInterceptor cacheInterceptor(
+  public static CacheInterceptor cacheInterceptor(
       CacheManager caffeineCacheManager, CacheOperationSource cacheOperationSource) {
     CacheInterceptor interceptor = new TwoLevelCacheInterceptor(caffeineCacheManager);
     interceptor.setCacheOperationSources(cacheOperationSource);
@@ -108,7 +130,7 @@ public class CacheConfig {
   }
 
   @Bean
-  public CacheOperationSource cacheOperationSource() {
+  public static CacheOperationSource cacheOperationSource() {
     return new AnnotationCacheOperationSource();
   }
 }

@@ -1,15 +1,17 @@
 package com.foodey.server.interceptor;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheInterceptor;
 import org.springframework.data.redis.cache.RedisCache;
 
-@RequiredArgsConstructor
 public class TwoLevelCacheInterceptor extends CacheInterceptor {
 
   private final CacheManager caffeineCacheManager;
+
+  public TwoLevelCacheInterceptor(CacheManager caffeineCacheManager) {
+    this.caffeineCacheManager = caffeineCacheManager;
+  }
 
   @Override
   protected Cache.ValueWrapper doGet(Cache cache, Object key) {
@@ -17,7 +19,6 @@ public class TwoLevelCacheInterceptor extends CacheInterceptor {
 
     if (existingCacheValue != null && cache.getClass() == RedisCache.class) {
       Cache caffeineCache = caffeineCacheManager.getCache(cache.getName());
-
       if (caffeineCache != null) {
         caffeineCache.putIfAbsent(key, existingCacheValue.get());
       }
