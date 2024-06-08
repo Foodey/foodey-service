@@ -7,11 +7,13 @@ import com.foodey.server.shop.repository.ShopRepository;
 import com.foodey.server.shop.service.ShopBrandService;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.model.User;
+import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -42,7 +44,7 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  @Cacheable(value = "shop", key = "#id")
+  @Cacheable(value = "shops", key = "#id")
   public Shop findById(String id) {
     return shopRepository
         .findById(id)
@@ -56,7 +58,7 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  @CachePut(value = "shop", key = "#shop.id")
+  @CachePut(value = "shops", key = "#shop.id")
   @CacheEvict(value = "shops", allEntries = true)
   public Shop save(Shop shop) {
     return shopRepository.save(shop);
@@ -64,12 +66,22 @@ public class ShopServiceImpl implements ShopService {
 
   @Override
   @CacheEvict(value = "shops", allEntries = true)
-  public List<Shop> saveAll(List<Shop> shops) {
+  public List<Shop> saveAll(Iterable<Shop> shops) {
     return shopRepository.saveAll(shops);
   }
 
   @Override
-  // @Cacheable(value = "shops", key = "#category.concat('-').concat(#pageable.pageNumber)")
+  @Caching(
+      cacheable = {
+        @Cacheable(
+            value = "shops",
+            key = "#categoryId.concat('-').concat(#pageable.pageNumber)",
+            cacheManager = "caffeineCacheManager"),
+        // @Cacheable(
+        //     value = "shops",
+        //     key = "#categoryId.concat('-').concat(#pageable.pageNumber)",
+        //     cacheManager = "redisCacheManager"),
+      })
   public Slice<Shop> findByCategoryId(String categoryId, Pageable pageable) {
     return shopRepository.findByCategoryIdsContaining(categoryId, pageable);
   }
@@ -83,13 +95,16 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  @Cacheable(value = "shops", key = "#brandId")
+  @Caching(
+      cacheable = {
+        @Cacheable(value = "shops", cacheManager = "caffeineCacheManager"),
+        @Cacheable(value = "shops", cacheManager = "redisCacheManage"),
+      })
   public List<Shop> findByBrandId(String brandId) {
     return shopRepository.findByBrandId(brandId);
   }
 
   @Override
-  // @Cacheable(value = "shops", key = "#brandId.concat('-').concat(#pageable.pageNumber)")
   public Slice<Shop> findByBrandId(String brandId, Pageable pageable) {
     return shopRepository.findByBrandId(brandId, pageable);
   }
@@ -108,11 +123,15 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  // @Cacheable(value = "shops", key = "#query.concat('-').concat(#pageable.pageNumber)")
   public Slice<Shop> searchByName(String query, Pageable pageable) {
     if (query.isEmpty()) {
       return new SliceImpl<>(List.of(), pageable, false);
     }
     return shopRepository.findByNameContainingIgnoreCase(query, pageable);
+  }
+
+  @Override
+  public List<Shop> getShopsNotRatedSince(Instant date, long limit) {
+    return shopRepository.findByLastRatingCalculationAtBeforeLimit(date, limit);
   }
 }

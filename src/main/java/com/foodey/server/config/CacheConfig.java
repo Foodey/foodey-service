@@ -1,5 +1,6 @@
 package com.foodey.server.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodey.server.interceptor.TwoLevelCacheInterceptor;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.github.benmanes.caffeine.jcache.CacheManagerImpl;
@@ -10,6 +11,7 @@ import java.time.Duration;
 import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.cache.CacheManager;
@@ -33,7 +35,10 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 @ImportAutoConfiguration({
   CacheAutoConfiguration.class,
 })
+@RequiredArgsConstructor
 public class CacheConfig {
+
+  private final ObjectMapper objectMapper;
 
   // https://stackoverflow.com/questions/77973235/why-is-bucket4j-not-working-with-caffeine
   // Implementing a cache manager for bucket4j
@@ -56,14 +61,6 @@ public class CacheConfig {
     impl.createCache("rate-limit-buckets", configuration); // the cache for bucket4j
     return impl;
   }
-
-  // @Bean
-  // @Primary
-  // public CacheManager caffeineCacheManager(CaffeineCache caffeineCache) {
-  //   SimpleCacheManager manager = new SimpleCacheManager();
-  //   manager.setCaches(Arrays.asList(caffeineCache));
-  //   return manager;
-  // }
 
   @Primary
   @Bean("caffeineCacheManager")
@@ -94,15 +91,6 @@ public class CacheConfig {
   //   return manager;
   // }
 
-  // @Bean
-  //    public CaffeineCache caffeineCacheConfig() {
-  //        return new CaffeineCache("customerCache", Caffeine.newBuilder()
-  //          .expireAfterWrite(Duration.ofMinutes(1))
-  //          .initialCapacity(1)
-  //          .maximumSize(2000)
-  //          .build());
-  //    }
-
   @Bean
   public RedisCacheConfiguration redisCacheConfiguration() {
     return RedisCacheConfiguration.defaultCacheConfig()
@@ -110,14 +98,26 @@ public class CacheConfig {
         .disableCachingNullValues()
         .serializeValuesWith(
             RedisSerializationContext.SerializationPair.fromSerializer(
-                new GenericJackson2JsonRedisSerializer()));
+                new GenericJackson2JsonRedisSerializer(objectMapper)));
   }
 
   @Bean("redisCacheManager")
   public CacheManager redisCacheManager(
       RedisConnectionFactory connectionFactory, RedisCacheConfiguration cacheConfiguration) {
+
     return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory)
+        .withCacheConfiguration(
+            "productCategories",
+            RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofDays(1))
+                .disableCachingNullValues()
+                .serializeValuesWith(
+                    RedisSerializationContext.SerializationPair.fromSerializer(
+                        new GenericJackson2JsonRedisSerializer(objectMapper))))
         .withCacheConfiguration("product", cacheConfiguration)
+        .withCacheConfiguration("products", cacheConfiguration)
+        .withCacheConfiguration("shop", cacheConfiguration)
+        .withCacheConfiguration("shops", cacheConfiguration)
         .build();
   }
 

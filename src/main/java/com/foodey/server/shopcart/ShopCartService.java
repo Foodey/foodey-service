@@ -26,4 +26,6 @@ public interface ShopCartService {
   boolean removeProduct(String userId, String shopId, String productId);
 
   boolean removeProduct(String shopId, String productId);
+
+  void clear(String userId, String shopId);
 }

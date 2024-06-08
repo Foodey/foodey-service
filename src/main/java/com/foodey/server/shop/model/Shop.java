@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -55,9 +56,6 @@ public class Shop implements Persistable<String> {
   @Schema(description = "The url of wallpaper of the shop")
   private String wallpaper;
 
-  @Schema(description = "The rating of the shop")
-  private long rating = 0;
-
   @NotBlank
   @Size(min = 2, max = 100)
   @Schema(description = "The address of the shop")
@@ -66,6 +64,17 @@ public class Shop implements Persistable<String> {
   @Indexed(name = "shop_categories")
   @Schema(description = "The category ids of the shop ")
   private Set<String> categoryIds = new HashSet<>();
+
+  @Schema(description = "The rating of the shop")
+  private double rating = -1; // -1 means the rating has not been calculated yet
+
+  @Setter(AccessLevel.NONE)
+  private Instant lastRatingCalculationAt = Instant.now();
+
+  public void setRating(double rating) {
+    this.rating = rating;
+    this.lastRatingCalculationAt = Instant.now();
+  }
 
   @CreatedDate private Instant createdAt;
 

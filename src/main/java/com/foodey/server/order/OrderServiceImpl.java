@@ -3,12 +3,14 @@ package com.foodey.server.order;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.payment.Payment;
 import com.foodey.server.payment.PaymentStatus;
+import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.shopcart.ShopCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +28,21 @@ public class OrderServiceImpl implements OrderService {
     String shopId = orderRequest.getShopId();
     ShopCartDetail shopCart = shopCartService.getDetail(userId, shopId);
 
+    if (shopCart.getItems().isEmpty()) {
+      throw new ResourceNotFoundException("ShopCart", "userId", userId);
+    }
+
     Payment payment =
         new Payment(
             orderRequest.getPaymentMethod(), PaymentStatus.PENDING, shopCart.getTotalPrice());
 
+    Shop shop = shopService.findById(shopId);
     Order order =
         new Order(
             userId,
-            shopService.findById(shopId),
+            shop,
+            shop.getId(),
+            shop.getName(),
             null,
             orderRequest.getAddress(),
             payment,
@@ -41,13 +50,24 @@ public class OrderServiceImpl implements OrderService {
             orderRequest.getNote(),
             shopCart.getItems());
 
-    return orderRepository.save(order);
+    Order newOrder = orderRepository.save(order);
+
+    shopCartService.clear(userId, shopId);
+
+    return newOrder;
   }
 
   @Override
   public Order findById(String orderId) {
     return orderRepository
         .findById(orderId)
+        .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+  }
+
+  @Override
+  public Order findByIdAndUserId(String orderId, String userId) {
+    return orderRepository
+        .findByIdAndUserId(orderId, userId)
         .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
   }
 
@@ -91,5 +111,18 @@ public class OrderServiceImpl implements OrderService {
   public Slice<Order> findOrdersByShopIdAndStatus(
       String shopId, OrderStatus status, Pageable pageable) {
     return orderRepository.findByShopIdAndStatus(shopId, status, pageable);
+  }
+
+  @Override
+  public Order findByIdAndVerifyOwner(String orderId, String userId) {
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+    if (!order.getUserId().equals(userId)) {
+      throw new AccessDeniedException("You are not the owner of this order");
+    }
+    return order;
   }
 }

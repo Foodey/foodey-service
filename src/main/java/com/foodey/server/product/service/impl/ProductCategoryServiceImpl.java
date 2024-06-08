@@ -6,11 +6,12 @@ import com.foodey.server.product.model.ProductCategory;
 import com.foodey.server.product.repository.ProductCategoryRepository;
 import com.foodey.server.product.service.ProductCategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-/** ProductCategoryServiceImpl */
 @Service
 @RequiredArgsConstructor
 public class ProductCategoryServiceImpl implements ProductCategoryService {
@@ -18,6 +19,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   private final ProductCategoryRepository productCategoryRepository;
 
   @Override
+  @CacheEvict(value = "productCategories", allEntries = true, cacheManager = "redisCacheManager")
   public ProductCategory createProductCategory(ProductCategory productCategory) {
     if (productCategoryRepository.existsByName(productCategory.getName())) {
       throw new ResourceAlreadyInUseException("ProductCategory", "name", productCategory.getName());
@@ -33,6 +35,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   }
 
   @Override
+  @Cacheable(
+      value = "productCategories",
+      key = "#pageable.pageNumber",
+      cacheManager = "redisCacheManager")
   public Slice<ProductCategory> findAll(Pageable pageable) {
     return productCategoryRepository.findAll(pageable);
   }

@@ -157,4 +157,9 @@ public class ShopCartServiceImpl implements ShopCartService {
         throw new UnsupportedOperationException("Unimplemented action '" + action + "'");
     }
   }
+
+  @Override
+  public void clear(String userId, String shopId) {
+    shopCartRepository.deleteById(ShopCart.id(userId, shopId));
+  }
 }

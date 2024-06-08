@@ -1,5 +1,6 @@
 package com.foodey.server.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.redisson.spring.data.connection.RedissonConnectionFactory;
@@ -12,6 +13,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisKeyValueAdapter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,6 +24,8 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
   RedisAutoConfiguration.class,
 })
 public class RedisConfig {
+
+  private final ObjectMapper objectMapper;
 
   // @Value("${spring.data.redis.host}")
   // private String HOST;
@@ -42,6 +47,12 @@ public class RedisConfig {
       RedisConnectionFactory redissonConnectionFactory) {
     RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redissonConnectionFactory);
+
+    redisTemplate.setKeySerializer(new StringRedisSerializer());
+    redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+    redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+    redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+    redisTemplate.afterPropertiesSet();
     return redisTemplate;
   }
 

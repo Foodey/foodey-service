@@ -32,7 +32,13 @@ public class Order implements Persistable<String> {
 
   private String userId;
 
-  @DBRef private Shop shop;
+  @DBRef
+  @Deprecated(since = "1.0.0")
+  private Shop shop;
+
+  private String shopId;
+
+  private String shopName;
 
   private String note;
 
@@ -55,6 +61,8 @@ public class Order implements Persistable<String> {
   public Order(
       String userId,
       Shop shop,
+      String shopId,
+      String shopName,
       String shipperId,
       String shippingAddress,
       Payment payment,
@@ -63,6 +71,8 @@ public class Order implements Persistable<String> {
       List<OrderItem> items) {
     this.userId = userId;
     this.shop = shop;
+    this.shopId = shopId;
+    this.shopName = shopName;
     this.shipperId = shipperId;
     this.shippingAddress = shippingAddress;
     this.payment = payment;

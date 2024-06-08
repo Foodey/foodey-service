@@ -2,6 +2,7 @@ package com.foodey.server.shop.service;
 
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,7 +19,7 @@ public interface ShopService {
 
   Shop save(Shop shop);
 
-  List<Shop> saveAll(List<Shop> shops);
+  List<Shop> saveAll(Iterable<Shop> shops);
 
   Shop findByIdAndVerifyOwner(String id, String userId);
 
@@ -33,4 +34,6 @@ public interface ShopService {
   Slice<Shop> findByBrandId(String brandId, Pageable pageable);
 
   Slice<Shop> searchByName(String query, Pageable pageable);
+
+  List<Shop> getShopsNotRatedSince(Instant date, long limit);
 }
