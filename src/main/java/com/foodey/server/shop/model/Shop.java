@@ -68,6 +68,31 @@ public class Shop implements Persistable<String> {
   @Schema(description = "The rating of the shop")
   private double rating = -1; // -1 means the rating has not been calculated yet
 
+  @JsonIgnore
+  public boolean isRatingCaculatedAtLeastOneTime() {
+    return rating != -1;
+  }
+
+  /**
+   * Get the real rating of the shop, even if it has not been calculated
+   *
+   * @return
+   */
+  @JsonIgnore
+  public double getRealRating() {
+    return rating;
+  }
+
+  /**
+   * Get the rating of the shop if it has been calculated, otherwise return 0 This feild is used to
+   * avoid returning -1 to the client
+   *
+   * @return
+   */
+  public double getRating() {
+    return rating == -1 ? 0 : rating;
+  }
+
   @Setter(AccessLevel.NONE)
   private Instant lastRatingCalculationAt = Instant.now();
 

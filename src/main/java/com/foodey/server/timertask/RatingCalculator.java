@@ -65,11 +65,10 @@ public class RatingCalculator {
             .filter(shop -> shopRatings.containsKey(shop.getId()))
             .map(
                 shop -> {
-                  final double lastRating = shop.getRating();
                   final double newRating =
-                      lastRating < 0
+                      shop.isRatingCaculatedAtLeastOneTime()
                           ? shopRatings.get(shop.getId())
-                          : (lastRating + shopRatings.get(shop.getId())) / 2;
+                          : (shop.getRating() + shopRatings.get(shop.getId())) / 2;
                   shop.setRating(newRating);
                   return shop;
                 })
