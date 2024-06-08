@@ -6,6 +6,9 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +46,15 @@ public class RatingCalculator {
 
     List<Shop> shops = shopService.getShopsNotRatedSince(dayInPast, MAX_CACULATION_SHOPS_PER_DAY);
 
+    if (shops.isEmpty()) {
+      log.info(
+          "Calculated ratings for 0 shops that have not been rated since {} - Viet Nam time: {}",
+          dayInPast,
+          ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"))
+              .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
+      return;
+    }
+
     Set<String> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
 
     // mark all the order_evaluations as rated
@@ -77,8 +89,10 @@ public class RatingCalculator {
     shopService.saveAll(shops);
 
     log.info(
-        "Calculated ratings for {} shops that have not been rated since {}",
+        "Calculated ratings for {} shops that have not been rated since {} - Viet Nam time: {}",
         shops.size(),
-        dayInPast);
+        dayInPast,
+        ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"))
+            .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
   }
 }

@@ -65,12 +65,13 @@ public class Shop implements Persistable<String> {
   @Schema(description = "The category ids of the shop ")
   private Set<String> categoryIds = new HashSet<>();
 
+  // Computed Pattern
   @Schema(description = "The rating of the shop")
   private double rating = -1; // -1 means the rating has not been calculated yet
 
   @JsonIgnore
   public boolean isRatingCaculatedAtLeastOneTime() {
-    return rating != -1;
+    return rating >= 0;
   }
 
   /**
@@ -90,13 +91,14 @@ public class Shop implements Persistable<String> {
    * @return
    */
   public double getRating() {
-    return rating == -1 ? 0 : rating;
+    return rating < 0 ? 0 : rating;
   }
 
   @Setter(AccessLevel.NONE)
   private Instant lastRatingCalculationAt = Instant.now();
 
   public void setRating(double rating) {
+    assert rating >= 0 && rating <= 5;
     this.rating = rating;
     this.lastRatingCalculationAt = Instant.now();
   }

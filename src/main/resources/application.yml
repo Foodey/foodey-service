@@ -118,7 +118,7 @@ foodey:
     shop:
       max_shop_per_calculation: 100000
       duration_between_calculations_ms: 172800000
-      cron_expression: "0 0 1 * * ?" # 1 AM every day
+      cron_expression: "0 30 14,23 * * ?" # 2:30 PM and 11:30 PM every day
   jwt:
     secret-key: 01fbe13122a008e71d1f60b9fe9d1df3c3532845de0d3312bf04eee066be7f87 # FOODEY_JWT_SECRET_KEY
     access-token-expiration: 300000 # 5 mins
