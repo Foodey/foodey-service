@@ -56,7 +56,7 @@ management:
       exposure:
         include: "*"
   security:
-    enabled: false
+    enabled: true
 
 bucket4j:
   enabled: true

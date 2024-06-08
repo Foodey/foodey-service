@@ -16,6 +16,11 @@ public class BeanConfig {
   public ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
 
+    // SimpleModule module = new SimpleModule();
+    // module.addDeserializer(Slice.class, new SliceDeserializer());
+    // module.addSerializer(Slice.class, new SliceSerializer());
+    // mapper.registerModule(module);
+
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     // https://stackoverflow.com/questions/45662820/how-to-set-format-of-string-for-java-time-instant-using-objectmapper

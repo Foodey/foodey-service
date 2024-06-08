@@ -132,6 +132,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     apiEndpointSecurityInspector.getPublicEndpoints().add("/api/v1/auth/**");
+    apiEndpointSecurityInspector.getPublicEndpoints().add("/actuator/**");
 
     // WebAuthn Login
     http.with(
@@ -197,7 +198,7 @@ public class SecurityConfig {
         .csrf(
             customizer -> {
               // customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-              customizer.ignoringRequestMatchers("/api/**");
+              customizer.ignoringRequestMatchers("/api/**", "/actuator/**");
             })
 
         // exception handling
@@ -211,6 +212,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
+                        apiEndpointSecurityInspector.getPublicEndpoints().toArray(String[]::new))
+                    .permitAll()
+                    .requestMatchers(
                         HttpMethod.GET,
                         apiEndpointSecurityInspector.getPublicGetEndpoints().toArray(String[]::new))
                     .permitAll()

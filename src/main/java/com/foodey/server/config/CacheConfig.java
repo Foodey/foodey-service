@@ -2,6 +2,7 @@ package com.foodey.server.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodey.server.interceptor.TwoLevelCacheInterceptor;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.github.benmanes.caffeine.jcache.CacheManagerImpl;
 import com.github.benmanes.caffeine.jcache.configuration.CaffeineConfiguration;
@@ -65,31 +66,21 @@ public class CacheConfig {
   @Primary
   @Bean("caffeineCacheManager")
   public CacheManager caffeineCacheManager() {
-    // SimpleCacheManager cacheManager = new SimpleCacheManager();
-    CaffeineCacheManager cacheManager =
+    CaffeineCacheManager caffeineCacheManager =
         new CaffeineCacheManager("product", "products", "shop", "shops");
+    caffeineCacheManager.setCaffeineSpec(
+        CaffeineSpec.parse("maximumSize=3000,expireAfterAccess=30000s"));
 
-    cacheManager.setCaffeineSpec(CaffeineSpec.parse("maximumSize=3000,expireAfterAccess=30000s"));
-    return cacheManager;
+    caffeineCacheManager.registerCustomCache(
+        "productCategories",
+        Caffeine.newBuilder()
+            .expireAfterWrite(Duration.ofDays(4))
+            .initialCapacity(1)
+            .maximumSize(30)
+            .build());
+
+    return caffeineCacheManager;
   }
-
-  // @Bean
-  // public CaffeineCache caffeineCacheConfig() {
-  //   return new CaffeineCache(
-  //       "product",
-  //       Caffeine.newBuilder()
-  //           .expireAfterWrite(Duration.ofSeconds(3))
-  //           .initialCapacity(1)
-  //           .maximumSize(2000)
-  //           .build());
-  // }
-
-  // @Bean
-  // public CacheManager caffeineCacheManager(CaffeineCache caffeineCache) {
-  //   SimpleCacheManager manager = new SimpleCacheManager();
-  //   manager.setCaches(Arrays.asList(caffeineCache));
-  //   return manager;
-  // }
 
   @Bean
   public RedisCacheConfiguration redisCacheConfiguration() {
@@ -107,13 +98,7 @@ public class CacheConfig {
 
     return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory)
         .withCacheConfiguration(
-            "productCategories",
-            RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(1))
-                .disableCachingNullValues()
-                .serializeValuesWith(
-                    RedisSerializationContext.SerializationPair.fromSerializer(
-                        new GenericJackson2JsonRedisSerializer(objectMapper))))
+            "productCategories", cacheConfiguration.entryTtl(Duration.ofDays(1)))
         .withCacheConfiguration("product", cacheConfiguration)
         .withCacheConfiguration("products", cacheConfiguration)
         .withCacheConfiguration("shop", cacheConfiguration)

@@ -35,10 +35,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   }
 
   @Override
-  @Cacheable(
-      value = "productCategories",
-      key = "#pageable.pageNumber",
-      cacheManager = "redisCacheManager")
+  @Cacheable(value = "productCategories", key = "#pageable.pageNumber")
   public Slice<ProductCategory> findAll(Pageable pageable) {
     return productCategoryRepository.findAll(pageable);
   }
