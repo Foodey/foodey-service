@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,6 +29,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
   @CompoundIndex(name = "user_status_idx", def = "{'userId': 1, 'status': 1}"),
   @CompoundIndex(name = "shop_status_idx", def = "{'shop.$id': 1, 'status': 1}")
 })
+@NoArgsConstructor
 public class Order implements Persistable<String> {
   @Id private String id;
 
@@ -77,6 +79,34 @@ public class Order implements Persistable<String> {
     this.userId = user.getId();
     this.userName = user.getName();
     this.userPhoneNumber = user.getPhoneNumber();
+    this.shop = shop;
+    this.shopId = shopId;
+    this.shopName = shopName;
+    this.shipperId = shipperId;
+    this.shippingAddress = shippingAddress;
+    this.payment = payment;
+    this.voucherCode = voucherCode;
+    this.items = items;
+    this.note = note == null ? "" : note;
+    this.status = OrderStatus.PENDING;
+  }
+
+  public Order(
+      String userId,
+      String userName,
+      String userPhoneNumber,
+      Shop shop,
+      String shopId,
+      String shopName,
+      String shipperId,
+      String shippingAddress,
+      Payment payment,
+      String voucherCode,
+      String note,
+      List<OrderItem> items) {
+    this.userId = userId;
+    this.userName = userName;
+    this.userPhoneNumber = userPhoneNumber;
     this.shop = shop;
     this.shopId = shopId;
     this.shopName = shopName;

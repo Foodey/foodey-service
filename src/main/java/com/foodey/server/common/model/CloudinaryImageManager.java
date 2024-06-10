@@ -2,7 +2,7 @@ package com.foodey.server.common.model;
 
 import com.foodey.server.config.CloudinaryConfig;
 
-public interface CloudinaryManager {
+public interface CloudinaryImageManager {
 
   default String getCloudinaryFolder() {
     return getClass().getSimpleName().toLowerCase() + "s";
@@ -13,7 +13,7 @@ public interface CloudinaryManager {
   }
 
   default String getCloudinaryImageEndpoint() {
-    return "https://res.cloudinary.com/" + CloudinaryConfig.CLOUD_NAME + "/video/upload";
+    return "https://res.cloudinary.com/" + CloudinaryConfig.CLOUD_NAME + "/image/upload";
   }
 
   default String getCloudinaryImageURL(String publicId) {

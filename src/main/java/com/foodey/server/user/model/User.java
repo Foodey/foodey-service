@@ -3,7 +3,7 @@ package com.foodey.server.user.model;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.foodey.server.common.model.CloudinaryManager;
+import com.foodey.server.common.model.CloudinaryImageManager;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.enums.UserStatus;
@@ -47,7 +47,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Document(collection = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class User implements UserDetails, UserRole, Persistable<String>, CloudinaryManager {
+public class User implements UserDetails, UserRole, Persistable<String>, CloudinaryImageManager {
 
   @JsonIgnore @Id private String id;
 
@@ -87,7 +87,7 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
 
   @Schema(description = "The avatar of the account")
   public String getAvatar() {
-    return getCloudinaryImageEndpoint() + getCloudinaryAvatarFolder() + "/" + pubId;
+    return getCloudinaryImageEndpoint() + "/" + getCloudinaryAvatarFolder() + "/" + pubId;
   }
 
   public String getAvatarCloudinaryPath() {
@@ -104,7 +104,6 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
   @Schema(description = "The status of the account")
   private UserStatus status = UserStatus.UNVERIFIED;
 
-  @JsonIgnore
   @Default
   @Schema(description = "The roles of the account")
   private Set<Role> roles = Set.of(new Role(RoleType.CUSTOMER));
@@ -136,14 +135,17 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
   @Schema(description = "The list of credential ids of the account")
   @Getter
   @Default
+  @JsonIgnore
   private Set<AuthenticatorData<ExtensionAuthenticatorOutput>> authenticatorDatas = new HashSet<>();
 
   @CreatedDate
   @Schema(description = "The created time of the account")
+  @JsonIgnore
   private Instant createdAt;
 
   @LastModifiedDate
   @Schema(description = "The updated time of the account")
+  @JsonIgnore
   private Instant updatedAt;
 
   @JsonIgnore @Transient private Collection<? extends GrantedAuthority> authorities;
@@ -187,6 +189,7 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
   }
 
   @Override
+  @JsonIgnore
   public String getPassword() {
     return password;
   }
@@ -197,20 +200,24 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
   }
 
   @Override
+  @JsonIgnore
   public boolean isAccountNonExpired() {
     return status != UserStatus.ARCHIVED && status != UserStatus.DELETED;
   }
 
   @Override
+  @JsonIgnore
   public boolean isAccountNonLocked() {
     return status != UserStatus.BANNED;
   }
 
   @Override
+  @JsonIgnore
   public boolean isCredentialsNonExpired() {
     return status != UserStatus.COMPROMISED;
   }
 
+  @JsonIgnore
   @Override
   public boolean isEnabled() {
     return status == UserStatus.ACTIVE;

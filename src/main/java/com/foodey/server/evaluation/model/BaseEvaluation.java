@@ -2,6 +2,7 @@ package com.foodey.server.evaluation.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -24,14 +25,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Schema(description = "The evaluation of a restaurant")
 @Document(collection = "evaluations")
+@JsonIgnoreProperties(
+    value = {"id", "creatorName", "creatorId", "reply", "createdAt", "updatedAt", "totalLikes"},
+    allowGetters = true)
 @JsonTypeInfo(
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     use = JsonTypeInfo.Id.NAME,
     property = "type",
+    visible = true,
     defaultImpl = OrderEvaluation.class)
-@JsonIgnoreProperties(
-    value = {"id", "creatorName", "creatorId", "reply", "createdAt", "updatedAt", "totalLikes"},
-    allowGetters = true)
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = OrderEvaluation.class, name = EvaluationType.Fields.ORDER),
+  @JsonSubTypes.Type(value = ProductEvaluation.class, name = EvaluationType.Fields.PRODUCT)
+})
 @BsonDiscriminator
 public abstract class BaseEvaluation implements Persistable<String> {
 
@@ -60,7 +66,7 @@ public abstract class BaseEvaluation implements Persistable<String> {
   @Schema(description = "The rating of the evaluation, from 1 to 5", example = "5")
   @Min(1)
   @Max(5)
-  private byte rating;
+  private Byte rating;
 
   @Schema(description = "Whether the evaluation is rated by the user", example = "false")
   // thoi diem schedule job thuc hien rating thi truong nay se duoc set la true

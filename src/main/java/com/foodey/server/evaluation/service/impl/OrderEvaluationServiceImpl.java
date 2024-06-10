@@ -3,14 +3,20 @@ package com.foodey.server.evaluation.service.impl;
 import com.foodey.server.evaluation.model.BaseEvaluation;
 import com.foodey.server.evaluation.model.EvaluationType;
 import com.foodey.server.evaluation.model.OrderEvaluation;
+import com.foodey.server.evaluation.model.ProductEvaluation;
 import com.foodey.server.evaluation.repository.OrderEvaluationRepository;
+import com.foodey.server.evaluation.repository.ProductEvaluationRepository;
 import com.foodey.server.evaluation.service.EvaluationService;
 import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.order.Order;
+import com.foodey.server.order.OrderItem;
 import com.foodey.server.order.OrderService;
 import com.foodey.server.user.model.User;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -20,6 +26,7 @@ import org.springframework.stereotype.Service;
 public class OrderEvaluationServiceImpl extends EvaluationService {
 
   private final OrderEvaluationRepository orderEvaluationRepository;
+  private final ProductEvaluationRepository productEvaluationRepository;
   private final OrderService orderService;
 
   @Override
@@ -28,15 +35,63 @@ public class OrderEvaluationServiceImpl extends EvaluationService {
     assert evaluation instanceof OrderEvaluation;
     assert user != null;
 
-    OrderEvaluation orderEvaluation = (OrderEvaluation) evaluation;
+    String userId = user.getId();
+    String userName = user.getName();
 
+    OrderEvaluation orderEvaluation = (OrderEvaluation) evaluation;
     String orderId = orderEvaluation.getOrderId();
     Order order = orderService.findByIdAndVerifyOwner(orderId, user);
 
+    String shopId = order.getShopId() != null ? order.getShopId() : order.getShop().getId();
+
+    List<ProductEvaluation> productEvaluations = orderEvaluation.getProductEvaluations();
+
+    final byte rating = orderEvaluation.getRating() != null ? orderEvaluation.getRating() : 5;
+
+    if (productEvaluations == null || productEvaluations.isEmpty()) {
+      productEvaluationRepository.insert(
+          order.getItems().stream()
+              .map(
+                  item ->
+                      new ProductEvaluation(
+                          orderId, shopId, item.getProductId(), rating, "", userName, userId))
+              .toList());
+    } else {
+      List<OrderItem> items = order.getItems();
+
+      Set<ProductEvaluation> evaluations =
+          items.stream()
+              .filter(
+                  item ->
+                      productEvaluations.stream()
+                          .noneMatch(e -> e.getProductId().equals(item.getProductId())))
+              .map(
+                  item ->
+                      new ProductEvaluation(
+                          orderId, shopId, item.getProductId(), rating, "", userName, userId))
+              .collect(Collectors.toCollection(HashSet::new));
+      evaluations.addAll(
+          productEvaluations.stream()
+              .map(
+                  e ->
+                      new ProductEvaluation(
+                          orderId,
+                          shopId,
+                          e.getProductId(),
+                          e.getRating(),
+                          e.getComment(),
+                          userName,
+                          userId))
+              .collect(Collectors.toCollection(HashSet::new)));
+      productEvaluationRepository.insert(evaluations);
+
+      orderEvaluation.setRating(
+          (byte) evaluations.stream().mapToInt(ProductEvaluation::getRating).average().orElse(5));
+    }
+
     orderEvaluation.setCreatorId(user.getId());
     orderEvaluation.setCreatorName(user.getName());
-    orderEvaluation.setShopId(
-        order.getShopId() != null ? order.getShopId() : order.getShop().getId());
+    orderEvaluation.setShopId(shopId);
 
     try {
       return (T) orderEvaluationRepository.save(orderEvaluation);
