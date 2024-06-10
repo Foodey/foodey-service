@@ -4,6 +4,7 @@ import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.product.service.ProductService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -39,8 +40,14 @@ public class ProductServiceImpl implements ProductService {
     return productRepository.save(product);
   }
 
+  @Override
   @CacheEvict(value = "product", key = "#id")
   public void deleteById(String id) {
     productRepository.deleteById(id);
+  }
+
+  @Override
+  public List<Product> findAllById(List<String> ids) {
+    return productRepository.findAllById(ids);
   }
 }

@@ -1,6 +1,8 @@
 package com.foodey.server.user.service;
 
 import com.foodey.server.auth.dto.RegistrationRequest;
+import com.foodey.server.common.model.CloudinaryUploadApiOptions;
+import com.foodey.server.common.model.CloudinaryUploadApiOptionsImpl;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
@@ -44,5 +46,9 @@ public interface UserService {
 
   default User getCurrentUser() {
     return PrincipalUtils.getUser();
+  }
+
+  default CloudinaryUploadApiOptions getAvatarUploadApiOptions(User user) {
+    return new CloudinaryUploadApiOptionsImpl(user.getPubId(), user.getCloudinaryAvatarFolder());
   }
 }

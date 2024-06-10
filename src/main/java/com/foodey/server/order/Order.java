@@ -3,6 +3,7 @@ package com.foodey.server.order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodey.server.payment.Payment;
 import com.foodey.server.shop.model.Shop;
+import com.foodey.server.user.model.User;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
@@ -30,7 +31,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Order implements Persistable<String> {
   @Id private String id;
 
-  private String userId;
+  @JsonIgnore private String userId;
+
+  private String userName;
+
+  private String userPhoneNumber;
 
   @DBRef
   @Deprecated(since = "1.0.0")
@@ -59,7 +64,7 @@ public class Order implements Persistable<String> {
   @LastModifiedDate private Instant updatedAt;
 
   public Order(
-      String userId,
+      User user,
       Shop shop,
       String shopId,
       String shopName,
@@ -69,7 +74,9 @@ public class Order implements Persistable<String> {
       String voucherCode,
       String note,
       List<OrderItem> items) {
-    this.userId = userId;
+    this.userId = user.getId();
+    this.userName = user.getName();
+    this.userPhoneNumber = user.getPhoneNumber();
     this.shop = shop;
     this.shopId = shopId;
     this.shopName = shopName;

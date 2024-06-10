@@ -1,6 +1,7 @@
 package com.foodey.server.shop.service.impl;
 
 import com.foodey.server.product.model.Product;
+import com.foodey.server.product.model.ProductWithCloudinaryMetadata;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.dto.MenuView;
 import com.foodey.server.shop.event.ProductsAddedToMenuEvent;
@@ -64,7 +65,7 @@ public class MenuServiceImpl implements MenuService {
 
   @Override
   @Transactional
-  public Product addProductToMenu(
+  public ProductWithCloudinaryMetadata addProductToMenu(
       User user, String brandId, String shopId, Product product, boolean appliedToAllShops) {
     // TODO: Validate shop
 
@@ -91,7 +92,7 @@ public class MenuServiceImpl implements MenuService {
 
     publishProductsAddedEvent(user, brandId, shopId, List.of(product), appliedToAllShops);
 
-    return savedProduct;
+    return new ProductWithCloudinaryMetadata(savedProduct);
   }
 
   private void publishProductsAddedEvent(

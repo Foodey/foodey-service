@@ -43,7 +43,14 @@ public class Product implements Persistable<String> {
   private double price;
 
   @Schema(description = "The url image of the product")
-  private String image = "";
+  // private String image;
+  public String getImage() {
+    return "https://res.cloudinary.com/foodey/image/upload/" + getCloudinaryFolder() + "/" + id;
+  }
+
+  public String getCloudinaryFolder() {
+    return Product.class.getSimpleName().toLowerCase() + "s";
+  }
 
   @Schema(description = "The description of the product")
   private String description = "";
@@ -67,7 +74,7 @@ public class Product implements Persistable<String> {
   public Product(String name, long price, String image, String description) {
     this.name = name;
     this.price = price;
-    this.image = image;
+    // this.image = image;
     this.description = description;
   }
 
@@ -76,7 +83,7 @@ public class Product implements Persistable<String> {
     this.name = product.name;
     this.ownerId = product.ownerId;
     this.price = product.price;
-    this.image = product.image;
+    // this.image = product.image;
     this.description = product.description;
     this.categoryId = product.categoryId;
     this.categoryNameDisplayedOnMenu = product.categoryNameDisplayedOnMenu;

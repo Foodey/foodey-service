@@ -1,0 +1,16 @@
+Hien tai co danh gia order sau khi mot don da ket thuc
+
+Trong danh gia nay se co mot list cac mon an ma nguoi dung mua, va nguoi dung se danh gia moi mon
+an, hoac la danh gia don thoi
+
+Danh gia mon an se co cac tieu chi sau:
+
+- Chat luong mon an: 1-5
+
+- Comment: 1-255 ky tu
+
+
+
+
+
+

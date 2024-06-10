@@ -1,8 +1,10 @@
 package com.foodey.server.user.controller;
 
 import com.foodey.server.annotation.CurrentUser;
+import com.foodey.server.common.model.CloudinaryUploadApiOptions;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
+import com.foodey.server.upload.CloudinaryService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.SellerRoleRequest;
@@ -12,20 +14,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +40,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
   private final UserService userService;
+  private final CloudinaryService cloudinaryService;
+
+  @PostMapping("/avatar/upload")
+  public ResponseEntity<?> uploadAvatar(
+      @RequestParam(value = "file") MultipartFile file, @CurrentUser User user) throws IOException {
+    return ResponseEntity.ok(
+        cloudinaryService.uploadFile(file, user.getCloudinaryAvatarFolder(), user.getPubId()));
+  }
+
+  @Operation(summary = "Get profile of the current user")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Get profile successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/avatar/upload-options")
+  public CloudinaryUploadApiOptions getAvatarUploadApiOptions(@CurrentUser User user) {
+    return userService.getAvatarUploadApiOptions(user);
+  }
+
+  @Operation(summary = "Get profile of the current user")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Get profile successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/me/profile")
+  public User getProfile(@CurrentUser User user) {
+    return user;
+  }
 
   @Operation(summary = "Request a seller role")
   @ApiResponses({

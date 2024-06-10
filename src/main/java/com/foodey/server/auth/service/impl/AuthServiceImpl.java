@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
             .orElseThrow(
                 () -> {
                   log.error("Refresh token {} not found", refreshToken);
-                  return new JwtTokenException(refreshToken, "Invalid refresh token");
+                  return new JwtTokenException(refreshToken, "Refresh token not found");
                 });
 
     if (savedRefreshToken.isRevoked()) {

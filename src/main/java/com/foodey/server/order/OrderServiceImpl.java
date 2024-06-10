@@ -7,6 +7,7 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.shopcart.ShopCartService;
+import com.foodey.server.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -24,8 +25,10 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional
-  public Order createOrderFromShopCart(String userId, OrderRequest orderRequest) {
+  public Order createOrderFromShopCart(User user, OrderRequest orderRequest) {
     String shopId = orderRequest.getShopId();
+
+    String userId = user.getId();
     ShopCartDetail shopCart = shopCartService.getDetail(userId, shopId);
 
     if (shopCart.getItems().isEmpty()) {
@@ -39,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
     Shop shop = shopService.findById(shopId);
     Order order =
         new Order(
-            userId,
+            user,
             shop,
             shop.getId(),
             shop.getName(),

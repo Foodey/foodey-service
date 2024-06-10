@@ -43,7 +43,7 @@ public class OrderController {
   @ResponseStatus(HttpStatus.CREATED)
   public Order createOrderFromShoppingCart(
       @RequestBody @Valid OrderRequest orderRequest, @CurrentUser User user) {
-    return orderService.createOrderFromShopCart(user.getId(), orderRequest);
+    return orderService.createOrderFromShopCart(user, orderRequest);
   }
 
   @Operation(summary = "Get an order by its id")

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Slice;
 
 public interface OrderService {
 
-  Order createOrderFromShopCart(String userId, OrderRequest orderRequest);
+  Order createOrderFromShopCart(User user, OrderRequest orderRequest);
 
   Order findById(String orderId);
 

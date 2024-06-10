@@ -3,6 +3,7 @@ package com.foodey.server.user.model;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.foodey.server.common.model.CloudinaryManager;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.enums.UserStatus;
@@ -46,7 +47,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Document(collection = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class User implements UserDetails, UserRole, Persistable<String> {
+public class User implements UserDetails, UserRole, Persistable<String>, CloudinaryManager {
 
   @JsonIgnore @Id private String id;
 
@@ -80,9 +81,18 @@ public class User implements UserDetails, UserRole, Persistable<String> {
   @Schema(description = "The email of the user", requiredMode = RequiredMode.REQUIRED)
   private String email;
 
-  @Default
+  public String getCloudinaryAvatarFolder() {
+    return getCloudinaryFolder() + "/avatar";
+  }
+
   @Schema(description = "The avatar of the account")
-  private String avatar = "";
+  public String getAvatar() {
+    return getCloudinaryImageEndpoint() + getCloudinaryAvatarFolder() + "/" + pubId;
+  }
+
+  public String getAvatarCloudinaryPath() {
+    return getCloudinaryAvatarFolder() + "/" + pubId;
+  }
 
   @Schema(description = "The last logout time of the account")
   private Instant lastLogoutAt;

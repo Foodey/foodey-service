@@ -12,4 +12,7 @@ public enum EvaluationType {
 
   @FieldNameConstants.Include
   PRODUCT,
+
+  @FieldNameConstants.Include
+  SHIPPER,
 }
