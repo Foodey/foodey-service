@@ -44,10 +44,10 @@ public class ShopBrandController {
         description = "Shop brand with the same name already exists"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @PostMapping({"", "/"})
+  @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
   @RolesAllowed(RoleType.Fields.SELLER)
-  public ShopBrand createShopBrand(
+  public ShopBrand createShopBrandForUser(
       @RequestBody @Valid ShopBrand shopBrand, @CurrentUser User user) {
     return shopBrandService.createShopBrand(shopBrand, user);
   }
@@ -95,7 +95,7 @@ public class ShopBrandController {
     @ApiResponse(responseCode = "404", description = "Shop brand not found"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @GetMapping({"/", ""})
+  @GetMapping("")
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
   public Slice<ShopBrand> findAll(

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-/** OrderEvaluationRepository */
 public interface ProductEvaluationRepository extends MongoRepository<ProductEvaluation, String> {
 
   Optional<OrderEvaluation> findByOrderIdAndCreatorId(String orderId, String creatorId);

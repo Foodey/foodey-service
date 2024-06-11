@@ -28,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  @Cacheable(value = "products", key = "#pageable.pageNumber")
+  @Cacheable(value = "products", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
   public Slice<Product> findAll(Pageable pageable) {
     return productRepository.findAll(pageable);
   }

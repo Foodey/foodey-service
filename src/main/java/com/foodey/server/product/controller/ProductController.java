@@ -39,8 +39,7 @@ public class ProductController {
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
   public Slice<Product> getProducts(
-      @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
-          Pageable pageable) {
+      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
     return productService.findAll(pageable);
   }
 

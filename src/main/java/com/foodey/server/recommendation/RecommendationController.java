@@ -23,16 +23,14 @@ public class RecommendationController {
   @GetMapping("/products")
   public Slice<Product> recommendProductsForUser(
       @CurrentUser User user,
-      @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
-          Pageable pageable) {
+      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
     return recommendationService.recommendProductsForUser(user.getId(), pageable);
   }
 
   @GetMapping("/shops")
   public Slice<Shop> recommendShopsFofUser(
       @CurrentUser User user,
-      @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
-          Pageable pageable) {
+      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
     return recommendationService.recommendShopsForUser(user.getId(), pageable);
   }
 }

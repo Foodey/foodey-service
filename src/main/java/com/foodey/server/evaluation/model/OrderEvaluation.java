@@ -20,7 +20,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
   "shopId",
 })
 @Document(collection = "order_evaluations")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderEvaluation extends BaseEvaluation {
 
   @Schema(
@@ -33,6 +32,8 @@ public class OrderEvaluation extends BaseEvaluation {
 
   @JsonProperty("productEvaluations")
   @Transient
+  @Schema(description = "This field support for payload only, not stored in database")
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private List<@Valid ProductEvaluation> productEvaluations;
 
   public OrderEvaluation() {
@@ -49,7 +50,6 @@ public class OrderEvaluation extends BaseEvaluation {
     super(EvaluationType.ORDER, rating, comment, creatorName, creatorId);
     this.orderId = orderId;
     this.shopId = shopId;
-    this.productEvaluations = new java.util.ArrayList<>();
   }
 
   public OrderEvaluation(

@@ -19,7 +19,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   private final ProductCategoryRepository productCategoryRepository;
 
   @Override
-  @CacheEvict(value = "productCategories", allEntries = true, cacheManager = "redisCacheManager")
+  @CacheEvict(value = "productCategories", allEntries = true)
   public ProductCategory createProductCategory(ProductCategory productCategory) {
     if (productCategoryRepository.existsByName(productCategory.getName())) {
       throw new ResourceAlreadyInUseException("ProductCategory", "name", productCategory.getName());

@@ -17,14 +17,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "The evaluation of a restaurant")
-@Document(collection = "evaluations")
+// @Document(collection = "evaluations")
 @JsonIgnoreProperties(
     value = {"id", "creatorName", "creatorId", "reply", "createdAt", "updatedAt", "totalLikes"},
     allowGetters = true)

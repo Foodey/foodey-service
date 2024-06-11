@@ -20,8 +20,6 @@ public class AdminServiceImpl implements AdminService {
 
   @Override
   public void approveNewRoleRequest(String requestId) {
-
-    System.out.println("Approving new role request with id: " + requestId);
     NewRoleRequest request =
         newRoleRequestRepository
             .findById(requestId)

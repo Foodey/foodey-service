@@ -2,7 +2,6 @@ package com.foodey.server.shop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodey.server.product.model.Product;
-import com.foodey.server.utils.ConsoleUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.HashMap;
@@ -211,7 +210,7 @@ public class Menu {
   private Map<String, ProductWrapper> specificShops;
 
   private Map<String, ProductWrapper> getSpecificShops() {
-    ConsoleUtils.prettyPrint(specificShops);
+    // ConsoleUtils.prettyPrint(specificShops);
     if (specificShops == null) specificShops = new HashMap<>();
     return specificShops;
   }

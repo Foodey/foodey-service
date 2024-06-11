@@ -87,7 +87,7 @@ public class ShopController {
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
   public Slice<Shop> findByCategoryId(
-      @PathVariable(required = true, name = "categoryId") String categoryId,
+      @PathVariable(name = "categoryId") String categoryId,
       @PageableDefault(page = 0, size = 12, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
     return shopService.findByCategoryId(categoryId, pageable);

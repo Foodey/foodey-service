@@ -42,8 +42,7 @@ public class ProductCategoryController {
   @PublicEndpoint
   @GetMapping({"/", ""})
   public Slice<ProductCategory> getCategories(
-      @PageableDefault(page = 0, size = 6, sort = "name", direction = Direction.ASC)
-          Pageable pageable) {
+      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
     return productCategoryService.findAll(pageable);
   }
 
