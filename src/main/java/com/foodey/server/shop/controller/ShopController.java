@@ -88,7 +88,7 @@ public class ShopController {
   @ResponseStatus(HttpStatus.OK)
   public Slice<Shop> findByCategoryId(
       @PathVariable(required = true, name = "categoryId") String categoryId,
-      @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.ASC)
+      @PageableDefault(page = 0, size = 12, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
     return shopService.findByCategoryId(categoryId, pageable);
   }
@@ -102,8 +102,36 @@ public class ShopController {
   @PublicEndpoint
   public Slice<Shop> searchByName(
       @RequestParam String q,
-      @PageableDefault(page = 0, size = 9, sort = "createdAt", direction = Direction.ASC)
+      @PageableDefault(page = 0, size = 9, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
     return shopService.searchByName(q, pageable);
+  }
+
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Shops found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/me/all")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Slice<Shop> getShopsOfCurrentUser(
+      @CurrentUser User user,
+      @PageableDefault(page = 0, size = 9, sort = "rating", direction = Direction.ASC)
+          Pageable pageable) {
+    return shopService.findByOwnerId(user.getId(), pageable);
+  }
+
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Shops found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/brands/{brandId}")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Slice<Shop> getAllShopsOfBrand(
+      @PathVariable(required = true, name = "brandId") String brandId,
+      @PageableDefault(page = 0, size = 9, sort = "rating", direction = Direction.ASC)
+          Pageable pageable) {
+    return shopService.findByBrandId(brandId, pageable);
   }
 }

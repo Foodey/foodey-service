@@ -31,6 +31,8 @@ public interface ShopRepository extends MongoRepository<Shop, String> {
 
   Slice<Shop> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
+  Slice<Shop> findByOwnerId(String userId, Pageable pageable);
+
   @Aggregation(
       pipeline = {"{ $match: { lastRatingCalculationAt: { $lt: ?0 } } }", "{ $limit: ?1 }"})
   List<Shop> findByLastRatingCalculationAtBeforeLimit(Instant lastRatingCalculation, long limit);

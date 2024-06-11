@@ -134,4 +134,9 @@ public class ShopServiceImpl implements ShopService {
   public List<Shop> getShopsNotRatedSince(Instant date, long limit) {
     return shopRepository.findByLastRatingCalculationAtBeforeLimit(date, limit);
   }
+
+  @Override
+  public Slice<Shop> findByOwnerId(String ownerId, Pageable pageable) {
+    return shopRepository.findByOwnerId(ownerId, pageable);
+  }
 }

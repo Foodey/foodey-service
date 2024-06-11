@@ -36,4 +36,6 @@ public interface ShopService {
   Slice<Shop> searchByName(String query, Pageable pageable);
 
   List<Shop> getShopsNotRatedSince(Instant date, long limit);
+
+  Slice<Shop> findByOwnerId(String ownerId, Pageable pageable);
 }
