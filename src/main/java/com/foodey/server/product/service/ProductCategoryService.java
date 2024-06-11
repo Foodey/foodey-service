@@ -15,4 +15,6 @@ public interface ProductCategoryService {
   boolean existsByName(String name);
 
   boolean existsById(String id);
+
+  void deleteById(String id);
 }

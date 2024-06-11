@@ -38,6 +38,11 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  public void rejectNewRoleRequest(String requestId) {
+    newRoleRequestRepository.deleteById(requestId);
+  }
+
+  @Override
   public Slice<NewRoleRequest> getNewRoleRequests(Pageable pageable) {
     return newRoleRequestRepository.findAll(pageable);
   }

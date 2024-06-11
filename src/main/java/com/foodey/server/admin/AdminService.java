@@ -8,5 +8,7 @@ public interface AdminService {
 
   void approveNewRoleRequest(String requestId);
 
+  void rejectNewRoleRequest(String requestId);
+
   Slice<NewRoleRequest> getNewRoleRequests(Pageable pageable);
 }

@@ -14,10 +14,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,7 +42,7 @@ public class ProductCategoryController {
   @PublicEndpoint
   @GetMapping({"/", ""})
   public Slice<ProductCategory> getCategories(
-      @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
+      @PageableDefault(page = 0, size = 6, sort = "name", direction = Direction.ASC)
           Pageable pageable) {
     return productCategoryService.findAll(pageable);
   }
@@ -57,5 +61,19 @@ public class ProductCategoryController {
   @RolesAllowed(RoleType.Fields.ADMIN)
   public ProductCategory addCategory(@RequestBody @Valid ProductCategory productCategory) {
     return productCategoryService.createProductCategory(productCategory);
+  }
+
+  @Operation(summary = "Remove a product category")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Product Category removed"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @DeleteMapping("/{id}")
+  @RolesAllowed(RoleType.Fields.ADMIN)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void removeCategory(@PathVariable(name = "id") String id) {
+    productCategoryService.deleteById(id);
   }
 }

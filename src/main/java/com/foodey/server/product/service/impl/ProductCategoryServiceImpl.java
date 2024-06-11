@@ -35,7 +35,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   }
 
   @Override
-  @Cacheable(value = "productCategories", key = "#pageable.pageNumber")
+  @Cacheable(value = "productCategories", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
   public Slice<ProductCategory> findAll(Pageable pageable) {
     return productCategoryRepository.findAll(pageable);
   }
@@ -48,5 +48,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Override
   public boolean existsById(String id) {
     return productCategoryRepository.existsById(id);
+  }
+
+  @Override
+  public void deleteById(String id) {
+    productCategoryRepository.deleteById(id);
   }
 }
