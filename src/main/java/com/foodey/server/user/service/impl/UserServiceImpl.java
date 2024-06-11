@@ -94,6 +94,9 @@ public class UserServiceImpl implements UserService {
 
     validateNewRoleRequest(user, request);
     request.setUserId(user.getId());
+    request.setUserName(user.getName());
+    request.setUserPhoneNumber(user.getPhoneNumber());
+
     newRoleRequestRepository.save(request);
   }
 

@@ -2,6 +2,7 @@ package com.foodey.server.recommendation;
 
 import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.product.model.Product;
+import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +21,18 @@ public class RecommendationController {
   private final RecommendationService recommendationService;
 
   @GetMapping("/products")
-  public Slice<Product> getRecommendedProducts(
+  public Slice<Product> recommendProductsForUser(
       @CurrentUser User user,
       @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
           Pageable pageable) {
     return recommendationService.recommendProductsForUser(user.getId(), pageable);
+  }
+
+  @GetMapping("/shops")
+  public Slice<Shop> recommendShopsFofUser(
+      @CurrentUser User user,
+      @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
+          Pageable pageable) {
+    return recommendationService.recommendShopsForUser(user.getId(), pageable);
   }
 }

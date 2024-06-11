@@ -87,10 +87,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsApiConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(
-        List.of(
-            "http://localhost:8080",
-            // accept ngrok.io for testing
-            "*.ngrok-free.app"));
+        List.of("http://localhost:8080", "http://localhost:3000", "*.ngrok-free.app"));
     // configuration.addAllowedOriginPattern("*");
     // configuration.addAllowedHeader("*");
     // configuration.addAllowedMethod("*");

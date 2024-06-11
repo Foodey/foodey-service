@@ -59,8 +59,8 @@ public class ProductEvaluation extends BaseEvaluation {
     if (this == obj) return true;
     else if (!(obj instanceof ProductEvaluation)) return false;
     ProductEvaluation that = (ProductEvaluation) (obj);
-    return this.orderId == that.orderId
-        && this.productId == that.productId
-        && this.shopId == that.shopId;
+    return orderId.equals(that.orderId)
+        && shopId.equals(that.shopId)
+        && productId.equals(that.productId);
   }
 }

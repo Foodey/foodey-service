@@ -6,6 +6,8 @@ import com.foodey.server.user.model.decorator.NewRoleRequest;
 import com.foodey.server.user.repository.NewRoleRequestRepository;
 import com.foodey.server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,5 +35,10 @@ public class AdminServiceImpl implements AdminService {
     userService.upgradeRole(user, request);
 
     newRoleRequestRepository.deleteById(requestId);
+  }
+
+  @Override
+  public Slice<NewRoleRequest> getNewRoleRequests(Pageable pageable) {
+    return newRoleRequestRepository.findAll(pageable);
   }
 }

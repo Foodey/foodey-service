@@ -18,8 +18,13 @@ public class SellerRoleRequest extends NewRoleRequest {
     super(RoleType.SELLER);
   }
 
-  public SellerRoleRequest(String userId, String identifyImageFront, String identifyImageBack) {
-    super(userId, RoleType.SELLER);
+  public SellerRoleRequest(
+      String userId,
+      String userPhoneNumber,
+      String userName,
+      String identifyImageFront,
+      String identifyImageBack) {
+    super(userId, userPhoneNumber, userName, RoleType.SELLER);
     this.identifyImageFront = identifyImageFront;
     this.identifyImageBack = identifyImageBack;
   }
