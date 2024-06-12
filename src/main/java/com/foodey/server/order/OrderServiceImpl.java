@@ -27,12 +27,12 @@ public class OrderServiceImpl implements OrderService {
   @Transactional
   public Order createOrderFromShopCart(User user, OrderRequest orderRequest) {
     String shopId = orderRequest.getShopId();
-
     String userId = user.getId();
+
     ShopCartDetail shopCart = shopCartService.getDetail(userId, shopId);
 
     if (shopCart.getItems().isEmpty()) {
-      throw new ResourceNotFoundException("ShopCart", "userId", userId);
+      throw new ResourceNotFoundException("ShopCart", "shopId:userId", shopId + ":" + userId);
     }
 
     Payment payment =
@@ -40,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
             orderRequest.getPaymentMethod(), PaymentStatus.PENDING, shopCart.getTotalPrice());
 
     Shop shop = shopService.findById(shopId);
+
     Order order =
         new Order(
             user,

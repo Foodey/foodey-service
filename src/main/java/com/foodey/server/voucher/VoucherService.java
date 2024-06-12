@@ -11,8 +11,9 @@ public interface VoucherService {
 
   Slice<Voucher> findActiveVouchers(Pageable pageable);
 
-  // Voucher findVoucherByCodeAndCanBeUsed(
-  //     String code, List<OrderItem> boughtOrderItems, String storeId, String customerId);
+  Slice<Voucher> findAllVouchers(Pageable pageable);
 
-  // Slice<Voucher> findVoucherCanBeAppliedToShopCart();
+  Slice<Voucher> findVouchersCanBeAppliedForShop(String shopId, Pageable pageable);
+
+  void applyVoucherForShopCart(String userId, String shopId);
 }

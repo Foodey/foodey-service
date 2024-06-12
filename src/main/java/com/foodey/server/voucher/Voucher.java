@@ -1,8 +1,8 @@
 package com.foodey.server.voucher;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,7 +30,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 
-/** Vouncher */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -38,12 +37,7 @@ import org.springframework.util.StringUtils;
 @Builder
 @Document(collection = "vouchers")
 @JsonIgnoreProperties(
-    value = {
-      "id",
-      "createdAt",
-      "updatedAt",
-      "shopOrBrandId",
-    },
+    value = {"id", "createdAt", "updatedAt", "createdBy"},
     allowGetters = true)
 public class Voucher implements Persistable<String> {
 
@@ -52,8 +46,20 @@ public class Voucher implements Persistable<String> {
   private String id;
 
   @Indexed(unique = true)
-  @Default
-  private String code = NanoIdUtils.randomNanoId();
+  // @Default
+  private String code;
+
+  // private String code = NanoIdUtils.randomNanoId().replace("-", "");
+
+  @JsonProperty("code")
+  public void setCode(String code) {
+    if (!StringUtils.hasText(code)) {
+      this.code = null;
+      // this.code = NanoIdUtils.randomNanoId().replace("-", "");
+    } else {
+      this.code = code;
+    }
+  }
 
   @Schema(description = "The name of the voucher")
   @OptimizedName
@@ -92,14 +98,17 @@ public class Voucher implements Persistable<String> {
 
   @CreatedDate
   @Schema(description = "The time the voucher is created")
+  @JsonIgnore
   private Instant createdAt;
 
   @LastModifiedDate
   @Schema(description = "The last time the voucher is updated")
+  @JsonIgnore
   private Instant updatedAt;
 
   @Schema(description = "The user id who created this voucher")
   @CreatedBy
+  @JsonIgnore
   private String createdBy;
 
   // constraints
