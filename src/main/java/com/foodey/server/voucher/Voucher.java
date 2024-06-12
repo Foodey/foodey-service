@@ -1,5 +1,6 @@
 package com.foodey.server.voucher;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foodey.server.shopcart.ShopCartDetail;
@@ -9,17 +10,22 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
@@ -28,6 +34,7 @@ import org.springframework.util.StringUtils;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Document(collection = "vouchers")
 @JsonIgnoreProperties(
@@ -44,7 +51,9 @@ public class Voucher implements Persistable<String> {
   @Schema(description = "The voucher id")
   private String id;
 
-  private String code;
+  @Indexed(unique = true)
+  @Default
+  private String code = NanoIdUtils.randomNanoId();
 
   @Schema(description = "The name of the voucher")
   @OptimizedName
@@ -70,15 +79,16 @@ public class Voucher implements Persistable<String> {
   @Default
   @FutureOrPresent
   @DateTimeFormat
-  private Instant activationDate = Instant.now();
+  private Instant activationDate = Instant.now().plus(Duration.ofMinutes(5));
 
   @Schema(
       description =
           "The date when the voucher is expired, the voucher cannot be used after this date.")
-  @NotNull
+  // @NotNull
   @Future
   @DateTimeFormat
-  private Instant expiryDate;
+  @Default
+  private Instant expiryDate = Instant.now().plus(Duration.ofDays(7));
 
   @CreatedDate
   @Schema(description = "The time the voucher is created")
@@ -87,6 +97,10 @@ public class Voucher implements Persistable<String> {
   @LastModifiedDate
   @Schema(description = "The last time the voucher is updated")
   private Instant updatedAt;
+
+  @Schema(description = "The user id who created this voucher")
+  @CreatedBy
+  private String createdBy;
 
   // constraints
 
@@ -108,14 +122,13 @@ public class Voucher implements Persistable<String> {
 
   @Schema(description = "The minimum quantity of products have to buy for the voucher to apply")
   @Default
-  private Long minimumBuyingQuantity = 1L;
+  private int minimumBuyingQuantity = 1;
 
   @Schema(
       description = "The minimum distance from the store for the voucher to apply. The unit is km")
   @Default
-  private Long minimumDistanceFromStore = 5L;
+  private int minimumDistanceFromStore = 5;
 
-  @NotNull
   @Min(0)
   @Schema(
       description =
@@ -123,6 +136,7 @@ public class Voucher implements Persistable<String> {
               + " method is PERCENTAGE, then the discount amount is the percentage of the total. If"
               + " the method is SPECIAL_AMOUNT, then the discount amount is the specific money"
               + " amount or specific product amount if type is PRODUCT.")
+  @NotNull
   private Double discountAmount;
 
   public boolean isExpired() {
@@ -137,8 +151,8 @@ public class Voucher implements Persistable<String> {
     return !StringUtils.hasText(this.shopVsBrandId) || this.shopVsBrandId.equals(storeId);
   }
 
-  public boolean isApplicableToStore(String storeId, String brandId) {
-    return isApplicableToStore(storeId) || isApplicableToStore(brandId);
+  public boolean isApplicableToStore(List<String> shopVsBrandIds) {
+    return shopVsBrandIds.stream().anyMatch(this::isApplicableToStore);
   }
 
   public boolean isApplicableToCategory(String categoryId) {
@@ -149,20 +163,23 @@ public class Voucher implements Persistable<String> {
     return appliedProductIds.contains(productId);
   }
 
-  public boolean isEnoughMiniumDistance(Long distance) {
+  public boolean isEnoughMiniumDistance(int distance) {
     return distance >= this.minimumDistanceFromStore;
   }
 
-  public boolean isEnoughMiniumBuyingQuantity(Long quantity) {
-    return quantity >= this.minimumBuyingQuantity;
+  public boolean isEnoughMiniumBuyingQuantity(int minimumBuyingQuantity) {
+    return minimumBuyingQuantity >= this.minimumBuyingQuantity;
   }
 
   public boolean canBeUsed() {
     return !isExpired() && isActivated() && quantity > 0;
   }
 
-  public boolean canBeAppliedTo(String storeId, String brandId, ShopCartDetail shopCartDetail) {
-    return canBeUsed();
+  public boolean canBeAppliedTo(List<String> shopVsBrandIds, ShopCartDetail shopCartDetail) {
+    // return canBeUsed() && isApplicableToStore(shopVsBrandIds) &&
+    // shopCartDetail.getTotalPrice
+
+    return false;
   }
 
   @Override

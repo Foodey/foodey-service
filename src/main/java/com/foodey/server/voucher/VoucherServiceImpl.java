@@ -1,9 +1,6 @@
 package com.foodey.server.voucher;
 
-import com.foodey.server.order.OrderItem;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -16,27 +13,19 @@ public class VoucherServiceImpl implements VoucherService {
 
   @Override
   public Voucher createVoucher(Voucher voucher) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'createVoucher'");
+    return voucherRepository.insert(voucher);
   }
 
   @Override
-  public Voucher findById(String voucherId) {
+  public Voucher findVoucherById(String voucherId) {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    throw new UnsupportedOperationException("Unimplemented method 'findVoucherById'");
   }
 
   @Override
-  public Slice<Voucher> getActiveVouchers(Pageable pageable) {
+  public Slice<Voucher> findActiveVouchers(org.springframework.data.domain.Pageable pageable) {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getActiveVouchers'");
-  }
-
-  @Override
-  public Voucher findVoucherByCodeAndCanBeUsed(
-      String code, List<OrderItem> boughtOrderItems, String storeId, String customerId) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'findVoucherByCodeAndCanBeUsed'");
+    throw new UnsupportedOperationException("Unimplemented method 'findActiveVouchers'");
   }
 
   // @Override
