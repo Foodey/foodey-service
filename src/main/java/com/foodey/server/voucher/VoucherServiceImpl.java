@@ -62,7 +62,7 @@ public class VoucherServiceImpl implements VoucherService {
   }
 
   @Override
-  public void applyVoucherForShopCart(String voucherId, String userId, String shopId) {
+  public Voucher applyVoucherForShopCart(String voucherId, String userId, String shopId) {
 
     ShopCartDetail shopCartDetail = shopCartService.getDetail(shopId);
 
@@ -80,6 +80,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     shopCartDetail.getShopCart().setVoucher(voucher);
     shopCartService.save(shopCartDetail.getShopCart());
+    return voucher;
   }
 
   @Override

@@ -59,6 +59,8 @@ public class Order implements Persistable<String> {
 
   private String shippingAddress;
 
+  // private Address address;
+
   @NotNull private OrderStatus status;
 
   private List<OrderItem> items;
