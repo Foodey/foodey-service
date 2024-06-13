@@ -91,12 +91,9 @@ public class Voucher implements Persistable<String> {
   private Instant activationDate = Instant.now().plus(Duration.ofMinutes(3));
 
   @JsonProperty("activationDate")
-  public void setActivationDate(@DateTimeFormat Instant activationDate) {
-    if (activationDate == null) {
-      this.activationDate = Instant.now().plus(Duration.ofMinutes(3));
-    } else {
-      this.activationDate = activationDate;
-    }
+  public void setActivationDate(@FutureOrPresent @DateTimeFormat Instant activationDate) {
+    this.activationDate =
+        (activationDate == null) ? Instant.now().plus(Duration.ofMinutes(3)) : activationDate;
   }
 
   @Schema(
@@ -109,12 +106,8 @@ public class Voucher implements Persistable<String> {
   private Instant expiryDate = Instant.now().plus(Duration.ofDays(7));
 
   @JsonProperty("expiryDate")
-  public void setExpiryDate(@DateTimeFormat Instant expiryDate) {
-    if (expiryDate == null) {
-      this.expiryDate = Instant.now().plus(Duration.ofDays(7));
-    } else {
-      this.expiryDate = expiryDate;
-    }
+  public void setExpiryDate(@Future @DateTimeFormat Instant expiryDate) {
+    this.expiryDate = (expiryDate == null) ? Instant.now().plus(Duration.ofDays(7)) : expiryDate;
   }
 
   @CreatedDate

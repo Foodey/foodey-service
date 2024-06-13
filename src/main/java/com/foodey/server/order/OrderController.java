@@ -106,7 +106,7 @@ public class OrderController {
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @PatchMapping("/{orderId}/cancel")
-  public void cancelOrder(String orderId) {
+  public void cancelOrder(@PathVariable("orderId") String orderId) {
     orderService.cancelOrder(orderId);
   }
 }
