@@ -3,6 +3,7 @@ package com.foodey.server.user.model;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.foodey.server.common.model.CloudinaryImage;
 import com.foodey.server.common.model.CloudinaryImageManager;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.user.enums.RoleType;
@@ -48,6 +49,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 public class User implements UserDetails, UserRole, Persistable<String>, CloudinaryImageManager {
+  @Transient private static final String USER_AVATAR_FOLDER = "user-avatars";
 
   @JsonIgnore @Id private String id;
 
@@ -82,16 +84,14 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
   private String email;
 
   public String getCloudinaryAvatarFolder() {
-    return getCloudinaryFolder() + "/avatar";
+    return USER_AVATAR_FOLDER;
   }
+
+  @Default private CloudinaryImage cldAvatar = new CloudinaryImage(USER_AVATAR_FOLDER);
 
   @Schema(description = "The avatar of the account")
   public String getAvatar() {
-    return getCloudinaryImageEndpoint() + "/" + getCloudinaryAvatarFolder() + "/" + pubId;
-  }
-
-  public String getAvatarCloudinaryPath() {
-    return getCloudinaryAvatarFolder() + "/" + pubId;
+    return cldAvatar.getUrl();
   }
 
   @Schema(description = "The last logout time of the account")

@@ -1,7 +1,7 @@
 package com.foodey.server.shop.service.impl;
 
 import com.foodey.server.product.model.Product;
-import com.foodey.server.product.model.ProductWithCloudinaryMetadata;
+import com.foodey.server.product.model.ProductWithApiUploadOptions;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.dto.MenuView;
 import com.foodey.server.shop.event.ProductsAddedToMenuEvent;
@@ -10,7 +10,7 @@ import com.foodey.server.shop.model.Menu;
 import com.foodey.server.shop.model.ShopBrand;
 import com.foodey.server.shop.service.MenuService;
 import com.foodey.server.shop.service.ShopBrandService;
-import com.foodey.server.shop.service.ShopService;
+import com.foodey.server.upload.CloudinaryService;
 import com.foodey.server.user.model.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,9 @@ public class MenuServiceImpl implements MenuService {
 
   private final ProductRepository productRepository;
   private final ShopBrandService shopBrandService;
-  private final ShopService shopService;
+  // private final ShopService shopService;
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final CloudinaryService cloudinaryService;
 
   @Override
   @Transactional
@@ -65,7 +66,7 @@ public class MenuServiceImpl implements MenuService {
 
   @Override
   @Transactional
-  public ProductWithCloudinaryMetadata addProductToMenu(
+  public ProductWithApiUploadOptions addProductToMenu(
       User user, String brandId, String shopId, Product product, boolean appliedToAllShops) {
     // TODO: Validate shop
 
@@ -92,7 +93,8 @@ public class MenuServiceImpl implements MenuService {
 
     publishProductsAddedEvent(user, brandId, shopId, List.of(product), appliedToAllShops);
 
-    return new ProductWithCloudinaryMetadata(savedProduct);
+    return new ProductWithApiUploadOptions(
+        savedProduct, cloudinaryService.getUploadApiOptions(product.getCldImage()));
   }
 
   private void publishProductsAddedEvent(

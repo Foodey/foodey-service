@@ -1,6 +1,7 @@
 package com.foodey.server.product.service;
 
 import com.foodey.server.product.model.ProductCategory;
+import java.util.Map;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -17,4 +18,6 @@ public interface ProductCategoryService {
   boolean existsById(String id);
 
   void deleteById(String id);
+
+  Map<String, Object> getImageUploadApiOptions(String id);
 }

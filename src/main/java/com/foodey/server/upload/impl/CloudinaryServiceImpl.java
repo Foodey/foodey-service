@@ -45,19 +45,18 @@ public class CloudinaryServiceImpl implements CloudinaryService {
   }
 
   @Override
-  public Map<String, Object> generateCloudinaryRequestOptions(Map<String, Object> params) {
-    assert params != null;
-
-    String signature = generateSignature(params);
+  public Map<String, Object> getUploadApiOptions(Map<String, Object> paramsToSign) {
+    String signature = cloudinary.apiSignRequest(paramsToSign, CloudinaryConfig.API_SECRET);
     try {
-      params.put("signature", signature);
-      return params;
+      paramsToSign.put("signature", signature);
     } catch (UnsupportedOperationException e) {
-      return new HashMap<>(params) {
-        {
-          put("signature", signature);
-        }
-      };
+      paramsToSign =
+          new HashMap<>(paramsToSign) {
+            {
+              put("signature", signature);
+            }
+          };
     }
+    return paramsToSign;
   }
 }

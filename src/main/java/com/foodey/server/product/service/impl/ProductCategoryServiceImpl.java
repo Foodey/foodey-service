@@ -5,6 +5,8 @@ import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.product.model.ProductCategory;
 import com.foodey.server.product.repository.ProductCategoryRepository;
 import com.foodey.server.product.service.ProductCategoryService;
+import com.foodey.server.upload.CloudinaryService;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class ProductCategoryServiceImpl implements ProductCategoryService {
 
   private final ProductCategoryRepository productCategoryRepository;
+  private final CloudinaryService cloudinaryService;
 
   @Override
   @CacheEvict(value = "productCategories", allEntries = true)
@@ -24,7 +27,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     if (productCategoryRepository.existsByName(productCategory.getName())) {
       throw new ResourceAlreadyInUseException("ProductCategory", "name", productCategory.getName());
     }
-    return productCategoryRepository.save(productCategory);
+
+    ProductCategory newProductCategory = productCategoryRepository.save(productCategory);
+    newProductCategory.setCldImageUploadApiOptions(
+        cloudinaryService.getUploadApiOptions(newProductCategory.getCldImage()));
+    return newProductCategory;
   }
 
   @Override
@@ -53,5 +60,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Override
   public void deleteById(String id) {
     productCategoryRepository.deleteById(id);
+  }
+
+  @Override
+  public Map<String, Object> getImageUploadApiOptions(String id) {
+    ProductCategory productCategory = findById(id);
+    return cloudinaryService.getUploadApiOptions(productCategory.getCldImage());
   }
 }

@@ -2,6 +2,8 @@ package com.foodey.server.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.foodey.server.common.model.CloudinaryImage;
+import com.foodey.server.common.model.CloudinaryImageManager;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.mongodb.lang.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +26,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @JsonIgnoreProperties(
     value = {"id", "ownerId", "createdAt", "updatedAt", "shopId", "brandId"},
     allowGetters = true)
-public class Product implements Persistable<String> {
+public class Product implements Persistable<String>, CloudinaryImageManager {
 
   @Schema(description = "The unique identifier of the product")
   @Id
@@ -43,13 +45,10 @@ public class Product implements Persistable<String> {
   private double price;
 
   @Schema(description = "The url image of the product")
-  // private String image;
-  public String getImage() {
-    return "https://res.cloudinary.com/foodey/image/upload/" + getCloudinaryFolder() + "/" + id;
-  }
+  private CloudinaryImage cldImage = new CloudinaryImage(getCloudinaryFolder());
 
-  public String getCloudinaryFolder() {
-    return Product.class.getSimpleName().toLowerCase() + "s";
+  public String getImage() {
+    return cldImage.getUrl();
   }
 
   @Schema(description = "The description of the product")

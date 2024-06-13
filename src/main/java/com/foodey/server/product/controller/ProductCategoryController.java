@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -74,5 +75,11 @@ public class ProductCategoryController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void removeCategory(@PathVariable(name = "id") String id) {
     productCategoryService.deleteById(id);
+  }
+
+  @RolesAllowed(RoleType.Fields.ADMIN)
+  @GetMapping("/{id}/image-upload-api-options")
+  public Map<String, Object> getApiImageUploadOptions(@PathVariable("id") String id) {
+    return productCategoryService.getImageUploadApiOptions(id);
   }
 }

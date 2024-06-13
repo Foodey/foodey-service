@@ -1,7 +1,6 @@
 package com.foodey.server.user.controller;
 
 import com.foodey.server.annotation.CurrentUser;
-import com.foodey.server.common.model.CloudinaryUploadApiOptions;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.upload.CloudinaryService;
@@ -51,18 +50,19 @@ public class UserController {
         cloudinaryService.uploadFile(file, user.getCloudinaryAvatarFolder(), user.getPubId()));
   }
 
-  @Operation(summary = "Get profile of the current user")
-  @ApiResponses({
-    @ApiResponse(responseCode = "200", description = "Get profile successfully"),
-    @ApiResponse(responseCode = "400", description = "Bad request"),
-    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
-    @ApiResponse(responseCode = "500", description = "Internal server error")
-  })
-  @GetMapping("/avatar/upload-options")
-  public CloudinaryUploadApiOptions getAvatarUploadApiOptions(@CurrentUser User user) {
-    return userService.getAvatarUploadApiOptions(user);
-  }
+  // @Operation(summary = "Get profile of the current user")
+  // @ApiResponses({
+  //   @ApiResponse(responseCode = "200", description = "Get profile successfully"),
+  //   @ApiResponse(responseCode = "400", description = "Bad request"),
+  //   @ApiResponse(responseCode = "401", description = "Unauthorized"),
+  //   @ApiResponse(responseCode = "403", description = "User is not allowed to perform this
+  // action"),
+  //   @ApiResponse(responseCode = "500", description = "Internal server error")
+  // })
+  // @GetMapping("/avatar/upload-options")
+  // public CloudinaryUploadApiOptions getAvatarUploadApiOptions(@CurrentUser User user) {
+  //   return userService.getAvatarUploadApiOptions(user);
+  // }
 
   @Operation(summary = "Get profile of the current user")
   @ApiResponses({
