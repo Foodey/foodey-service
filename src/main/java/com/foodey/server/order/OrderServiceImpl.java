@@ -157,5 +157,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     order.setStatus(OrderStatus.CANCELED);
+    orderRepository.save(order);
   }
 }
