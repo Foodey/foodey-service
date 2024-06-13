@@ -40,12 +40,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     Voucher voucher = shopCart.getVoucher();
+    String voucherCode = null;
+    String voucherName = null;
+
     if (voucher != null) {
       if (voucher.isExpired()) {
         throw new VoucherInvalidException("Voucher is expired");
       } else if (!voucher.isEnoughQuantity()) {
         throw new VoucherInvalidException("Voucher is out of stock");
       }
+
+      voucherCode = voucher.getCode();
+      voucherName = voucher.getName();
+      voucherService.saveVoucher(voucher.apply());
     }
 
     Payment payment =
@@ -65,13 +72,11 @@ public class OrderServiceImpl implements OrderService {
             null,
             orderRequest.getAddress(),
             payment,
-            voucher.getCode(),
-            voucher.getName(),
+            voucherCode,
+            voucherName,
             shopCart.getTotalDiscount(),
             orderRequest.getNote(),
             shopCart.getItems());
-
-    voucherService.saveVoucher(voucher.apply());
 
     Order newOrder = orderRepository.save(order);
 
@@ -152,6 +157,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public void cancelOrder(String orderId) {
     Order order = findById(orderId);
+
     if (order.getStatus() != OrderStatus.PENDING) {
       throw new AccessDeniedException("You can only cancel pending order");
     }
