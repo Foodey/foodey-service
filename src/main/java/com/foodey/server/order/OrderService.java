@@ -31,4 +31,6 @@ public interface OrderService {
   Slice<Order> findOrdersByUserIdAndStatus(String userId, OrderStatus status, Pageable pageable);
 
   Slice<Order> findOrdersByShopIdAndStatus(String shopId, OrderStatus status, Pageable pageable);
+
+  void cancelOrder(String orderId);
 }

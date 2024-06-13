@@ -1,6 +1,8 @@
 package com.foodey.server.voucher;
 
+import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.user.enums.RoleType;
+import com.foodey.server.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -70,6 +72,21 @@ public class VoucherController {
     return voucherService.findAllVouchers(pageable);
   }
 
+  @Operation(summary = "Get voucher by Id")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "200", description = "Voucher found"),
+        @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+      })
+  @GetMapping("/{id}")
+  @RolesAllowed({RoleType.Fields.ADMIN, RoleType.Fields.SELLER})
+  public Voucher findVoucherById(@PathVariable("id") String id) {
+    return voucherService.findVoucherById(id);
+  }
+
   @Operation(summary = "Find vouchers can be applied to shop cart")
   @ApiResponses(
       value = {
@@ -85,5 +102,42 @@ public class VoucherController {
       @PathVariable("shopId") String shopId,
       @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
     return voucherService.findVouchersCanBeAppliedForShop(shopId, pageable);
+  }
+
+  @Operation(summary = "Find vouchers can be applied to shop cart")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "200", description = "Vouchers found"),
+        @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+      })
+  @GetMapping("seller/shops/{shopId}")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Slice<Voucher> findVouchersOfShop(
+      @PathVariable("shopId") String shopId,
+      @CurrentUser User user,
+      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
+    return voucherService.findVouchersOfCurrentShop(user, shopId, pageable);
+  }
+
+  @Operation(summary = "Find vouchers can be applied to shop cart")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "200", description = "Vouchers found"),
+        @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+      })
+  @PostMapping("{voucherId}/shops/{shopId}")
+  @RolesAllowed(RoleType.Fields.CUSTOMER)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void applyVoucherForShopCart(
+      @PathVariable("voucherId") String voucherId,
+      @PathVariable("shopId") String shopId,
+      @CurrentUser User user) {
+    voucherService.applyVoucherForShopCart(voucherId, user.getId(), shopId);
   }
 }

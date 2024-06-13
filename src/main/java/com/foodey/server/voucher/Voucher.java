@@ -1,9 +1,10 @@
 package com.foodey.server.voucher;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foodey.server.shopcart.ShopCartDetail;
+import com.foodey.server.order.OrderItem;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
@@ -46,20 +47,22 @@ public class Voucher implements Persistable<String> {
   private String id;
 
   @Indexed(unique = true)
-  // @Default
   private String code;
-
-  // private String code = NanoIdUtils.randomNanoId().replace("-", "");
 
   @JsonProperty("code")
   public void setCode(String code) {
     if (!StringUtils.hasText(code)) {
-      this.code = null;
-      // this.code = NanoIdUtils.randomNanoId().replace("-", "");
+      this.code = NanoIdUtils.randomNanoId();
     } else {
       this.code = code;
     }
   }
+
+  // private String generateUniqueCode() {
+  //   char[] alphabet =
+  //       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+  //   return NanoIdUtils.randomNanoId(NanoIdUtils.DEFAULT_NUMBER_GENERATOR, alphabet, 10);
+  // }
 
   @Schema(description = "The name of the voucher")
   @OptimizedName
@@ -148,12 +151,83 @@ public class Voucher implements Persistable<String> {
   @NotNull
   private Double discountAmount;
 
+  public Double getPriceAfterDiscount(List<OrderItem> orderItems) {
+    Double currentPrice = orderItems.stream().mapToDouble(OrderItem::getTotalPrice).sum();
+    return getPriceAfterDiscount(currentPrice, orderItems);
+  }
+
+  public Double getPriceAfterDiscount(Double currentPrice, List<OrderItem> orderItems) {
+    switch (method) {
+      case PERCENTAGE:
+        return currentPrice * (100 - discountAmount) / 100;
+      case SPECIAL_AMOUNT:
+        switch (type) {
+          case MONEY:
+            {
+              double newPrice = currentPrice - discountAmount;
+              return newPrice < 0 ? 0 : newPrice;
+            }
+          case PRODUCT:
+            {
+              // filter items that can be apply and sort by price
+              boolean hasProductConstraint =
+                  appliedProductIds != null && !appliedProductIds.isEmpty();
+              boolean hasCategoryConstraint =
+                  appliedCategoryIds != null && !appliedCategoryIds.isEmpty();
+
+              List<OrderItem> itemsApllicaple =
+                  orderItems.stream()
+                      .filter(
+                          item -> {
+                            if (hasProductConstraint
+                                && appliedProductIds.contains(item.getProductId())) {
+                              return true;
+                            } else if (hasCategoryConstraint
+                                && appliedCategoryIds.contains(item.getCategoryId())) {
+                              return true;
+                            }
+                            return !hasProductConstraint && !hasCategoryConstraint; // no constraint
+                          })
+                      .sorted((a, b) -> Double.compare(a.getTotalPrice(), b.getTotalPrice()))
+                      .toList();
+
+              Double discountedAmount = discountAmount;
+              double newPrice = currentPrice;
+              for (OrderItem item : itemsApllicaple) {
+                if (discountedAmount >= item.getTotalPrice()) {
+                  discountedAmount -= item.getQuantity();
+                  newPrice -= item.getTotalPrice();
+                } else {
+                  newPrice -= discountedAmount * item.getProductPrice();
+                  break;
+                }
+              }
+              return newPrice;
+            }
+          default:
+            break;
+        }
+    }
+    return currentPrice;
+  }
+
+  public Voucher apply() {
+    if (this.quantity > 0) {
+      this.quantity--;
+    }
+    return this;
+  }
+
   public boolean isExpired() {
     return this.expiryDate.isBefore(Instant.now());
   }
 
   public boolean isActivated() {
     return this.activationDate.isBefore(Instant.now());
+  }
+
+  public boolean isEnoughQuantity() {
+    return this.quantity > 0;
   }
 
   private boolean isApplicableToStore(String storeId) {
@@ -165,30 +239,41 @@ public class Voucher implements Persistable<String> {
   }
 
   public boolean isApplicableToCategory(String categoryId) {
-    return appliedCategoryIds.contains(categoryId);
+    return appliedCategoryIds == null || appliedCategoryIds.contains(categoryId);
   }
 
   public boolean isApplicableToProduct(String productId) {
-    return appliedProductIds.contains(productId);
+    return appliedProductIds == null || appliedProductIds.contains(productId);
   }
 
   public boolean isEnoughMiniumDistance(int distance) {
     return distance >= this.minimumDistanceFromStore;
   }
 
-  public boolean isEnoughMiniumBuyingQuantity(int minimumBuyingQuantity) {
-    return minimumBuyingQuantity >= this.minimumBuyingQuantity;
+  public boolean isEnoughMiniumBuyingQuantity(List<OrderItem> orderItems) {
+    if (orderItems == null || orderItems.isEmpty()) return false;
+
+    long totalConstraintQuantity = 0;
+    long totalQuantity = 0;
+
+    boolean hasProductConstraint = appliedProductIds != null && !appliedProductIds.isEmpty();
+    boolean hasCategoryConstraint = appliedCategoryIds != null && !appliedCategoryIds.isEmpty();
+
+    for (OrderItem orderItem : orderItems) {
+      totalQuantity += orderItem.getQuantity();
+      if (hasProductConstraint && appliedProductIds.contains(orderItem.getProductId())) {
+        totalConstraintQuantity += orderItem.getQuantity();
+      } else if (hasCategoryConstraint && appliedCategoryIds.contains(orderItem.getCategoryId())) {
+        totalConstraintQuantity += orderItem.getQuantity();
+      }
+      if (totalConstraintQuantity > minimumBuyingQuantity) return true;
+    }
+    if (hasProductConstraint || hasCategoryConstraint) return false;
+    return totalQuantity >= minimumBuyingQuantity;
   }
 
   public boolean canBeUsed() {
     return !isExpired() && isActivated() && quantity > 0;
-  }
-
-  public boolean canBeAppliedTo(List<String> shopVsBrandIds, ShopCartDetail shopCartDetail) {
-    // return canBeUsed() && isApplicableToStore(shopVsBrandIds) &&
-    // shopCartDetail.getTotalPrice
-
-    return false;
   }
 
   @Override

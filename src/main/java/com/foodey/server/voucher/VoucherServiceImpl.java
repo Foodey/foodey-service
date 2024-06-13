@@ -1,13 +1,17 @@
 package com.foodey.server.voucher;
 
+import com.foodey.server.exceptions.ResourceAlreadyInUseException;
 import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
+import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.shopcart.ShopCartService;
+import com.foodey.server.user.model.User;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -22,7 +26,11 @@ public class VoucherServiceImpl implements VoucherService {
 
   @Override
   public Voucher createVoucher(Voucher voucher) {
-    return voucherRepository.insert(voucher);
+    try {
+      return voucherRepository.insert(voucher);
+    } catch (DuplicateKeyException e) {
+      throw new ResourceAlreadyInUseException("Voucher", "code", voucher.getCode());
+    }
   }
 
   @Override
@@ -35,7 +43,7 @@ public class VoucherServiceImpl implements VoucherService {
   @Override
   public Slice<Voucher> findActiveVouchers(Pageable pageable) {
     return voucherRepository.findActiveVouchersByExpiryAfter(
-        Instant.now().plus(Duration.ofMinutes(3)), pageable);
+        Instant.now().plus(Duration.ofMinutes(2)), pageable);
   }
 
   @Override
@@ -49,10 +57,40 @@ public class VoucherServiceImpl implements VoucherService {
 
     return voucherRepository.findActiveVouchersForShopByExpiryAfter(
         Arrays.asList(shopId, shop.getBrandId()),
-        Instant.now().plus(Duration.ofMinutes(3)),
+        Instant.now().plus(Duration.ofMinutes(2)),
         pageable);
   }
 
   @Override
-  public void applyVoucherForShopCart(String userId, String shopId) {}
+  public void applyVoucherForShopCart(String voucherId, String userId, String shopId) {
+
+    ShopCartDetail shopCartDetail = shopCartService.getDetail(shopId);
+
+    Voucher voucher = findVoucherById(voucherId);
+
+    if (!voucher.isActivated()) {
+      throw new VoucherInvalidException("Voucher is not activated");
+    } else if (voucher.isExpired()) {
+      throw new VoucherInvalidException("Voucher is expired");
+    } else if (!voucher.isEnoughQuantity()) {
+      throw new VoucherInvalidException("Voucher is out of quantity");
+    } else if (!voucher.isEnoughMiniumBuyingQuantity(shopCartDetail.getItems())) {
+      throw new VoucherInvalidException("Not enough constraint products in cart");
+    }
+
+    shopCartDetail.getShopCart().setVoucher(voucher);
+    shopCartService.save(shopCartDetail.getShopCart());
+  }
+
+  @Override
+  public Slice<Voucher> findVouchersOfCurrentShop(User user, String shopId, Pageable pageable) {
+    Shop shop = shopService.findByIdAndVerifyOwner(shopId, user);
+    return voucherRepository.findByShopVsBrandIdIn(
+        Arrays.asList(shopId, shop.getBrandId()), pageable);
+  }
+
+  @Override
+  public Voucher saveVoucher(Voucher voucher) {
+    return voucherRepository.save(voucher);
+  }
 }

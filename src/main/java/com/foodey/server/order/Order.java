@@ -53,6 +53,10 @@ public class Order implements Persistable<String> {
 
   private String voucherCode;
 
+  private double totalDiscount;
+
+  private String voucherName;
+
   private String shippingAddress;
 
   @NotNull private OrderStatus status;
@@ -74,6 +78,8 @@ public class Order implements Persistable<String> {
       String shippingAddress,
       Payment payment,
       String voucherCode,
+      String voucherName,
+      double totalDiscount,
       String note,
       List<OrderItem> items) {
     this.userId = user.getId();
@@ -86,6 +92,8 @@ public class Order implements Persistable<String> {
     this.shippingAddress = shippingAddress;
     this.payment = payment;
     this.voucherCode = voucherCode;
+    this.voucherName = voucherName;
+    this.totalDiscount = totalDiscount;
     this.items = items;
     this.note = note == null ? "" : note;
     this.status = OrderStatus.PENDING;
@@ -102,6 +110,8 @@ public class Order implements Persistable<String> {
       String shippingAddress,
       Payment payment,
       String voucherCode,
+      String voucherName,
+      double totalDiscount,
       String note,
       List<OrderItem> items) {
     this.userId = userId;
@@ -114,6 +124,8 @@ public class Order implements Persistable<String> {
     this.shippingAddress = shippingAddress;
     this.payment = payment;
     this.voucherCode = voucherCode;
+    this.voucherName = voucherName;
+    this.totalDiscount = totalDiscount;
     this.items = items;
     this.note = note == null ? "" : note;
     this.status = OrderStatus.PENDING;

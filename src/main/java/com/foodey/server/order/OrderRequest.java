@@ -13,8 +13,6 @@ public class OrderRequest implements IBodyRequest {
 
   PaymentMethod paymentMethod = PaymentMethod.CASH;
 
-  String voucherCode;
-
   String address;
 
   String note;

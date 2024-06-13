@@ -1,6 +1,7 @@
 package com.foodey.server.shopcart;
 
 import com.foodey.server.utils.PrincipalUtils;
+import com.foodey.server.voucher.Voucher;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,16 @@ public class ShopCart {
   private String userId;
 
   private long numberOfItems;
+
+  private Voucher voucher;
+
+  public void setVoucher(Voucher voucher) {
+    this.voucher = voucher;
+  }
+
+  public Voucher getVoucher() {
+    return voucher;
+  }
 
   private Map<String, Long> productsWithQuantity;
 

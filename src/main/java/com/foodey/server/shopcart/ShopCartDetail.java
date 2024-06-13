@@ -1,7 +1,10 @@
 package com.foodey.server.shopcart;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodey.server.order.OrderItem;
+import com.foodey.server.voucher.Voucher;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,18 +14,45 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ShopCartDetail {
 
-  private double totalPrice;
-  private long numberOfItems;
+  private double totalRealPrice;
+  private double priceAfterDiscount;
+
+  @JsonIgnore
+  @Setter(AccessLevel.NONE)
+  private ShopCart shopCart;
+
+  public long getNumberOfItems() {
+    return shopCart.getNumberOfItems();
+  }
+
+  public Voucher getVoucher() {
+    return shopCart.getVoucher();
+  }
 
   private List<OrderItem> items;
 
   public ShopCartDetail(ShopCart shopCart, List<OrderItem> items) {
-    this.numberOfItems = shopCart.getNumberOfItems();
+    this.shopCart = shopCart;
     this.items = items;
-    calculateTotalPrice();
+    caculatePrice(items);
   }
 
-  void calculateTotalPrice() {
-    totalPrice = items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
+  void caculatePrice(List<OrderItem> items) {
+    totalRealPrice = items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
+    if (getVoucher() != null)
+      priceAfterDiscount = getVoucher().getPriceAfterDiscount(totalRealPrice, items);
+    else priceAfterDiscount = totalRealPrice;
+  }
+
+  public double getTotalRealPrice() {
+    return totalRealPrice;
+  }
+
+  public double getTotalDiscount() {
+    return totalRealPrice - priceAfterDiscount;
+  }
+
+  public double getPriceAfterDiscount() {
+    return priceAfterDiscount;
   }
 }

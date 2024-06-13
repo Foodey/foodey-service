@@ -8,6 +8,9 @@ import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.shopcart.ShopCartService;
 import com.foodey.server.user.model.User;
+import com.foodey.server.voucher.Voucher;
+import com.foodey.server.voucher.VoucherInvalidException;
+import com.foodey.server.voucher.VoucherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,6 +25,7 @@ public class OrderServiceImpl implements OrderService {
   private final OrderRepository orderRepository;
   private final ShopCartService shopCartService;
   private final ShopService shopService;
+  private final VoucherService voucherService;
 
   @Override
   @Transactional
@@ -35,9 +39,20 @@ public class OrderServiceImpl implements OrderService {
       throw new ResourceNotFoundException("ShopCart", "shopId:userId", shopId + ":" + userId);
     }
 
+    Voucher voucher = shopCart.getVoucher();
+    if (voucher != null) {
+      if (voucher.isExpired()) {
+        throw new VoucherInvalidException("Voucher is expired");
+      } else if (!voucher.isEnoughQuantity()) {
+        throw new VoucherInvalidException("Voucher is out of stock");
+      }
+    }
+
     Payment payment =
         new Payment(
-            orderRequest.getPaymentMethod(), PaymentStatus.PENDING, shopCart.getTotalPrice());
+            orderRequest.getPaymentMethod(),
+            PaymentStatus.PENDING,
+            shopCart.getPriceAfterDiscount());
 
     Shop shop = shopService.findById(shopId);
 
@@ -50,9 +65,13 @@ public class OrderServiceImpl implements OrderService {
             null,
             orderRequest.getAddress(),
             payment,
-            orderRequest.getVoucherCode(),
+            voucher.getCode(),
+            voucher.getName(),
+            shopCart.getTotalDiscount(),
             orderRequest.getNote(),
             shopCart.getItems());
+
+    voucherService.saveVoucher(voucher.apply());
 
     Order newOrder = orderRepository.save(order);
 
@@ -128,5 +147,15 @@ public class OrderServiceImpl implements OrderService {
       throw new AccessDeniedException("You are not the owner of this order");
     }
     return order;
+  }
+
+  @Override
+  public void cancelOrder(String orderId) {
+    Order order = findById(orderId);
+    if (order.getStatus() != OrderStatus.PENDING) {
+      throw new AccessDeniedException("You can only cancel pending order");
+    }
+
+    order.setStatus(OrderStatus.CANCELED);
   }
 }

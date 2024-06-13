@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -94,5 +95,18 @@ public class OrderController {
       @PageableDefault(page = 0, size = 8, sort = "createdAt", direction = Direction.DESC)
           Pageable pageable) {
     return orderService.findOrdersByShopIdAndStatus(shopId, status, pageable);
+  }
+
+  @Operation(summary = "Cancel an order")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Order canceled successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @PatchMapping("/{orderId}/cancel")
+  public void cancelOrder(String orderId) {
+    orderService.cancelOrder(orderId);
   }
 }

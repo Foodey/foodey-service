@@ -1,9 +1,12 @@
 package com.foodey.server.voucher;
 
+import com.foodey.server.user.model.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface VoucherService {
+
+  Voucher saveVoucher(Voucher voucher);
 
   Voucher createVoucher(Voucher voucher);
 
@@ -15,5 +18,7 @@ public interface VoucherService {
 
   Slice<Voucher> findVouchersCanBeAppliedForShop(String shopId, Pageable pageable);
 
-  void applyVoucherForShopCart(String userId, String shopId);
+  Slice<Voucher> findVouchersOfCurrentShop(User user, String shopId, Pageable pageable);
+
+  void applyVoucherForShopCart(String voucherId, String userId, String shopId);
 }
