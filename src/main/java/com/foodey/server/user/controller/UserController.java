@@ -6,6 +6,7 @@ import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.upload.CloudinaryService;
 import com.foodey.server.user.enums.RoleType;
+import com.foodey.server.user.model.Role;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.SellerRoleRequest;
 import com.foodey.server.user.service.UserService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -73,6 +75,18 @@ public class UserController {
   @GetMapping("/me/profile")
   public User getProfile(@CurrentUser User user) {
     return user;
+  }
+
+  @Operation(summary = "Get roles of the current user")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Get roles successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/me/roles")
+  public Set<Role> getRoles(@CurrentUser User user) {
+    return user.getRoles();
   }
 
   @Operation(summary = "Request a seller role")
