@@ -88,7 +88,7 @@ public class Voucher implements Persistable<String> {
   @Default
   @FutureOrPresent
   @DateTimeFormat
-  private Instant activationDate = Instant.now().plus(Duration.ofMinutes(5));
+  private Instant activationDate = Instant.now().plus(Duration.ofMinutes(3));
 
   @Schema(
       description =

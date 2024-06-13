@@ -20,5 +20,5 @@ public interface VoucherService {
 
   Slice<Voucher> findVouchersOfCurrentShop(User user, String shopId, Pageable pageable);
 
-  void applyVoucherForShopCart(String voucherId, String userId, String shopId);
+  Voucher applyVoucherForShopCart(String voucherId, String userId, String shopId);
 }

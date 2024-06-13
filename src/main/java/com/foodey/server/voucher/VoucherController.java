@@ -65,7 +65,8 @@ public class VoucherController {
   @RolesAllowed({RoleType.Fields.ADMIN, RoleType.Fields.SELLER})
   public Slice<Voucher> findVouchers(
       @RequestParam(name = "active", defaultValue = "true") boolean active,
-      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
+      @PageableDefault(page = 0, size = 12, direction = Direction.ASC, sort = "expiryDate")
+          Pageable pageable) {
     if (active) {
       return voucherService.findActiveVouchers(pageable);
     }
@@ -134,10 +135,10 @@ public class VoucherController {
   @PostMapping("{voucherId}/shops/{shopId}")
   @RolesAllowed(RoleType.Fields.CUSTOMER)
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void applyVoucherForShopCart(
+  public Voucher applyVoucherForShopCart(
       @PathVariable("voucherId") String voucherId,
       @PathVariable("shopId") String shopId,
       @CurrentUser User user) {
-    voucherService.applyVoucherForShopCart(voucherId, user.getId(), shopId);
+    return voucherService.applyVoucherForShopCart(voucherId, user.getId(), shopId);
   }
 }
