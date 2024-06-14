@@ -6,14 +6,18 @@ import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.repository.ShopRepository;
+import com.foodey.server.upload.service.CloudinaryService;
 import com.foodey.server.user.exceptions.NewRoleRequestAlreadySentException;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;
+import com.foodey.server.user.model.decorator.NewRoleRequestResponse;
 import com.foodey.server.user.model.decorator.SellerRoleDecorator;
+import com.foodey.server.user.model.decorator.SellerRoleImageUploadOptions;
 import com.foodey.server.user.model.decorator.SellerRoleRequest;
 import com.foodey.server.user.repository.NewRoleRequestRepository;
 import com.foodey.server.user.repository.UserRepository;
 import com.foodey.server.user.service.UserService;
+import com.foodey.server.utils.ConsoleUtils;
 import com.foodey.server.utils.SortUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
   private final NewRoleRequestRepository newRoleRequestRepository;
   private final ShopRepository shopRepository;
   private final ProductRepository productRepository;
+  private final CloudinaryService cloudinaryService;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -88,7 +93,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void requestNewRole(User user, NewRoleRequest request) {
+  public NewRoleRequestResponse requestNewRole(User user, NewRoleRequest request) {
     if (user.hasRole(request.getRole())
         || newRoleRequestRepository.existsByUserIdAndRole(user.getId(), request.getRole()))
       throw new NewRoleRequestAlreadySentException(request.getRole());
@@ -99,6 +104,14 @@ public class UserServiceImpl implements UserService {
     request.setUserPhoneNumber(user.getPhoneNumber());
 
     newRoleRequestRepository.save(request);
+
+    if (request instanceof SellerRoleRequest) {
+      SellerRoleRequest sellerRoleRequest = (SellerRoleRequest) request;
+      return new SellerRoleImageUploadOptions(
+          cloudinaryService.getUploadApiOptions(sellerRoleRequest.getCldIdentifyImageFront()),
+          cloudinaryService.getUploadApiOptions(sellerRoleRequest.getCldIdentifyImageBack()));
+    }
+    return null;
   }
 
   @Override
@@ -109,8 +122,6 @@ public class UserServiceImpl implements UserService {
   }
 
   private void validateNewRoleRequest(User user, NewRoleRequest request) {
-    if (request instanceof NewRoleRequest) return;
-
     try {
       BindingResult bindingResult = new BindException(request, "newRoleRequest");
       if (user.getProfiles() == null) {
@@ -125,6 +136,7 @@ public class UserServiceImpl implements UserService {
         for (Field field : request.getClass().getDeclaredFields()) {
           field.setAccessible(true);
           String key = field.getName();
+          ConsoleUtils.prettyPrint(key);
           if (user.getProfiles().get(key) == null && field.get(request) == null) {
             bindingResult.rejectValue(key, "required", "Field " + key + " is required");
           }
@@ -199,7 +211,6 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Map<String, Object> getAvatarUploadApiOptions(User user) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getAvatarUploadApiOptions'");
+    return cloudinaryService.getUploadApiOptions(user.getCldAvatar());
   }
 }

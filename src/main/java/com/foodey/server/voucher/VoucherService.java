@@ -1,6 +1,7 @@
 package com.foodey.server.voucher;
 
 import com.foodey.server.user.model.User;
+import java.util.Map;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -21,4 +22,6 @@ public interface VoucherService {
   Slice<Voucher> findVouchersOfCurrentShop(User user, String shopId, Pageable pageable);
 
   Voucher applyVoucherForShopCart(String voucherId, String userId, String shopId);
+
+  Map<String, Object> getImageUploadApiOptions(String voucherId);
 }

@@ -1,4 +1,4 @@
-package com.foodey.server.common.model;
+package com.foodey.server.upload.model;
 
 import com.foodey.server.config.CloudinaryConfig;
 

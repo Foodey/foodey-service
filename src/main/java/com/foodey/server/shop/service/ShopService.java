@@ -4,6 +4,7 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -38,4 +39,8 @@ public interface ShopService {
   List<Shop> getShopsNotRatedSince(Instant date, long limit);
 
   Slice<Shop> findByOwnerId(String ownerId, Pageable pageable);
+
+  Map<String, Object> getLogoUploadApiOptions(String shopId, String userId);
+
+  Map<String, Object> getWallpaperUploadApiOptions(String shopId, String userId);
 }

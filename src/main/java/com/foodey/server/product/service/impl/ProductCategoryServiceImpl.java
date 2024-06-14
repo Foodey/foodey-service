@@ -5,7 +5,7 @@ import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.product.model.ProductCategory;
 import com.foodey.server.product.repository.ProductCategoryRepository;
 import com.foodey.server.product.service.ProductCategoryService;
-import com.foodey.server.upload.CloudinaryService;
+import com.foodey.server.upload.service.CloudinaryService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -58,6 +58,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   }
 
   @Override
+  @CacheEvict(value = "productCategories", allEntries = true)
   public void deleteById(String id) {
     productCategoryRepository.deleteById(id);
   }

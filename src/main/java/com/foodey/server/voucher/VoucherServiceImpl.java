@@ -6,10 +6,12 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.shopcart.ShopCartDetail;
 import com.foodey.server.shopcart.ShopCartService;
+import com.foodey.server.upload.service.CloudinaryService;
 import com.foodey.server.user.model.User;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +24,16 @@ public class VoucherServiceImpl implements VoucherService {
 
   private final VoucherRepository voucherRepository;
   private final ShopCartService shopCartService;
+  private final CloudinaryService cloudinaryService;
   private final ShopService shopService;
 
   @Override
   public Voucher createVoucher(Voucher voucher) {
     try {
-      return voucherRepository.insert(voucher);
+      Voucher newVoucher = voucherRepository.insert(voucher);
+      newVoucher.setImageApiUploadOptions(
+          cloudinaryService.getUploadApiOptions(newVoucher.getCldImage()));
+      return newVoucher;
     } catch (DuplicateKeyException e) {
       throw new ResourceAlreadyInUseException("Voucher", "code", voucher.getCode());
     }
@@ -93,5 +99,11 @@ public class VoucherServiceImpl implements VoucherService {
   @Override
   public Voucher saveVoucher(Voucher voucher) {
     return voucherRepository.save(voucher);
+  }
+
+  @Override
+  public Map<String, Object> getImageUploadApiOptions(String voucherId) {
+    Voucher voucher = findVoucherById(voucherId);
+    return cloudinaryService.getUploadApiOptions(voucher.getCldImage());
   }
 }

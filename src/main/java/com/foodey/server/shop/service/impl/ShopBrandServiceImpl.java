@@ -5,7 +5,9 @@ import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.shop.model.ShopBrand;
 import com.foodey.server.shop.repository.ShopBrandRepository;
 import com.foodey.server.shop.service.ShopBrandService;
+import com.foodey.server.upload.service.CloudinaryService;
 import com.foodey.server.user.model.User;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class ShopBrandServiceImpl implements ShopBrandService {
 
   private final ShopBrandRepository shopBrandRepository;
+  private final CloudinaryService cloudinaryService;
 
   // Create
 
@@ -28,7 +31,14 @@ public class ShopBrandServiceImpl implements ShopBrandService {
 
     shopBrand.setOwnerId(user.getId());
 
-    return shopBrandRepository.save(shopBrand);
+    ShopBrand newShopBrand = shopBrandRepository.save(shopBrand);
+
+    newShopBrand.setLogoUploadApiOptions(
+        cloudinaryService.getUploadApiOptions(newShopBrand.getCldLogo()));
+    newShopBrand.setWallpaperUploadApiOptions(
+        cloudinaryService.getUploadApiOptions(newShopBrand.getCldWallpaper()));
+
+    return newShopBrand;
   }
 
   // Find
@@ -75,5 +85,17 @@ public class ShopBrandServiceImpl implements ShopBrandService {
   @Override
   public ShopBrand save(ShopBrand shopBrand) {
     return shopBrandRepository.save(shopBrand);
+  }
+
+  @Override
+  public Map<String, Object> getLogoUploadApiOptions(String brandId, String userId) {
+    ShopBrand shopBrand = findByIdAndVerifyOwner(brandId, userId);
+    return cloudinaryService.getUploadApiOptions(shopBrand.getCldLogo());
+  }
+
+  @Override
+  public Map<String, Object> getWallpaperUploadApiOptions(String brandId, String userId) {
+    ShopBrand shopBrand = findByIdAndVerifyOwner(brandId, userId);
+    return cloudinaryService.getUploadApiOptions(shopBrand.getCldWallpaper());
   }
 }

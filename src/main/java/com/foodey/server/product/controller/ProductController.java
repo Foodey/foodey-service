@@ -3,10 +3,13 @@ package com.foodey.server.product.controller;
 import com.foodey.server.annotation.PublicEndpoint;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.product.service.ProductService;
+import com.foodey.server.user.enums.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -71,5 +74,19 @@ public class ProductController {
   @ResponseStatus(HttpStatus.OK)
   public List<Product> findMutipleProductById(@RequestBody List<String> ids) {
     return productService.findAllById(ids);
+  }
+
+  @Operation(
+      summary = "Get image upload options",
+      description = "Get image upload options for a product")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Return image upload options"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @RolesAllowed({RoleType.Fields.SELLER})
+  @GetMapping("/{id}/image-upload-options")
+  public Map<String, Object> getImageUploadOptions(@PathVariable("id") String id) {
+    return productService.getImageUploadApiOptions(id);
   }
 }

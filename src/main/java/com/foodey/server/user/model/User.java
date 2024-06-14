@@ -3,9 +3,9 @@ package com.foodey.server.user.model;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.foodey.server.common.model.CloudinaryImage;
-import com.foodey.server.common.model.CloudinaryImageManager;
 import com.foodey.server.product.model.FavoriteProduct;
+import com.foodey.server.upload.model.CloudinaryImage;
+import com.foodey.server.upload.model.CloudinaryImageManager;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.enums.UserStatus;
 import com.foodey.server.user.model.decorator.UserRole;
@@ -82,10 +82,6 @@ public class User implements UserDetails, UserRole, Persistable<String>, Cloudin
   @Email
   @Schema(description = "The email of the user", requiredMode = RequiredMode.REQUIRED)
   private String email;
-
-  public String getCloudinaryAvatarFolder() {
-    return USER_AVATAR_FOLDER;
-  }
 
   @Default private CloudinaryImage cldAvatar = new CloudinaryImage(USER_AVATAR_FOLDER);
 

@@ -3,7 +3,6 @@ package com.foodey.server.auth.jwt;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.repository.UserRepository;
 import com.foodey.server.utils.ApiEndpointSecurityInspector;
-import com.foodey.server.utils.ConsoleUtils;
 import com.foodey.server.utils.HttpHeaderUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +55,6 @@ public class LazyJwtAuthTokenFilter extends OncePerRequestFilter {
 
     try {
       SecurityContext context = SecurityContextHolder.getContext();
-      ConsoleUtils.prettyPrint(context.getAuthentication());
       if (context.getAuthentication() == null) {
         String jwtToken = HttpHeaderUtils.extractBearerToken(request);
         String userPubId = jwtService.extractSubject(jwtToken);

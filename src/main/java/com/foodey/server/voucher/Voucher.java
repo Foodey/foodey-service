@@ -3,8 +3,11 @@ package com.foodey.server.voucher;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodey.server.order.OrderItem;
+import com.foodey.server.upload.model.CloudinaryImage;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
@@ -14,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +29,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -68,7 +73,18 @@ public class Voucher implements Persistable<String> {
   @OptimizedName
   private String name;
 
-  @Default private String image = "";
+  @JsonInclude(Include.NON_NULL)
+  @Transient
+  @Schema(description = "This field is just use for payload only")
+  private Map<String, Object> imageApiUploadOptions;
+
+  @Schema(description = "The url image of the product")
+  @Default
+  private CloudinaryImage cldImage = new CloudinaryImage();
+
+  public String getImage() {
+    return cldImage != null ? cldImage.getUrl() : "";
+  }
 
   @Default private String description = "";
 

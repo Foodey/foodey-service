@@ -6,10 +6,12 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -87,7 +89,7 @@ public class ShopController {
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
   public Slice<Shop> findByCategoryId(
-      @PathVariable(name = "categoryId") String categoryId,
+      @PathVariable("categoryId") String categoryId,
       @PageableDefault(page = 0, size = 12, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
     return shopService.findByCategoryId(categoryId, pageable);
@@ -129,9 +131,49 @@ public class ShopController {
   @GetMapping("/brands/{brandId}")
   @RolesAllowed(RoleType.Fields.SELLER)
   public Slice<Shop> getAllShopsOfBrand(
-      @PathVariable(required = true, name = "brandId") String brandId,
+      @PathVariable("brandId") String brandId,
       @PageableDefault(page = 0, size = 9, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
     return shopService.findByBrandId(brandId, pageable);
+  }
+
+  @Operation(
+      summary = "Get upload options for shop logo",
+      description = "Get upload options for shop logo")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Upload options found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+    @ApiResponse(
+        responseCode = "403",
+        description = "User does not have permission to access this resource"),
+    @ApiResponse(responseCode = "404", description = "Shop not found"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/{id}/logo-upload-options")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Map<String, Object> getLogoUploadOptions(
+      @PathVariable("id") String shopId, @CurrentUser User user) {
+    return shopService.getLogoUploadApiOptions(shopId, user.getId());
+  }
+
+  @Operation(
+      summary = "Get upload options for shop wallpaper",
+      description = "Get upload options for shop wallpaper")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Upload options found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+    @ApiResponse(
+        responseCode = "403",
+        description = "User does not have permission to access this resource"),
+    @ApiResponse(responseCode = "404", description = "Shop not found"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/{id}/wallpaper-upload-options")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Map<String, Object> getWallpaperUploadOptions(
+      @PathVariable("id") String shopId, @CurrentUser User user) {
+    return shopService.getWallpaperUploadApiOptions(shopId, user.getId());
   }
 }

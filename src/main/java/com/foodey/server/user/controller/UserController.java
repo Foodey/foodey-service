@@ -3,10 +3,10 @@ package com.foodey.server.user.controller;
 import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
-import com.foodey.server.upload.CloudinaryService;
 import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.Role;
 import com.foodey.server.user.model.User;
+import com.foodey.server.user.model.decorator.NewRoleRequestResponse;
 import com.foodey.server.user.model.decorator.SellerRoleRequest;
 import com.foodey.server.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -22,17 +23,14 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,13 +39,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
   private final UserService userService;
-  private final CloudinaryService cloudinaryService;
 
-  @PostMapping("/avatar/upload")
-  public ResponseEntity<?> uploadAvatar(
-      @RequestParam(value = "file") MultipartFile file, @CurrentUser User user) throws IOException {
-    return ResponseEntity.ok(
-        cloudinaryService.uploadFile(file, user.getCloudinaryAvatarFolder(), user.getPubId()));
+  @Operation(summary = "Get upload api options for avatar of the current user")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @RolesAllowed(RoleType.Fields.CUSTOMER)
+  @GetMapping("/me/avatar-upload-options")
+  public Map<String, Object> getAvatarUploadApiOptions(@CurrentUser User user) throws IOException {
+    return userService.getAvatarUploadApiOptions(user);
   }
 
   // @Operation(summary = "Get profile of the current user")
@@ -99,10 +103,9 @@ public class UserController {
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @PostMapping("/role/seller")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void registerSellerRole(
+  public NewRoleRequestResponse registerSellerRole(
       @CurrentUser User user, @RequestBody @Valid SellerRoleRequest request) {
-    userService.requestNewRole(user, request);
+    return userService.requestNewRole(user, request);
   }
 
   @Operation(summary = "Add a shop to the favorite list")

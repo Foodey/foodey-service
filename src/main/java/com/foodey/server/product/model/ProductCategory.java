@@ -1,9 +1,13 @@
 package com.foodey.server.product.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.foodey.server.common.model.CloudinaryImage;
-import com.foodey.server.common.model.CloudinaryImageManager;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.foodey.server.upload.model.CloudinaryImage;
+import com.foodey.server.upload.model.CloudinaryImageManager;
+import com.foodey.server.utils.ConsoleUtils;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
@@ -21,6 +25,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
     value = {"id"},
     allowGetters = true)
 @NoArgsConstructor
+@JsonPropertyOrder({"name"})
 public class ProductCategory implements CloudinaryImageManager {
 
   @Id
@@ -39,7 +44,16 @@ public class ProductCategory implements CloudinaryImageManager {
   private Map<String, Object> cldImageUploadApiOptions;
 
   @Schema(description = "The image url of the category")
-  private CloudinaryImage cldImage = new CloudinaryImage(getCloudinaryFolder());
+  private CloudinaryImage cldImage;
+
+  @JsonProperty("cldImage")
+  public void setCldImage(CloudinaryImage cldImage) {
+    if (cldImage == null) {
+      this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
+      return;
+    }
+    this.cldImage = cldImage;
+  }
 
   public String getImage() {
     return cldImage.getUrl();
@@ -48,8 +62,13 @@ public class ProductCategory implements CloudinaryImageManager {
   @Schema(description = "The description of the category")
   private String description = "";
 
-  public ProductCategory(String name, String description) {
+  @JsonCreator
+  public ProductCategory(
+      @JsonProperty("name") String name, @JsonProperty("description") String description) {
+
+    ConsoleUtils.prettyPrint("init cldImage");
     this.name = name;
     this.description = description;
+    this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
   }
 }

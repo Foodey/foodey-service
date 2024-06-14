@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -102,5 +103,45 @@ public class ShopBrandController {
       @PageableDefault(page = 0, size = 12, sort = "name", direction = Direction.ASC)
           Pageable pageable) {
     return shopBrandService.findAll(pageable);
+  }
+
+  @Operation(
+      summary = "Get upload options for shop brand logo",
+      description = "Get upload options for shop brand logo")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Upload options found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+    @ApiResponse(
+        responseCode = "403",
+        description = "User does not have permission to access this resource"),
+    @ApiResponse(responseCode = "404", description = "shop brand not found"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/{id}/logo-upload-options")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Map<String, Object> getLogoUploadOptions(
+      @PathVariable("id") String brandId, @CurrentUser User user) {
+    return shopBrandService.getLogoUploadApiOptions(brandId, user.getId());
+  }
+
+  @Operation(
+      summary = "Get upload options for shop brand wallpaper",
+      description = "Get upload options for shop brand wallpaper")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Upload options found successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized access"),
+    @ApiResponse(
+        responseCode = "403",
+        description = "User does not have permission to access this resource"),
+    @ApiResponse(responseCode = "404", description = "shop brand not found"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @GetMapping("/{id}/wallpaper-upload-options")
+  @RolesAllowed(RoleType.Fields.SELLER)
+  public Map<String, Object> getWallpaperUploadOptions(
+      @PathVariable("id") String brandId, @CurrentUser User user) {
+    return shopBrandService.getWallpaperUploadApiOptions(brandId, user.getId());
   }
 }

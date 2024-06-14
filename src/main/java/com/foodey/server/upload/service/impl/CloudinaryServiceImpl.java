@@ -1,8 +1,8 @@
-package com.foodey.server.upload.impl;
+package com.foodey.server.upload.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.foodey.server.config.CloudinaryConfig;
-import com.foodey.server.upload.CloudinaryService;
+import com.foodey.server.upload.service.CloudinaryService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

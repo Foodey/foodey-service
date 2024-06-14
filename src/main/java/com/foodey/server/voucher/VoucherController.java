@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -114,7 +115,7 @@ public class VoucherController {
         @ApiResponse(responseCode = "403", description = "Forbidden"),
         @ApiResponse(responseCode = "404", description = "Not found"),
       })
-  @GetMapping("seller/shops/{shopId}")
+  @GetMapping("/seller/shops/{shopId}")
   @RolesAllowed(RoleType.Fields.SELLER)
   public Slice<Voucher> findVouchersOfShop(
       @PathVariable("shopId") String shopId,
@@ -132,7 +133,7 @@ public class VoucherController {
         @ApiResponse(responseCode = "403", description = "Forbidden"),
         @ApiResponse(responseCode = "404", description = "Not found"),
       })
-  @PostMapping("{voucherId}/shops/{shopId}")
+  @PostMapping("/{voucherId}/shops/{shopId}")
   @RolesAllowed(RoleType.Fields.CUSTOMER)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public Voucher applyVoucherForShopCart(
@@ -140,5 +141,19 @@ public class VoucherController {
       @PathVariable("shopId") String shopId,
       @CurrentUser User user) {
     return voucherService.applyVoucherForShopCart(voucherId, user.getId(), shopId);
+  }
+
+  @Operation(
+      summary = "Get image upload options",
+      description = "Get image upload options for a voucher")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Return image upload options"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @RolesAllowed({RoleType.Fields.SELLER, RoleType.Fields.ADMIN})
+  @GetMapping("/{voucherId}/image-upload-options")
+  public Map<String, Object> getImageUploadOptions(@PathVariable("voucherId") String voucherId) {
+    return voucherService.getImageUploadApiOptions(voucherId);
   }
 }

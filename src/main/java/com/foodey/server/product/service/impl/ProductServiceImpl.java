@@ -4,7 +4,9 @@ import com.foodey.server.exceptions.ResourceNotFoundException;
 import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.product.service.ProductService;
+import com.foodey.server.upload.service.CloudinaryService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ProductServiceImpl implements ProductService {
 
   private final ProductRepository productRepository;
+  private final CloudinaryService cloudinaryService;
 
   @Override
   @Cacheable(value = "product", key = "#id")
@@ -49,5 +52,11 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<Product> findAllById(List<String> ids) {
     return productRepository.findAllById(ids);
+  }
+
+  @Override
+  public Map<String, Object> getImageUploadApiOptions(String productId) {
+    Product product = findById(productId);
+    return cloudinaryService.getUploadApiOptions(product.getCldImage());
   }
 }

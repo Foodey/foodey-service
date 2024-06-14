@@ -2,12 +2,17 @@ package com.foodey.server.shop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.foodey.server.upload.model.CloudinaryImage;
+import com.foodey.server.upload.model.CloudinaryImageManager;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.foodey.server.validation.annotation.PhoneNumber;
 import com.mongodb.lang.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import java.time.Instant;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +23,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,7 +38,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
     value = {"id", "ownerId", "createdAt", "updatedAt", "menu"},
     allowGetters = true)
 @Document(collection = "shop_brands")
-public class ShopBrand implements Persistable<String> {
+public class ShopBrand implements Persistable<String>, CloudinaryImageManager {
+  @Transient private static final String CLOUDINARY_FOLDER = "shop_brands";
+
   @Id
   @Schema(description = "The unique identifier of the shop brand.")
   private String id;
@@ -54,11 +62,28 @@ public class ShopBrand implements Persistable<String> {
   @NonNull
   private String ownerId;
 
+  @Transient
+  @JsonInclude(Include.NON_NULL)
+  private Map<String, Object> logoUploadApiOptions;
+
+  @Default private CloudinaryImage cldLogo = new CloudinaryImage(CLOUDINARY_FOLDER + "/logos");
+
   @Schema(description = "The logo of the shop brand.")
-  private String logo;
+  public String getLogo() {
+    return cldLogo != null ? cldLogo.getUrl() : "";
+  }
+
+  @Transient
+  @JsonInclude(Include.NON_NULL)
+  private Map<String, Object> wallpaperUploadApiOptions;
+
+  @Default
+  private CloudinaryImage cldWallpaper = new CloudinaryImage(CLOUDINARY_FOLDER + "/wallpapers");
 
   @Schema(description = "The wallpaper of the shop brand.")
-  private String wallpaper;
+  public String getWallpaper() {
+    return cldWallpaper != null ? cldWallpaper.getUrl() : "";
+  }
 
   @Schema(description = "The menu of the shop brand.")
   @Setter(AccessLevel.NONE)

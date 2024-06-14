@@ -6,9 +6,11 @@ import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.repository.ShopRepository;
 import com.foodey.server.shop.service.ShopBrandService;
 import com.foodey.server.shop.service.ShopService;
+import com.foodey.server.upload.service.CloudinaryService;
 import com.foodey.server.user.model.User;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -26,6 +28,7 @@ public class ShopServiceImpl implements ShopService {
 
   private final ShopRepository shopRepository;
   private final ShopBrandService shopBrandService;
+  private final CloudinaryService cloudinaryService;
 
   @Override
   public Shop createShop(Shop shop, User user) {
@@ -40,7 +43,13 @@ public class ShopServiceImpl implements ShopService {
     shop.setOwnerId(userId);
     shop.setBrandId(brandId);
 
-    return shopRepository.save(shop);
+    Shop newShop = shopRepository.save(shop);
+
+    newShop.setLogoUploadApiOptions(cloudinaryService.getUploadApiOptions(newShop.getCldLogo()));
+    newShop.setWallpaperUploadApiOptions(
+        cloudinaryService.getUploadApiOptions(newShop.getCldWallpaper()));
+
+    return newShop;
   }
 
   @Override
@@ -138,5 +147,17 @@ public class ShopServiceImpl implements ShopService {
   @Override
   public Slice<Shop> findByOwnerId(String ownerId, Pageable pageable) {
     return shopRepository.findByOwnerId(ownerId, pageable);
+  }
+
+  @Override
+  public Map<String, Object> getLogoUploadApiOptions(String shopId, String userId) {
+    Shop shop = findByIdAndVerifyOwner(shopId, userId);
+    return cloudinaryService.getUploadApiOptions(shop.getCldLogo());
+  }
+
+  @Override
+  public Map<String, Object> getWallpaperUploadApiOptions(String shopId, String userId) {
+    Shop shop = findByIdAndVerifyOwner(shopId, userId);
+    return cloudinaryService.getUploadApiOptions(shop.getCldWallpaper());
   }
 }

@@ -1,7 +1,7 @@
-package com.foodey.server.upload;
+package com.foodey.server.upload.service;
 
-import com.foodey.server.common.model.CloudinaryImage;
 import com.foodey.server.config.CloudinaryConfig;
+import com.foodey.server.upload.model.CloudinaryImage;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,7 +61,23 @@ public interface CloudinaryService {
     return getUploadApiOptions(options);
   }
 
+  default Map<String, Object> getUploadApiOptions(
+      String folder, String publicId, String displayName) {
+    Map<String, Object> options = new HashMap<>();
+    options.put("timestamp", System.currentTimeMillis() / 1000L);
+    options.put("folder", folder);
+    options.put("asset_folder", folder);
+    options.put("overwrite", true);
+    options.put("public_id", publicId);
+    options.put("display_name", displayName);
+    return getUploadApiOptions(options);
+  }
+
   default Map<String, Object> getUploadApiOptions(CloudinaryImage cldImage) {
+    if (cldImage.getDisplayName() != null) {
+      return getUploadApiOptions(
+          cldImage.getFolder(), cldImage.getPublicId(), cldImage.getDisplayName());
+    }
     return getUploadApiOptions(cldImage.getFolder(), cldImage.getPublicId());
   }
 }

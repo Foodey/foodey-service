@@ -2,6 +2,7 @@ package com.foodey.server.shop.service;
 
 import com.foodey.server.shop.model.ShopBrand;
 import com.foodey.server.user.model.User;
+import java.util.Map;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -30,4 +31,8 @@ public interface ShopBrandService {
   default void verifyOwner(String brachId, User user) {
     this.verifyOwner(brachId, user.getId());
   }
+
+  Map<String, Object> getLogoUploadApiOptions(String brandId, String userId);
+
+  Map<String, Object> getWallpaperUploadApiOptions(String brandId, String userId);
 }

@@ -5,6 +5,7 @@ import com.foodey.server.product.model.FavoriteProduct;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
 import com.foodey.server.user.model.decorator.NewRoleRequest;
+import com.foodey.server.user.model.decorator.NewRoleRequestResponse;
 import com.foodey.server.utils.PrincipalUtils;
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public interface UserService {
 
   User createBasicUser(String phoneNumber, String password, String name);
 
-  void requestNewRole(User user, NewRoleRequest request);
+  NewRoleRequestResponse requestNewRole(User user, NewRoleRequest request);
 
   void upgradeRole(User user, NewRoleRequest request);
 
@@ -48,5 +49,4 @@ public interface UserService {
   }
 
   Map<String, Object> getAvatarUploadApiOptions(User user);
-  // return new CloudinaryUploadApiOptionsImpl(user.getPubId(), user.getCloudinaryAvatarFolder());
 }
