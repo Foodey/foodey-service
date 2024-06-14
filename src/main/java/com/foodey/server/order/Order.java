@@ -1,9 +1,13 @@
 package com.foodey.server.order;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.foodey.server.common.model.Address;
 import com.foodey.server.payment.Payment;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
@@ -30,6 +34,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
   @CompoundIndex(name = "shop_status_idx", def = "{'shop.$id': 1, 'status': 1}")
 })
 @NoArgsConstructor
+@JsonIgnoreProperties(
+    value = {
+      "id",
+      "userId",
+      "shop",
+      "shipperId",
+      "userName",
+      "userPhoneNumber",
+      "createdAt",
+      "updatedAt",
+      "totalDiscount",
+      "voucherCode",
+      "voucherName",
+      "status",
+      "payment",
+      "items",
+    },
+    allowGetters = true)
 public class Order implements Persistable<String> {
   @Id private String id;
 
@@ -43,11 +65,15 @@ public class Order implements Persistable<String> {
   @Deprecated(since = "1.0.0")
   private Shop shop;
 
-  private String shopId;
+  @NotBlank private String shopId;
 
   private String shopName;
 
   private String note;
+
+  public String getNote() {
+    return note != null ? note : "";
+  }
 
   private String shipperId;
 
@@ -57,9 +83,9 @@ public class Order implements Persistable<String> {
 
   private String voucherName;
 
-  private String shippingAddress;
-
-  // private Address address;
+  // private String shippingAddress;
+  @JsonAlias({"address", "shippingAddress"})
+  private Address shippingAddress;
 
   @NotNull private OrderStatus status;
 
@@ -77,7 +103,7 @@ public class Order implements Persistable<String> {
       String shopId,
       String shopName,
       String shipperId,
-      String shippingAddress,
+      Address shippingAddress,
       Payment payment,
       String voucherCode,
       String voucherName,
@@ -109,7 +135,7 @@ public class Order implements Persistable<String> {
       String shopId,
       String shopName,
       String shipperId,
-      String shippingAddress,
+      Address shippingAddress,
       Payment payment,
       String voucherCode,
       String voucherName,

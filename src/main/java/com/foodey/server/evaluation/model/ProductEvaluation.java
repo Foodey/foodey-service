@@ -1,6 +1,7 @@
 package com.foodey.server.evaluation.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
     allowGetters = true)
 @AllArgsConstructor
 @Document(collection = "product_evaluations")
+@JsonTypeName(EvaluationType.Fields.PRODUCT)
 public class ProductEvaluation extends BaseEvaluation {
 
   // @Indexed(unique = true)

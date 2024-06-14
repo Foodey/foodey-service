@@ -37,7 +37,7 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "Order created successfully"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
+    @ApiResponse(responseCode = "403", description = "Voucher is not valid or expired"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   @PostMapping({"", "/"})

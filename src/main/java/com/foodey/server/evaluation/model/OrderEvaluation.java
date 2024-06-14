@@ -3,6 +3,7 @@ package com.foodey.server.evaluation.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
   "shopId",
 })
 @Document(collection = "order_evaluations")
+@JsonTypeName(EvaluationType.Fields.ORDER)
 public class OrderEvaluation extends BaseEvaluation {
 
   @Schema(

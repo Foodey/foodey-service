@@ -56,7 +56,7 @@ public class ProductCategory implements CloudinaryImageManager {
   }
 
   public String getImage() {
-    return cldImage.getUrl();
+    return cldImage != null ? cldImage.getUrl() : "";
   }
 
   @Schema(description = "The description of the category")

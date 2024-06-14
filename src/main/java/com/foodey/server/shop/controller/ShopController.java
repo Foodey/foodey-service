@@ -46,7 +46,7 @@ public class ShopController {
     @ApiResponse(responseCode = "409", description = "Shop with the same name already exists"),
     @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  @PostMapping({"/", ""})
+  @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
   @RolesAllowed(RoleType.Fields.SELLER)
   public Shop addNewShopOfBrand(@Valid @RequestBody Shop shop, @CurrentUser User user) {

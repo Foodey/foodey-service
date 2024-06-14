@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.foodey.server.common.model.Address;
 import com.foodey.server.upload.model.CloudinaryImage;
 import com.foodey.server.upload.model.CloudinaryImageManager;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.mongodb.lang.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,7 +32,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @Document(collection = "shops")
 @JsonIgnoreProperties(
-    value = {"id", "ownerId", "createdAt", "updatedAt", "rating", "categoryIds"},
+    value = {
+      "id",
+      "ownerId",
+      "createdAt",
+      "updatedAt",
+      "rating",
+      "categoryIds, lastRatingCalculationAt"
+    },
     allowGetters = true)
 @CompoundIndex(def = "{'name': 1, 'brandId': 1}", name = "shop_name_brand_id")
 @ToString
@@ -78,10 +84,8 @@ public class Shop implements Persistable<String>, CloudinaryImageManager {
     return cldWallpaper != null ? cldWallpaper.getUrl() : "";
   }
 
-  @NotBlank
-  @Size(min = 2, max = 100)
   @Schema(description = "The address of the shop")
-  private String address;
+  private Address address;
 
   @Indexed(name = "shop_categories")
   @Schema(description = "The category ids of the shop ")
@@ -129,10 +133,11 @@ public class Shop implements Persistable<String>, CloudinaryImageManager {
 
   @LastModifiedDate private Instant updatedAt;
 
-  public Shop(String name, String address, String brandId, String ownerId) {
+  public Shop(String name, Address address, String brandId, String ownerId) {
     this.name = name;
     this.address = address;
     this.brandId = brandId;
+    this.ownerId = ownerId;
   }
 
   @Override

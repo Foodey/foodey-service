@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
             shop.getId(),
             shop.getName(),
             null,
-            orderRequest.getAddress(),
+            orderRequest.getShippingAddress(),
             payment,
             voucherCode,
             voucherName,
