@@ -109,4 +109,18 @@ public class OrderController {
   public void cancelOrder(@PathVariable("orderId") String orderId) {
     orderService.cancelOrder(orderId);
   }
+
+  @Operation(summary = "Confirm an order")
+  @ApiResponses({
+    @ApiResponse(responseCode = "204", description = "Order confirmed successfully"),
+    @ApiResponse(responseCode = "400", description = "Bad request"),
+    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    @ApiResponse(responseCode = "403", description = "User is not allowed to perform this action"),
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  @RolesAllowed(RoleType.Fields.SELLER)
+  @PatchMapping("/{orderId}/confirm")
+  public void confirmOrder(@PathVariable("orderId") String orderId) {
+    orderService.confirmOrder(orderId);
+  }
 }

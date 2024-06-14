@@ -165,4 +165,16 @@ public class OrderServiceImpl implements OrderService {
     order.setStatus(OrderStatus.CANCELED);
     orderRepository.save(order);
   }
+
+  @Override
+  public void confirmOrder(String orderId) {
+    Order order = findById(orderId);
+
+    if (order.getStatus() != OrderStatus.PENDING) {
+      throw new AccessDeniedException("You can only confirm pending order");
+    }
+
+    order.setStatus(OrderStatus.STORE_CONFIRMED);
+    orderRepository.save(order);
+  }
 }
