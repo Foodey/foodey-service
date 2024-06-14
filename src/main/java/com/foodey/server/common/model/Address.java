@@ -51,12 +51,12 @@ public class Address {
 
   // @NotBlank private String state; // Tên tiểu bang, tỉnh thành hoặc khu vực hành chính.
 
+  // private long postalCode; // Mã bưu chính hoặc mã zip của địa chỉ.
+
+  // @NotBlank private String country;
+
   @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
   private GeoJsonPoint coords; // Tọa độ địa lý của địa chỉ.
-
-  private long postalCode; // Mã bưu chính hoặc mã zip của địa chỉ.
-
-  @NotBlank private String country;
 
   // public Address(
   //     String formattedAddress,
