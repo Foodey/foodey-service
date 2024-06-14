@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.elasticsearch.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.util.StringUtils;
@@ -45,7 +45,7 @@ public class Address {
   @NotBlank private String state; // Tên tiểu bang, tỉnh thành hoặc khu vực hành chính.
 
   @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-  private GeoJsonPoint location;
+  private GeoJsonPoint coords; // Tọa độ địa lý của địa chỉ.
 
   private long postalCode; // Mã bưu chính hoặc mã zip của địa chỉ.
 
@@ -87,13 +87,13 @@ public class Address {
     this.state = state;
     this.postalCode = postalCode;
     this.country = country;
-    this.location = GeoJsonPoint.of(longitude, latitude);
+    this.coords = new GeoJsonPoint(longitude, latitude);
   }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(
-        formattedAddress, streetNumber, route, city, state, postalCode, country, location);
+        formattedAddress, streetNumber, route, city, state, postalCode, country, coords);
   }
 
   @Override
@@ -101,6 +101,6 @@ public class Address {
     if (this == obj) return true;
     else if (obj == null || getClass() != obj.getClass()) return false;
     Address that = (Address) obj;
-    return formattedAddress.equals(that.formattedAddress) && Objects.equal(location, that.location);
+    return formattedAddress.equals(that.formattedAddress) && Objects.equal(coords, that.coords);
   }
 }

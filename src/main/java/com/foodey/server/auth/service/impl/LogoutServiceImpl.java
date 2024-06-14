@@ -48,6 +48,12 @@ public class LogoutServiceImpl implements LogoutHandler {
                           TokenType.BEARER, refreshToken, "Invalid refresh token"));
 
       refreshTokenRepository.save(savedRefreshToken.revoke());
+
+      // NOTE: Need to think more vecause usser can logout from multiple devices
+      // User user = PrincipalUtils.getUser();
+      // user.setLastLogoutAt(savedRefreshToken.getRevokedAt());
+      // userService.save(user);
+
       SecurityContextHolder.clearContext();
       response.setStatus(HttpStatus.NO_CONTENT.value());
 

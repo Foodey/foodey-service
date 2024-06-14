@@ -66,6 +66,9 @@ public class ShopController {
     return shopService.findById(id);
   }
 
+  @Operation(
+      summary = "Get all shops",
+      description = "Get all shops. Optionally filter by location")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Shops found successfully"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -75,11 +78,19 @@ public class ShopController {
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
   public Slice<Shop> findAll(
-      @PageableDefault(page = 0, size = 12, sort = "createdAt", direction = Direction.ASC)
-          Pageable pageable) {
+      @RequestParam(required = false) Double longitude,
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false, defaultValue = "5") long maxDistance,
+      @PageableDefault(page = 0, size = 12) Pageable pageable) {
+    if (longitude != null && latitude != null) {
+      return shopService.findAllNear(longitude, latitude, maxDistance, pageable);
+    }
     return shopService.findAll(pageable);
   }
 
+  @Operation(
+      summary = "Get shops by category",
+      description = "Get shops by category. Optionally filter by location")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Shops found successfully"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -89,12 +100,22 @@ public class ShopController {
   @PublicEndpoint
   @ResponseStatus(HttpStatus.OK)
   public Slice<Shop> findByCategoryId(
+      @RequestParam(required = false) Double longitude,
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false, defaultValue = "5") long maxDistance,
       @PathVariable("categoryId") String categoryId,
       @PageableDefault(page = 0, size = 12, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
+    if (longitude != null && latitude != null) {
+      return shopService.findByCategoryIdNear(
+          categoryId, longitude, latitude, maxDistance, pageable);
+    }
     return shopService.findByCategoryId(categoryId, pageable);
   }
 
+  @Operation(
+      summary = "Search shops by name",
+      description = "Search shops by name. Optionally filter by location")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Shops found successfully"),
     @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -104,8 +125,14 @@ public class ShopController {
   @PublicEndpoint
   public Slice<Shop> searchByName(
       @RequestParam String q,
+      @RequestParam(required = false) Double longitude,
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false, defaultValue = "5") long maxDistance,
       @PageableDefault(page = 0, size = 9, sort = "rating", direction = Direction.ASC)
           Pageable pageable) {
+    if (longitude != null && latitude != null) {
+      return shopService.searchByName(q, longitude, latitude, maxDistance, pageable);
+    }
     return shopService.searchByName(q, pageable);
   }
 

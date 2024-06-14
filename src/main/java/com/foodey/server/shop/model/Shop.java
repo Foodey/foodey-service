@@ -41,9 +41,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
       "categoryIds, lastRatingCalculationAt"
     },
     allowGetters = true)
-@CompoundIndex(def = "{'name': 1, 'brandId': 1}", name = "shop_name_brand_id")
 @ToString
 @NoArgsConstructor
+@CompoundIndex(def = "{'name': 1, 'brandId': 1}", unique = true, name = "name_brand_compound_idx")
 public class Shop implements Persistable<String>, CloudinaryImageManager {
 
   @Schema(description = "The unique identifier of the shop")

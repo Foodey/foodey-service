@@ -18,6 +18,9 @@ public interface ShopService {
 
   Slice<Shop> findAll(Pageable pageable);
 
+  Slice<Shop> findAllNear(
+      double longitude, double latitude, long maxDistanceKms, Pageable pageable);
+
   Shop save(Shop shop);
 
   List<Shop> saveAll(Iterable<Shop> shops);
@@ -30,11 +33,17 @@ public interface ShopService {
 
   Slice<Shop> findByCategoryId(String category, Pageable pageable);
 
+  Slice<Shop> findByCategoryIdNear(
+      String category, double longitude, double latitude, long maxDistanceKms, Pageable pageable);
+
   List<Shop> findByBrandId(String brandId);
 
   Slice<Shop> findByBrandId(String brandId, Pageable pageable);
 
   Slice<Shop> searchByName(String query, Pageable pageable);
+
+  Slice<Shop> searchByName(
+      String query, double longitude, double latitude, long maxDistanceKms, Pageable pageable);
 
   List<Shop> getShopsNotRatedSince(Instant date, long limit);
 

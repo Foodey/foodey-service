@@ -16,9 +16,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.geo.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -32,24 +34,22 @@ public class ShopServiceImpl implements ShopService {
 
   @Override
   public Shop createShop(Shop shop, User user) {
-    String brandId = shop.getBrandId();
-    String userId = user.getId();
+    try {
+      String brandId = shop.getBrandId();
+      String userId = user.getId();
 
-    shopBrandService.verifyOwner(brandId, userId);
+      shopBrandService.verifyOwner(brandId, userId);
+      shop.setOwnerId(userId);
+      shop.setBrandId(brandId);
+      Shop newShop = shopRepository.save(shop);
 
-    if (shopRepository.existsByNameAndBrandId(shop.getName(), brandId))
+      newShop.setLogoUploadApiOptions(cloudinaryService.getUploadApiOptions(newShop.getCldLogo()));
+      newShop.setWallpaperUploadApiOptions(
+          cloudinaryService.getUploadApiOptions(newShop.getCldWallpaper()));
+      return newShop;
+    } catch (DuplicateKeyException e) {
       throw new ResourceAlreadyInUseException("Shop", "name", shop.getName());
-
-    shop.setOwnerId(userId);
-    shop.setBrandId(brandId);
-
-    Shop newShop = shopRepository.save(shop);
-
-    newShop.setLogoUploadApiOptions(cloudinaryService.getUploadApiOptions(newShop.getCldLogo()));
-    newShop.setWallpaperUploadApiOptions(
-        cloudinaryService.getUploadApiOptions(newShop.getCldWallpaper()));
-
-    return newShop;
+    }
   }
 
   @Override
@@ -64,6 +64,13 @@ public class ShopServiceImpl implements ShopService {
   @Cacheable(value = "shops", key = "#pageable.pageNumber")
   public Slice<Shop> findAll(Pageable pageable) {
     return shopRepository.findAll(pageable);
+  }
+
+  @Override
+  public Slice<Shop> findAllNear(
+      double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
+    return shopRepository.findByAddressCoordsNear(
+        new Point(longitude, latitude), new Distance(maxDistanceKms, Metrics.KILOMETERS), pageable);
   }
 
   @Override
@@ -96,6 +103,24 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
+  @Caching(
+      cacheable = {
+        @Cacheable(
+            value = "shops",
+            key =
+                "#category.concat('-').concat(#longitude).concat('-').concat(#latitude).concat('-').concat(#maxDistanceKms).concat('-').concat(#pageable.pageNumber)",
+            cacheManager = "caffeineCacheManager"),
+      })
+  public Slice<Shop> findByCategoryIdNear(
+      String category, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
+    return shopRepository.findByCategoryIdsContainingAndAddressCoordsNear(
+        category,
+        new Point(longitude, latitude),
+        new Distance(maxDistanceKms, Metrics.KILOMETERS),
+        pageable);
+  }
+
+  @Override
   public Shop findByIdAndVerifyOwner(String id, String userId) {
     Shop shop = findById(id);
     if (!shop.getOwnerId().equals(userId))
@@ -119,7 +144,6 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  // @Cacheable(value = "shop", key = "#id.concat('-').concat(#brandId)")
   public Shop findByIdAndBrandIdAndVerifyOwner(String id, String brandId, String userId) {
     Shop shop =
         shopRepository
@@ -159,5 +183,15 @@ public class ShopServiceImpl implements ShopService {
   public Map<String, Object> getWallpaperUploadApiOptions(String shopId, String userId) {
     Shop shop = findByIdAndVerifyOwner(shopId, userId);
     return cloudinaryService.getUploadApiOptions(shop.getCldWallpaper());
+  }
+
+  @Override
+  public Slice<Shop> searchByName(
+      String query, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
+    return shopRepository.findByNameContainingIgnoreCaseAndAddressCoordsNear(
+        query,
+        new Point(longitude, latitude),
+        new Distance(maxDistanceKms, Metrics.KILOMETERS),
+        pageable);
   }
 }
