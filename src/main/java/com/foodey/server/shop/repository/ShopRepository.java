@@ -23,6 +23,9 @@ public interface ShopRepository extends MongoRepository<Shop, String> {
 
   Optional<Shop> findByIdAndBrandId(String id, String brandId);
 
+  Slice<Shop> findByIdInAndAddressCoordsNear(
+      Iterable<String> ids, Point point, Distance distance, Pageable pageable);
+
   List<Shop> findByBrandId(String brandId);
 
   Slice<Shop> findByBrandId(String brandId, Pageable pageable);

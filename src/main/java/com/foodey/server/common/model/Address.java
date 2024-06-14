@@ -2,8 +2,6 @@ package com.foodey.server.common.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.google.common.base.Objects;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,38 +9,47 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
-import org.springframework.util.StringUtils;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Address {
 
-  private String detailsAddress; // Địa chỉ chi tiết người dùng nhập vào.
+  @NotBlank private String detailsAddress; // Địa chỉ chi tiết người dùng nhập vào.
 
-  public String getDetailsAddress() {
-    if (StringUtils.hasText(detailsAddress)) {
-      return detailsAddress;
-    }
-    return formattedAddress;
-  }
+  // @NotBlank
+  // private String detailsAddress; // Địa chỉ chi tiết người dùng nhập vào.
 
-  @JsonValue
-  public void setDetailsAddress(String detailsAddress) {
-    if (StringUtils.hasText(detailsAddress)) {
-      this.detailsAddress = detailsAddress;
-    }
-  }
+  // public String getDetailsAddress() {
+  //   if (StringUtils.hasText(detailsAddress)) {
+  //     return detailsAddress;
+  //   }
+  //   return formattedAddress;
+  // }
 
-  @NotBlank private String formattedAddress; // Địa chỉ đã được định dạng theo chuẩn của Google.
+  // public String getDetailsAddress() {
+  //   if (StringUtils.hasText(detailsAddress)) {
+  //     return detailsAddress;
+  //   }
+  //   return formattedAddress;
+  // }
 
-  @NotBlank private String streetNumber; // Số nhà hoặc số đường của địa chỉ.
+  // @JsonValue
+  // public void setDetailsAddress(String detailsAddress) {
+  //   if (StringUtils.hasText(detailsAddress)) {
+  //     this.detailsAddress = detailsAddress;
+  //   }
+  // }
 
-  @NotBlank private String route; // Tên đường.
+  // @NotBlank private String formattedAddress; // Địa chỉ đã được định dạng theo chuẩn của Google.
 
-  @NotBlank private String city;
+  // @NotBlank private String streetNumber; // Số nhà hoặc số đường của địa chỉ.
 
-  @NotBlank private String state; // Tên tiểu bang, tỉnh thành hoặc khu vực hành chính.
+  // @NotBlank private String route; // Tên đường.
+
+  // @NotBlank private String city;
+
+  // @NotBlank private String state; // Tên tiểu bang, tỉnh thành hoặc khu vực hành chính.
 
   @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
   private GeoJsonPoint coords; // Tọa độ địa lý của địa chỉ.
@@ -51,56 +58,62 @@ public class Address {
 
   @NotBlank private String country;
 
-  public Address(
-      String formattedAddress,
-      String streetNumber,
-      String route,
-      String city,
-      String state,
-      long postalCode,
-      String country,
-      GeoJsonPoint location) {
-    this.formattedAddress = formattedAddress;
-    this.streetNumber = streetNumber;
-    this.route = route;
-    this.city = city;
-    this.state = state;
-    this.postalCode = postalCode;
-    this.country = country;
-  }
+  // public Address(
+  //     String formattedAddress,
+  //     String streetNumber,
+  //     String route,
+  //     String city,
+  //     String state,
+  //     long postalCode,
+  //     String country,
+  //     GeoJsonPoint location) {
+  //   this.formattedAddress = formattedAddress;
+  //   this.streetNumber = streetNumber;
+  //   this.route = route;
+  //   this.city = city;
+  //   this.state = state;
+  //   this.postalCode = postalCode;
+  //   this.country = country;
+  // }
 
   @JsonCreator
   public Address(
-      @JsonProperty("formattedAddress") String formattedAddress,
-      @JsonProperty("streetNumber") String streetNumber,
-      @JsonProperty("route") String route,
-      @JsonProperty("city") String city,
-      @JsonProperty("state") String state,
-      @JsonProperty("postalCode") long postalCode,
-      @JsonProperty("country") String country,
-      @JsonProperty("longitude") Double longitude,
-      @JsonProperty("latitude") Double latitude) {
-    this.formattedAddress = formattedAddress;
-    this.streetNumber = streetNumber;
-    this.route = route;
-    this.city = city;
-    this.state = state;
-    this.postalCode = postalCode;
-    this.country = country;
+      @JsonProperty("longitude") Double longitude, @JsonProperty("latitude") Double latitude) {
     this.coords = new GeoJsonPoint(longitude, latitude);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(
-        formattedAddress, streetNumber, route, city, state, postalCode, country, coords);
-  }
+  // @JsonCreator
+  // public Address(
+  //     @JsonProperty("formattedAddress") String formattedAddress,
+  //     @JsonProperty("streetNumber") String streetNumber,
+  //     @JsonProperty("route") String route,
+  //     @JsonProperty("city") String city,
+  //     @JsonProperty("state") String state,
+  //     @JsonProperty("postalCode") long postalCode,
+  //     @JsonProperty("country") String country,
+  //     @JsonProperty("longitude") Double longitude,
+  //     @JsonProperty("latitude") Double latitude) {
+  //   this.formattedAddress = formattedAddress;
+  //   this.streetNumber = streetNumber;
+  //   this.route = route;
+  //   this.city = city;
+  //   this.state = state;
+  //   this.postalCode = postalCode;
+  //   this.country = country;
+  //   this.coords = new GeoJsonPoint(longitude, latitude);
+  // }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    else if (obj == null || getClass() != obj.getClass()) return false;
-    Address that = (Address) obj;
-    return formattedAddress.equals(that.formattedAddress) && Objects.equal(coords, that.coords);
-  }
+  // @Override
+  // public int hashCode() {
+  //   return Objects.hashCode(
+  //       formattedAddress, streetNumber, route, city, state, postalCode, country, coords);
+  // }
+
+  // @Override
+  // public boolean equals(Object obj) {
+  //   if (this == obj) return true;
+  //   else if (obj == null || getClass() != obj.getClass()) return false;
+  //   Address that = (Address) obj;
+  //   return formattedAddress.equals(that.formattedAddress) && Objects.equal(coords, that.coords);
+  // }
 }

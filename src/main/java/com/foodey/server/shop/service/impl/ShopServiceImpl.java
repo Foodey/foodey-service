@@ -129,6 +129,11 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
+  public List<Shop> findAllById(Iterable<String> ids) {
+    return shopRepository.findAllById(ids);
+  }
+
+  @Override
   @Caching(
       cacheable = {
         @Cacheable(value = "shops", cacheManager = "caffeineCacheManager"),
@@ -190,6 +195,20 @@ public class ShopServiceImpl implements ShopService {
       String query, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
     return shopRepository.findByNameContainingIgnoreCaseAndAddressCoordsNear(
         query,
+        new Point(longitude, latitude),
+        new Distance(maxDistanceKms, Metrics.KILOMETERS),
+        pageable);
+  }
+
+  @Override
+  public Slice<Shop> findAllByIdNear(
+      Iterable<String> ids,
+      double longitude,
+      double latitude,
+      long maxDistanceKms,
+      Pageable pageable) {
+    return shopRepository.findByIdInAndAddressCoordsNear(
+        ids,
         new Point(longitude, latitude),
         new Distance(maxDistanceKms, Metrics.KILOMETERS),
         pageable);

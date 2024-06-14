@@ -7,10 +7,10 @@ import com.foodey.server.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,15 +22,21 @@ public class RecommendationController {
 
   @GetMapping("/products")
   public Slice<Product> recommendProductsForUser(
-      @CurrentUser User user,
-      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
+      @CurrentUser User user, @PageableDefault(page = 0, size = 12) Pageable pageable) {
     return recommendationService.recommendProductsForUser(user.getId(), pageable);
   }
 
   @GetMapping("/shops")
   public Slice<Shop> recommendShopsFofUser(
       @CurrentUser User user,
-      @PageableDefault(page = 0, size = 12, direction = Direction.ASC) Pageable pageable) {
+      @RequestParam(required = false) Double longitude,
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false, defaultValue = "5") long maxDistance,
+      @PageableDefault(page = 0, size = 12) Pageable pageable) {
+    if (longitude != null && latitude != null) {
+      return recommendationService.recommendShopsForUser(
+          user.getId(), longitude, latitude, maxDistance, pageable);
+    }
     return recommendationService.recommendShopsForUser(user.getId(), pageable);
   }
 }

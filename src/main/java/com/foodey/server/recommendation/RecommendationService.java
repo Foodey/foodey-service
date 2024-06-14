@@ -10,4 +10,7 @@ public interface RecommendationService {
   Slice<Product> recommendProductsForUser(String userId, Pageable pageable);
 
   Slice<Shop> recommendShopsForUser(String userId, Pageable pageable);
+
+  Slice<Shop> recommendShopsForUser(
+      String userId, double longitude, double latitude, long maxDistanceKms, Pageable pageable);
 }

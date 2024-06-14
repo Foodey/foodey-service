@@ -14,9 +14,18 @@ public interface ShopService {
 
   Shop findById(String id);
 
+  List<Shop> findAllById(Iterable<String> ids);
+
   Shop findByIdAndBrandIdAndVerifyOwner(String id, String brandId, String userId);
 
   Slice<Shop> findAll(Pageable pageable);
+
+  Slice<Shop> findAllByIdNear(
+      Iterable<String> ids,
+      double longitude,
+      double latitude,
+      long maxDistanceKms,
+      Pageable pageable);
 
   Slice<Shop> findAllNear(
       double longitude, double latitude, long maxDistanceKms, Pageable pageable);

@@ -8,6 +8,7 @@ import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.repository.ShopRepository;
+import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.utils.SortUtils;
 import java.time.Duration;
 import java.util.*;
@@ -28,6 +29,7 @@ public class RecommendationServiceImpl implements RecommendationService {
   private final OrderEvaluationRepository orderEvaluationRepository;
   private final ProductRepository productRepository;
   private final ShopRepository shopRepository;
+  private final ShopService shopService;
   private final UserShopRecommendedCache userShopRecommendedCache;
 
   /**
@@ -51,6 +53,27 @@ public class RecommendationServiceImpl implements RecommendationService {
     return productRepository.findByIdIn(recommendedProductIds, pageable);
   }
 
+  private List<String> readCacheOrFetchRecommendations(String userId) {
+    return userShopRecommendedCache
+        .get(userId)
+        .orElseGet(
+            () -> {
+              Map<String, Map<String, Double>> userShopMatrix = buildUserShopMatrix();
+              Map<String, Double> currentUserShopRatings = userShopMatrix.get(userId);
+
+              // if user has no ratings at the moment
+              if (currentUserShopRatings == null) return new ArrayList<>();
+
+              Map<String, Double> similarityScores =
+                  calculateSimilarityScores(userShopMatrix, currentUserShopRatings, userId);
+              List<String> newRecommendedShopIds =
+                  generateRecommendations(similarityScores, userShopMatrix, currentUserShopRatings);
+              userShopRecommendedCache.put(userId, newRecommendedShopIds, Duration.ofDays(1));
+              log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
+              return newRecommendedShopIds;
+            });
+  }
+
   /**
    * Recommends shops for a user based on their and others' shop evaluations.
    *
@@ -60,26 +83,28 @@ public class RecommendationServiceImpl implements RecommendationService {
    */
   @Override
   public Slice<Shop> recommendShopsForUser(String userId, Pageable pageable) {
-    List<String> recommendedShopIds =
-        userShopRecommendedCache
-            .get(userId)
-            .orElseGet(
-                () -> {
-                  Map<String, Map<String, Double>> userShopMatrix = buildUserShopMatrix();
-                  Map<String, Double> currentUserShopRatings = userShopMatrix.get(userId);
+    List<String> recommendedShopIds = readCacheOrFetchRecommendations(userId);
+    // List<String> recommendedShopIds =
+    //     userShopRecommendedCache
+    //         .get(userId)
+    //         .orElseGet(
+    //             () -> {
+    //               Map<String, Map<String, Double>> userShopMatrix = buildUserShopMatrix();
+    //               Map<String, Double> currentUserShopRatings = userShopMatrix.get(userId);
 
-                  // if user has no ratings at the moment
-                  if (currentUserShopRatings == null) return new ArrayList<>();
+    //               // if user has no ratings at the moment
+    //               if (currentUserShopRatings == null) return new ArrayList<>();
 
-                  Map<String, Double> similarityScores =
-                      calculateSimilarityScores(userShopMatrix, currentUserShopRatings, userId);
-                  List<String> newRecommendedShopIds =
-                      generateRecommendations(
-                          similarityScores, userShopMatrix, currentUserShopRatings);
-                  userShopRecommendedCache.put(userId, newRecommendedShopIds, Duration.ofDays(1));
-                  log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
-                  return newRecommendedShopIds;
-                });
+    //               Map<String, Double> similarityScores =
+    //                   calculateSimilarityScores(userShopMatrix, currentUserShopRatings, userId);
+    //               List<String> newRecommendedShopIds =
+    //                   generateRecommendations(
+    //                       similarityScores, userShopMatrix, currentUserShopRatings);
+    //               userShopRecommendedCache.put(userId, newRecommendedShopIds,
+    // Duration.ofDays(1));
+    //               log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
+    //               return newRecommendedShopIds;
+    //             });
 
     if (recommendedShopIds == null || recommendedShopIds.isEmpty()) {
       return shopRepository.findAll(pageable);
@@ -95,6 +120,50 @@ public class RecommendationServiceImpl implements RecommendationService {
     List<Shop> recommendedShops =
         SortUtils.sort(shopRepository.findAllById(responseRecommendShopids), pageable);
     return new SliceImpl<>(recommendedShops, pageable, hasNext);
+  }
+
+  @Override
+  public Slice<Shop> recommendShopsForUser(
+      String userId, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
+    // List<String> recommendedShopIds =
+    //     userShopRecommendedCache
+    //         .get(userId)
+    //         .orElseGet(
+    //             () -> {
+    //               Map<String, Map<String, Double>> userShopMatrix = buildUserShopMatrix();
+    //               Map<String, Double> currentUserShopRatings = userShopMatrix.get(userId);
+
+    //               // if user has no ratings at the moment
+    //               if (currentUserShopRatings == null) return new ArrayList<>();
+
+    //               Map<String, Double> similarityScores =
+    //                   calculateSimilarityScores(userShopMatrix, currentUserShopRatings, userId);
+    //               List<String> newRecommendedShopIds =
+    //                   generateRecommendations(
+    //                       similarityScores, userShopMatrix, currentUserShopRatings);
+    //               userShopRecommendedCache.put(userId, newRecommendedShopIds,
+    // Duration.ofDays(1));
+    //               log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
+    //               return newRecommendedShopIds;
+    //             });
+    List<String> recommendedShopIds = readCacheOrFetchRecommendations(userId);
+
+    if (recommendedShopIds == null || recommendedShopIds.isEmpty()) {
+      return shopService.findAllNear(longitude, latitude, maxDistanceKms, pageable);
+    }
+    return shopService.findAllByIdNear(
+        recommendedShopIds, longitude, latitude, maxDistanceKms, pageable);
+
+    // long pageOffset = pageable.getOffset();
+    // int pageSize = pageable.getPageSize();
+
+    // List<String> responseRecommendShopids =
+    //     recommendedShopIds.stream().skip(pageOffset).limit(pageSize).toList();
+
+    // boolean hasNext = recommendedShopIds.size() > pageOffset + pageSize;
+    // List<Shop> recommendedShops =
+    //     SortUtils.sort(shopRepository.findAllById(responseRecommendShopids), pageable);
+    // return new SliceImpl<>(recommendedShops, pageable, hasNext);
   }
 
   /**
