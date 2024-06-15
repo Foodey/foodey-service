@@ -2,7 +2,9 @@ package com.foodey.server.recommendation.cf.userbased;
 
 import com.foodey.server.annotation.CurrentUser;
 import com.foodey.server.shop.model.Shop;
+import com.foodey.server.user.enums.RoleType;
 import com.foodey.server.user.model.User;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -26,6 +28,7 @@ public class RecommendationController {
   // }
 
   @GetMapping("/shops")
+  @RolesAllowed(RoleType.Fields.CUSTOMER)
   public Slice<Shop> recommendShopsFofUser(
       @CurrentUser User user,
       @RequestParam(required = false) Double longitude,

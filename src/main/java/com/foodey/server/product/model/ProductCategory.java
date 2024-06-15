@@ -9,11 +9,14 @@ import com.foodey.server.upload.model.CloudinaryImage;
 import com.foodey.server.upload.model.CloudinaryImageManager;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Instant;
 import java.util.Map;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,6 +37,12 @@ public class ProductCategory implements CloudinaryImageManager {
   @Schema(description = "The name of the category")
   @OptimizedName
   private String name;
+
+  private boolean deleted = false;
+
+  @CreatedDate private Instant createdAt;
+
+  @LastModifiedDate private Instant updatedAt;
 
   @Transient
   @JsonInclude(JsonInclude.Include.NON_NULL)

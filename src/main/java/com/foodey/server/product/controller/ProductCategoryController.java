@@ -74,7 +74,9 @@ public class ProductCategoryController {
   @RolesAllowed(RoleType.Fields.ADMIN)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void removeCategory(@PathVariable(name = "id") String id) {
-    productCategoryService.deleteById(id);
+    ProductCategory productCategory = productCategoryService.findById(id);
+    productCategory.setDeleted(true);
+    productCategoryService.save(productCategory);
   }
 
   @RolesAllowed(RoleType.Fields.ADMIN)

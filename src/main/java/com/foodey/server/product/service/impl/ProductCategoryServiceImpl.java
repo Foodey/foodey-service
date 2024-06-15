@@ -44,7 +44,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   @Override
   @Cacheable(value = "productCategories", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
   public Slice<ProductCategory> findAll(Pageable pageable) {
-    return productCategoryRepository.findAll(pageable);
+    return productCategoryRepository.findByDeleted(false, pageable);
   }
 
   @Override
@@ -67,5 +67,10 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
   public Map<String, Object> getImageUploadApiOptions(String id) {
     ProductCategory productCategory = findById(id);
     return cloudinaryService.getUploadApiOptions(productCategory.getCldImage());
+  }
+
+  @Override
+  public ProductCategory save(ProductCategory productCategory) {
+    return productCategoryRepository.save(productCategory);
   }
 }

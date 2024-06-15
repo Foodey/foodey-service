@@ -20,4 +20,6 @@ public interface ProductCategoryService {
   void deleteById(String id);
 
   Map<String, Object> getImageUploadApiOptions(String id);
+
+  ProductCategory save(ProductCategory productCategory);
 }
