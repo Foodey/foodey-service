@@ -7,8 +7,8 @@ import org.springframework.data.domain.Slice;
 
 public interface ShopBasedRecommendationService {
 
-  Slice<Shop> recommendShopsForUser(User userId, Pageable pageable);
+  Slice<Shop> recommendShopsForUser(User user, Pageable pageable);
 
   Slice<Shop> recommendShopsForUser(
-      User userId, double longitude, double latitude, long maxDistanceKms, Pageable pageable);
+      User user, double longitude, double latitude, long maxDistanceKms, Pageable pageable);
 }

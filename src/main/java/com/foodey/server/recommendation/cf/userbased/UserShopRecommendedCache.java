@@ -29,6 +29,8 @@ public class UserShopRecommendedCache implements CacheRepository<String, List<St
 
   @Override
   public void put(String userId, List<String> shopIds, Duration ttl) {
+    if (shopIds == null || shopIds.isEmpty()) return;
+
     String key = PREFIX + userId;
     listOperations.rightPushAll(key, shopIds);
     if (ttl == null) ttl = TTL;

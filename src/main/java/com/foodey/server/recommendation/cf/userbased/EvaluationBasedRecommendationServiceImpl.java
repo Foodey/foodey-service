@@ -45,7 +45,8 @@ public class EvaluationBasedRecommendationServiceImpl
   //   Map<String, Double> similarityScores =
   //       calculateSimilarityScores(userProductMatrix, currentUserProductRatings, userId);
   //   List<String> recommendedProductIds =
-  //       generateRecommendations(similarityScores, userProductMatrix, currentUserProductRatings);
+  //       generateRecommendations(similarityScores, userProductMatrix,
+  // currentUserProductRatings);
 
   //   return productRepository.findByIdIn(recommendedProductIds, pageable);
   // }
@@ -67,6 +68,7 @@ public class EvaluationBasedRecommendationServiceImpl
               List<String> newRecommendedShopIds =
                   generateRecommendations(similarityScores, userShopMatrix, currentUserShopRatings);
               userShopRecommendedCache.put(userId, newRecommendedShopIds, Duration.ofDays(1));
+
               log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
               return newRecommendedShopIds;
             });
@@ -96,6 +98,7 @@ public class EvaluationBasedRecommendationServiceImpl
     if (recommendedShopIds == null || recommendedShopIds.isEmpty()) {
       return shopService.findAllNear(longitude, latitude, maxDistanceKms, pageable);
     }
+
     return shopService.findAllByIdNear(
         recommendedShopIds, longitude, latitude, maxDistanceKms, pageable);
   }
