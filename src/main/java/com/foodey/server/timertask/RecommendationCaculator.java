@@ -1,7 +1,7 @@
 package com.foodey.server.timertask;
 
-import com.foodey.server.recommendation.RecommendationService;
-import com.foodey.server.recommendation.UserShopRecommendedCache;
+import com.foodey.server.recommendation.cf.userbased.RecommendationService;
+import com.foodey.server.recommendation.cf.userbased.UserShopRecommendedCache;
 import com.foodey.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +35,8 @@ public class RecommendationCaculator {
         .forEach(
             user -> {
               // get user id
-              String userId = user.getId();
               // compute shops recommendation for user and save it to cache
-              recommendationService.recommendShopsForUser(userId, PageRequest.of(0, 1));
+              recommendationService.recommendShopsForUser(user, PageRequest.of(0, 1));
             });
 
     log.info(

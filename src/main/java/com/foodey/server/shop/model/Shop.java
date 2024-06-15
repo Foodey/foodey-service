@@ -62,6 +62,21 @@ public class Shop implements Persistable<String>, CloudinaryImageManager {
   @OptimizedName
   private String name;
 
+  @JsonIgnore
+  @Schema(description = "The vector features of the shop")
+  private double[] features;
+
+  @JsonIgnore
+  public double[] extractFeatures() {
+    double categoriesFeature = categoryIds != null ? categoryIds.hashCode() : 0;
+    double ratingFeature = rating;
+    double addressFeature =
+        address != null ? address.getCoords().getX() + address.getCoords().getY() : 0;
+    double ownerFeature = address.hashCode();
+    features = new double[] {categoriesFeature, ratingFeature, addressFeature, ownerFeature};
+    return features;
+  }
+
   @Transient
   @JsonInclude(Include.NON_NULL)
   private Map<String, Object> logoUploadApiOptions;

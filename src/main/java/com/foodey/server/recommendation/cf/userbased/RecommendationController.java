@@ -1,7 +1,6 @@
-package com.foodey.server.recommendation;
+package com.foodey.server.recommendation.cf.userbased;
 
 import com.foodey.server.annotation.CurrentUser;
-import com.foodey.server.product.model.Product;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.user.model.User;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +19,11 @@ public class RecommendationController {
 
   private final RecommendationService recommendationService;
 
-  @GetMapping("/products")
-  public Slice<Product> recommendProductsForUser(
-      @CurrentUser User user, @PageableDefault(page = 0, size = 12) Pageable pageable) {
-    return recommendationService.recommendProductsForUser(user.getId(), pageable);
-  }
+  // @GetMapping("/products")
+  // public Slice<Product> recommendProductsForUser(
+  //     @CurrentUser User user, @PageableDefault(page = 0, size = 12) Pageable pageable) {
+  //   return recommendationService.recommendProductsForUser(user, pageable);
+  // }
 
   @GetMapping("/shops")
   public Slice<Shop> recommendShopsFofUser(
@@ -35,8 +34,8 @@ public class RecommendationController {
       @PageableDefault(page = 0, size = 12) Pageable pageable) {
     if (longitude != null && latitude != null) {
       return recommendationService.recommendShopsForUser(
-          user.getId(), longitude, latitude, maxDistance, pageable);
+          user, longitude, latitude, maxDistance, pageable);
     }
-    return recommendationService.recommendShopsForUser(user.getId(), pageable);
+    return recommendationService.recommendShopsForUser(user, pageable);
   }
 }

@@ -1,4 +1,4 @@
-package com.foodey.server.recommendation;
+package com.foodey.server.recommendation.cf.userbased;
 
 import com.foodey.server.common.repos.CacheRepository;
 import java.time.Duration;

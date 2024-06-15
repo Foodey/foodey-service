@@ -1,14 +1,13 @@
-package com.foodey.server.recommendation;
+package com.foodey.server.recommendation.cf.userbased;
 
 import com.foodey.server.evaluation.model.OrderEvaluation;
-import com.foodey.server.evaluation.model.ProductEvaluation;
 import com.foodey.server.evaluation.repository.OrderEvaluationRepository;
 import com.foodey.server.evaluation.repository.ProductEvaluationRepository;
-import com.foodey.server.product.model.Product;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.model.Shop;
 import com.foodey.server.shop.repository.ShopRepository;
 import com.foodey.server.shop.service.ShopService;
+import com.foodey.server.user.model.User;
 import com.foodey.server.utils.SortUtils;
 import java.time.Duration;
 import java.util.*;
@@ -39,21 +38,23 @@ public class RecommendationServiceImpl implements RecommendationService {
    * @param pageable the pagination information.
    * @return a slice of recommended products.
    */
-  @Override
-  public Slice<Product> recommendProductsForUser(String userId, Pageable pageable) {
-    Map<String, Map<String, Double>> userProductMatrix = buildUserProductMatrix();
-    Map<String, Double> currentUserProductRatings = userProductMatrix.get(userId);
-    // if user has no ratings at the moment
+  // @Override
+  // public Slice<Product> recommendProductsForUser(User user, Pageable pageable) {
+  //   String userId = user.getId();
+  //   Map<String, Map<String, Double>> userProductMatrix = buildUserProductMatrix();
+  //   Map<String, Double> currentUserProductRatings = userProductMatrix.get(userId);
+  //   // if user has no ratings at the moment
 
-    Map<String, Double> similarityScores =
-        calculateSimilarityScores(userProductMatrix, currentUserProductRatings, userId);
-    List<String> recommendedProductIds =
-        generateRecommendations(similarityScores, userProductMatrix, currentUserProductRatings);
+  //   Map<String, Double> similarityScores =
+  //       calculateSimilarityScores(userProductMatrix, currentUserProductRatings, userId);
+  //   List<String> recommendedProductIds =
+  //       generateRecommendations(similarityScores, userProductMatrix, currentUserProductRatings);
 
-    return productRepository.findByIdIn(recommendedProductIds, pageable);
-  }
+  //   return productRepository.findByIdIn(recommendedProductIds, pageable);
+  // }
 
-  private List<String> readCacheOrFetchRecommendations(String userId) {
+  private List<String> readCacheOrFetchRecommendations(User user) {
+    String userId = user.getId();
     return userShopRecommendedCache
         .get(userId)
         .orElseGet(
@@ -75,6 +76,29 @@ public class RecommendationServiceImpl implements RecommendationService {
   }
 
   /**
+   * Calculate the average feature vector of user's favorite shops.
+   *
+   * @param favoriteShops list of favorite shops of the user
+   * @return average feature vector
+   */
+  private double[] calculateAverageFeatures(List<Shop> favoriteShops) {
+    int featureSize = favoriteShops.get(0).getFeatures().length;
+    double[] avgFeatures = new double[featureSize];
+
+    for (Shop shop : favoriteShops) {
+      for (int i = 0; i < featureSize; i++) {
+        avgFeatures[i] += shop.getFeatures()[i];
+      }
+    }
+
+    for (int i = 0; i < featureSize; i++) {
+      avgFeatures[i] /= favoriteShops.size();
+    }
+
+    return avgFeatures;
+  }
+
+  /**
    * Recommends shops for a user based on their and others' shop evaluations.
    *
    * @param userId the ID of the user for whom recommendations are being generated.
@@ -82,8 +106,9 @@ public class RecommendationServiceImpl implements RecommendationService {
    * @return a slice of recommended shops.
    */
   @Override
-  public Slice<Shop> recommendShopsForUser(String userId, Pageable pageable) {
-    List<String> recommendedShopIds = readCacheOrFetchRecommendations(userId);
+  public Slice<Shop> recommendShopsForUser(User user, Pageable pageable) {
+    // String userId = user.getId();
+    List<String> recommendedShopIds = readCacheOrFetchRecommendations(user);
     // List<String> recommendedShopIds =
     //     userShopRecommendedCache
     //         .get(userId)
@@ -124,7 +149,8 @@ public class RecommendationServiceImpl implements RecommendationService {
 
   @Override
   public Slice<Shop> recommendShopsForUser(
-      String userId, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
+      User user, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
+    // String userId = user.getId();
     // List<String> recommendedShopIds =
     //     userShopRecommendedCache
     //         .get(userId)
@@ -146,7 +172,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     //               log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
     //               return newRecommendedShopIds;
     //             });
-    List<String> recommendedShopIds = readCacheOrFetchRecommendations(userId);
+    List<String> recommendedShopIds = readCacheOrFetchRecommendations(user);
 
     if (recommendedShopIds == null || recommendedShopIds.isEmpty()) {
       return shopService.findAllNear(longitude, latitude, maxDistanceKms, pageable);
@@ -172,25 +198,25 @@ public class RecommendationServiceImpl implements RecommendationService {
    * @return a map where the key is the user ID and the value is another map with product IDs and
    *     their ratings.
    */
-  private Map<String, Map<String, Double>> buildUserProductMatrix() {
-    final List<ProductEvaluation> pEvaluations = productEvaluationRepository.findAll();
-    final Map<String, Map<String, Double>> userProductMatrix = new HashMap<>();
+  // private Map<String, Map<String, Double>> buildUserProductMatrix() {
+  //   final List<ProductEvaluation> pEvaluations = productEvaluationRepository.findAll();
+  //   final Map<String, Map<String, Double>> userProductMatrix = new HashMap<>();
 
-    pEvaluations.forEach(
-        evaluation -> {
-          String creatorId = evaluation.getCreatorId();
-          String productId = evaluation.getProductId();
-          Map<String, Double> productRatings =
-              userProductMatrix.computeIfAbsent(creatorId, k -> new HashMap<>());
+  //   pEvaluations.forEach(
+  //       evaluation -> {
+  //         String creatorId = evaluation.getCreatorId();
+  //         String productId = evaluation.getProductId();
+  //         Map<String, Double> productRatings =
+  //             userProductMatrix.computeIfAbsent(creatorId, k -> new HashMap<>());
 
-          productRatings.merge(
-              productId,
-              (double) evaluation.getRating(),
-              (oldRating, newRating) -> (newRating + oldRating) / 2);
-        });
+  //         productRatings.merge(
+  //             productId,
+  //             (double) evaluation.getRating(),
+  //             (oldRating, newRating) -> (newRating + oldRating) / 2);
+  //       });
 
-    return userProductMatrix;
-  }
+  //   return userProductMatrix;
+  // }
 
   /**
    * Builds the user-shop evaluation matrix.

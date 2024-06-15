@@ -41,6 +41,7 @@ public class ShopServiceImpl implements ShopService {
       shopBrandService.verifyOwner(brandId, userId);
       shop.setOwnerId(userId);
       shop.setBrandId(brandId);
+      shop.extractFeatures();
       Shop newShop = shopRepository.save(shop);
 
       newShop.setLogoUploadApiOptions(cloudinaryService.getUploadApiOptions(newShop.getCldLogo()));
