@@ -3,6 +3,7 @@ package com.foodey.server.common.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -78,9 +79,9 @@ public class Address {
 
   @JsonCreator
   public Address(
-      @JsonProperty("detailsAddress") String detailsAddress,
-      @JsonProperty("longitude") Double longitude,
-      @JsonProperty("latitude") Double latitude) {
+      @NotBlank @JsonProperty("detailsAddress") String detailsAddress,
+      @NotNull @JsonProperty("longitude") Double longitude,
+      @NotNull @JsonProperty("latitude") Double latitude) {
     this.detailsAddress = detailsAddress;
     this.coords = new GeoJsonPoint(longitude, latitude);
   }

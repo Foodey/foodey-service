@@ -76,29 +76,6 @@ public class RecommendationServiceImpl implements RecommendationService {
   }
 
   /**
-   * Calculate the average feature vector of user's favorite shops.
-   *
-   * @param favoriteShops list of favorite shops of the user
-   * @return average feature vector
-   */
-  private double[] calculateAverageFeatures(List<Shop> favoriteShops) {
-    int featureSize = favoriteShops.get(0).getFeatures().length;
-    double[] avgFeatures = new double[featureSize];
-
-    for (Shop shop : favoriteShops) {
-      for (int i = 0; i < featureSize; i++) {
-        avgFeatures[i] += shop.getFeatures()[i];
-      }
-    }
-
-    for (int i = 0; i < featureSize; i++) {
-      avgFeatures[i] /= favoriteShops.size();
-    }
-
-    return avgFeatures;
-  }
-
-  /**
    * Recommends shops for a user based on their and others' shop evaluations.
    *
    * @param userId the ID of the user for whom recommendations are being generated.
@@ -261,7 +238,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     userMatrix.forEach(
         (otherUserId, itemRatings) -> {
           if (!otherUserId.equals(userId)) {
-            Double similarity = cosineSimilarity(currentUserRatings, itemRatings);
+            Double similarity = calculateCosineSimilarity(currentUserRatings, itemRatings);
             if (similarity > 0) {
               similarityScores.put(otherUserId, similarity);
             }
@@ -299,15 +276,15 @@ public class RecommendationServiceImpl implements RecommendationService {
    * @param otherUserRatings the other user's ratings.
    * @return the cosine similarity score.
    */
-  private double cosineSimilarity(
+  private double calculateCosineSimilarity(
       Map<String, Double> userRatings, Map<String, Double> otherUserRatings) {
     double dotProduct = 0; // A.B
     double normA = 0; // |A|
     double normB = 0; // |B|
 
-    for (String productId : userRatings.keySet()) {
-      double userRating = userRatings.get(productId);
-      double otherRating = otherUserRatings.getOrDefault(productId, 0.0);
+    for (String objId : userRatings.keySet()) {
+      double userRating = userRatings.get(objId);
+      double otherRating = otherUserRatings.getOrDefault(objId, 0.0);
       dotProduct += userRating * otherRating;
       normA += Math.pow(userRating, 2);
       normB += Math.pow(otherRating, 2);
@@ -317,5 +294,53 @@ public class RecommendationServiceImpl implements RecommendationService {
       return 0;
     }
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  }
+
+  /**
+   * Calculate cosine similarity between two feature vectors.
+   *
+   * @param features1 feature vector 1
+   * @param features2 feature vector 2
+   * @return cosine similarity score
+   */
+  private double calculateCosineSimilarity(double[] features1, double[] features2) {
+    double dotProduct = 0.0;
+    double norm1 = 0.0;
+    double norm2 = 0.0;
+
+    for (int i = 0; i < features1.length; i++) {
+      dotProduct += features1[i] * features2[i];
+      norm1 += Math.pow(features1[i], 2);
+      norm2 += Math.pow(features2[i], 2);
+    }
+
+    if (norm1 == 0 || norm2 == 0) {
+      return 0.0; // Handle division by zero
+    }
+
+    return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
+  }
+
+  /**
+   * Calculate the average feature vector of user's favorite shops.
+   *
+   * @param favoriteShops list of favorite shops of the user
+   * @return average feature vector
+   */
+  private double[] calculateAverageFeatures(List<Shop> favoriteShops) {
+    int featureSize = favoriteShops.get(0).getFeatures().length;
+    double[] avgFeatures = new double[featureSize];
+
+    for (Shop shop : favoriteShops) {
+      for (int i = 0; i < featureSize; i++) {
+        avgFeatures[i] += shop.getFeatures()[i];
+      }
+    }
+
+    for (int i = 0; i < featureSize; i++) {
+      avgFeatures[i] /= favoriteShops.size();
+    }
+
+    return avgFeatures;
   }
 }

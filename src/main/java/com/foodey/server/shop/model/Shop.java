@@ -10,6 +10,8 @@ import com.foodey.server.upload.model.CloudinaryImageManager;
 import com.foodey.server.validation.annotation.OptimizedName;
 import com.mongodb.lang.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
@@ -100,6 +102,8 @@ public class Shop implements Persistable<String>, CloudinaryImageManager {
   }
 
   @Schema(description = "The address of the shop")
+  @Valid
+  @NotNull
   private Address address;
 
   @Indexed(name = "shop_categories")
