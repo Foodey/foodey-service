@@ -43,7 +43,7 @@ public class ShopBasedRecommendationServiceImpl implements ShopBasedRecommendati
       return new SliceImpl<>(new ArrayList<>(), pageable, false);
     }
 
-    // double[] avgFeatures = calculateAverageFeatures(favoriteShops);
+    double[] avgFeatures = calculateAverageFeatures(favoriteShops);
 
     // Find shops that are similar to the average features
     // PriorityQueue<Shop> maxHeap =

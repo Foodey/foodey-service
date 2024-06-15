@@ -5,10 +5,8 @@ import com.foodey.server.evaluation.repository.OrderEvaluationRepository;
 import com.foodey.server.evaluation.repository.ProductEvaluationRepository;
 import com.foodey.server.product.repository.ProductRepository;
 import com.foodey.server.shop.model.Shop;
-import com.foodey.server.shop.repository.ShopRepository;
 import com.foodey.server.shop.service.ShopService;
 import com.foodey.server.user.model.User;
-import com.foodey.server.utils.SortUtils;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,18 +14,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class RecommendationServiceImpl implements RecommendationService {
+public class EvaluationBasedRecommendationServiceImpl
+    implements EvaluationBasedRecommendationService {
 
   private final ProductEvaluationRepository productEvaluationRepository;
   private final OrderEvaluationRepository orderEvaluationRepository;
   private final ProductRepository productRepository;
-  private final ShopRepository shopRepository;
   private final ShopService shopService;
   private final UserShopRecommendedCache userShopRecommendedCache;
 
@@ -84,71 +81,16 @@ public class RecommendationServiceImpl implements RecommendationService {
    */
   @Override
   public Slice<Shop> recommendShopsForUser(User user, Pageable pageable) {
-    // String userId = user.getId();
     List<String> recommendedShopIds = readCacheOrFetchRecommendations(user);
-    // List<String> recommendedShopIds =
-    //     userShopRecommendedCache
-    //         .get(userId)
-    //         .orElseGet(
-    //             () -> {
-    //               Map<String, Map<String, Double>> userShopMatrix = buildUserShopMatrix();
-    //               Map<String, Double> currentUserShopRatings = userShopMatrix.get(userId);
-
-    //               // if user has no ratings at the moment
-    //               if (currentUserShopRatings == null) return new ArrayList<>();
-
-    //               Map<String, Double> similarityScores =
-    //                   calculateSimilarityScores(userShopMatrix, currentUserShopRatings, userId);
-    //               List<String> newRecommendedShopIds =
-    //                   generateRecommendations(
-    //                       similarityScores, userShopMatrix, currentUserShopRatings);
-    //               userShopRecommendedCache.put(userId, newRecommendedShopIds,
-    // Duration.ofDays(1));
-    //               log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
-    //               return newRecommendedShopIds;
-    //             });
-
     if (recommendedShopIds == null || recommendedShopIds.isEmpty()) {
-      return shopRepository.findAll(pageable);
+      return shopService.findAll(pageable);
     }
-
-    long pageOffset = pageable.getOffset();
-    int pageSize = pageable.getPageSize();
-
-    List<String> responseRecommendShopids =
-        recommendedShopIds.stream().skip(pageOffset).limit(pageSize).toList();
-
-    boolean hasNext = recommendedShopIds.size() > pageOffset + pageSize;
-    List<Shop> recommendedShops =
-        SortUtils.sort(shopRepository.findAllById(responseRecommendShopids), pageable);
-    return new SliceImpl<>(recommendedShops, pageable, hasNext);
+    return shopService.findAllById(recommendedShopIds, pageable);
   }
 
   @Override
   public Slice<Shop> recommendShopsForUser(
       User user, double longitude, double latitude, long maxDistanceKms, Pageable pageable) {
-    // String userId = user.getId();
-    // List<String> recommendedShopIds =
-    //     userShopRecommendedCache
-    //         .get(userId)
-    //         .orElseGet(
-    //             () -> {
-    //               Map<String, Map<String, Double>> userShopMatrix = buildUserShopMatrix();
-    //               Map<String, Double> currentUserShopRatings = userShopMatrix.get(userId);
-
-    //               // if user has no ratings at the moment
-    //               if (currentUserShopRatings == null) return new ArrayList<>();
-
-    //               Map<String, Double> similarityScores =
-    //                   calculateSimilarityScores(userShopMatrix, currentUserShopRatings, userId);
-    //               List<String> newRecommendedShopIds =
-    //                   generateRecommendations(
-    //                       similarityScores, userShopMatrix, currentUserShopRatings);
-    //               userShopRecommendedCache.put(userId, newRecommendedShopIds,
-    // Duration.ofDays(1));
-    //               log.info("Recommended shops for user {}: {}", userId, newRecommendedShopIds);
-    //               return newRecommendedShopIds;
-    //             });
     List<String> recommendedShopIds = readCacheOrFetchRecommendations(user);
 
     if (recommendedShopIds == null || recommendedShopIds.isEmpty()) {
@@ -156,17 +98,6 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
     return shopService.findAllByIdNear(
         recommendedShopIds, longitude, latitude, maxDistanceKms, pageable);
-
-    // long pageOffset = pageable.getOffset();
-    // int pageSize = pageable.getPageSize();
-
-    // List<String> responseRecommendShopids =
-    //     recommendedShopIds.stream().skip(pageOffset).limit(pageSize).toList();
-
-    // boolean hasNext = recommendedShopIds.size() > pageOffset + pageSize;
-    // List<Shop> recommendedShops =
-    //     SortUtils.sort(shopRepository.findAllById(responseRecommendShopids), pageable);
-    // return new SliceImpl<>(recommendedShops, pageable, hasNext);
   }
 
   /**
@@ -294,53 +225,5 @@ public class RecommendationServiceImpl implements RecommendationService {
       return 0;
     }
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-  }
-
-  /**
-   * Calculate cosine similarity between two feature vectors.
-   *
-   * @param features1 feature vector 1
-   * @param features2 feature vector 2
-   * @return cosine similarity score
-   */
-  private double calculateCosineSimilarity(double[] features1, double[] features2) {
-    double dotProduct = 0.0;
-    double norm1 = 0.0;
-    double norm2 = 0.0;
-
-    for (int i = 0; i < features1.length; i++) {
-      dotProduct += features1[i] * features2[i];
-      norm1 += Math.pow(features1[i], 2);
-      norm2 += Math.pow(features2[i], 2);
-    }
-
-    if (norm1 == 0 || norm2 == 0) {
-      return 0.0; // Handle division by zero
-    }
-
-    return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
-  }
-
-  /**
-   * Calculate the average feature vector of user's favorite shops.
-   *
-   * @param favoriteShops list of favorite shops of the user
-   * @return average feature vector
-   */
-  private double[] calculateAverageFeatures(List<Shop> favoriteShops) {
-    int featureSize = favoriteShops.get(0).getFeatures().length;
-    double[] avgFeatures = new double[featureSize];
-
-    for (Shop shop : favoriteShops) {
-      for (int i = 0; i < featureSize; i++) {
-        avgFeatures[i] += shop.getFeatures()[i];
-      }
-    }
-
-    for (int i = 0; i < featureSize; i++) {
-      avgFeatures[i] /= favoriteShops.size();
-    }
-
-    return avgFeatures;
   }
 }

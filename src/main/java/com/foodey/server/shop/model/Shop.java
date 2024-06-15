@@ -114,6 +114,16 @@ public class Shop implements Persistable<String>, CloudinaryImageManager {
   @Schema(description = "The rating of the shop")
   private double rating = -1; // -1 means the rating has not been calculated yet
 
+  /**
+   * Get the rating of the shop if it has been calculated, otherwise return 0 This feild is used to
+   * avoid returning -1 to the client
+   *
+   * @return
+   */
+  public double getRating() {
+    return rating < 0 ? 0 : rating;
+  }
+
   @JsonIgnore
   public boolean isRatingCaculatedAtLeastOneTime() {
     return rating >= 0;
@@ -127,16 +137,6 @@ public class Shop implements Persistable<String>, CloudinaryImageManager {
   @JsonIgnore
   public double getRealRating() {
     return rating;
-  }
-
-  /**
-   * Get the rating of the shop if it has been calculated, otherwise return 0 This feild is used to
-   * avoid returning -1 to the client
-   *
-   * @return
-   */
-  public double getRating() {
-    return rating < 0 ? 0 : rating;
   }
 
   @Setter(AccessLevel.NONE)

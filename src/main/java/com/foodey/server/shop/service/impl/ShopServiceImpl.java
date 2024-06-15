@@ -135,6 +135,11 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
+  public Slice<Shop> findAllById(Iterable<String> ids, Pageable pageable) {
+    return shopRepository.findByIdIn(ids, pageable);
+  }
+
+  @Override
   @Caching(
       cacheable = {
         @Cacheable(value = "shops", cacheManager = "caffeineCacheManager"),

@@ -5,7 +5,7 @@ import com.foodey.server.user.model.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
-public interface RecommendationService {
+public interface EvaluationBasedRecommendationService {
 
   // Slice<Product> recommendProductsForUser(User userId, Pageable pageable);
 

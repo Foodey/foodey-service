@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/recommendation")
 public class RecommendationController {
 
-  private final RecommendationService recommendationService;
+  private final EvaluationBasedRecommendationService recommendationService;
 
   // @GetMapping("/products")
   // public Slice<Product> recommendProductsForUser(

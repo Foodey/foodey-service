@@ -1,6 +1,6 @@
 package com.foodey.server.timertask;
 
-import com.foodey.server.recommendation.cf.userbased.RecommendationService;
+import com.foodey.server.recommendation.cf.userbased.EvaluationBasedRecommendationService;
 import com.foodey.server.recommendation.cf.userbased.UserShopRecommendedCache;
 import com.foodey.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RecommendationCaculator {
 
-  private final RecommendationService recommendationService;
+  private final EvaluationBasedRecommendationService recommendationService;
   private final UserShopRecommendedCache userShopRecommendedCache;
   private final UserRepository userRepository;
 
@@ -23,7 +23,7 @@ public class RecommendationCaculator {
       cron =
           "${foodey.recommendation.pre_compute.collaborative_filtering.shop_cron_expression:0 0 0 *"
               + " * ?}")
-  public void caculateShopsRecommendationByCF() {
+  public void cfRecommendBaseOnEvaluation() {
 
     log.info(
         "Start pre caculate shops recommadation for all users based on collaborative filtering"

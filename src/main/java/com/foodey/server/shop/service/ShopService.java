@@ -14,6 +14,8 @@ public interface ShopService {
 
   Shop findById(String id);
 
+  Slice<Shop> findAllById(Iterable<String> ids, Pageable pageable);
+
   List<Shop> findAllById(Iterable<String> ids);
 
   Shop findByIdAndBrandIdAndVerifyOwner(String id, String brandId, String userId);
