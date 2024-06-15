@@ -2,6 +2,8 @@ package com.foodey.server.common.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -80,8 +82,8 @@ public class Address {
   @JsonCreator
   public Address(
       @NotBlank @JsonProperty("detailsAddress") String detailsAddress,
-      @NotNull @JsonProperty("longitude") Double longitude,
-      @NotNull @JsonProperty("latitude") Double latitude) {
+      @Min(-180) @Max(180) @NotNull @JsonProperty("longitude") Double longitude,
+      @Min(-90) @Max(90) @NotNull @JsonProperty("latitude") Double latitude) {
     this.detailsAddress = detailsAddress;
     this.coords = new GeoJsonPoint(longitude, latitude);
   }
