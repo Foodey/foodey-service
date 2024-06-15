@@ -57,6 +57,8 @@ public class Order implements Persistable<String> {
 
   @JsonIgnore private String userId;
 
+  private boolean rated = false;
+
   private String userName;
 
   private String userPhoneNumber;

@@ -94,7 +94,10 @@ public class OrderEvaluationServiceImpl extends EvaluationService {
     orderEvaluation.setShopId(shopId);
 
     try {
-      return (T) orderEvaluationRepository.save(orderEvaluation);
+      order.setRated(true);
+      T newEvaluation = (T) orderEvaluationRepository.save(orderEvaluation);
+      orderService.save(order);
+      return newEvaluation;
     } catch (DuplicateKeyException e) {
       throw new ResourceAlreadyInUseException(
           "Order evaluation already exists for order " + orderId,
