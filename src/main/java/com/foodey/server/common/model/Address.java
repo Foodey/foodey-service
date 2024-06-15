@@ -78,7 +78,10 @@ public class Address {
 
   @JsonCreator
   public Address(
-      @JsonProperty("longitude") Double longitude, @JsonProperty("latitude") Double latitude) {
+      @JsonProperty("detailsAddress") String detailsAddress,
+      @JsonProperty("longitude") Double longitude,
+      @JsonProperty("latitude") Double latitude) {
+    this.detailsAddress = detailsAddress;
     this.coords = new GeoJsonPoint(longitude, latitude);
   }
 

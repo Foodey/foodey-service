@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.foodey.server.upload.model.CloudinaryImage;
 import com.foodey.server.upload.model.CloudinaryImageManager;
-import com.foodey.server.utils.ConsoleUtils;
 import com.foodey.server.validation.annotation.OptimizedName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
@@ -46,15 +45,6 @@ public class ProductCategory implements CloudinaryImageManager {
   @Schema(description = "The image url of the category")
   private CloudinaryImage cldImage;
 
-  @JsonProperty("cldImage")
-  public void setCldImage(CloudinaryImage cldImage) {
-    if (cldImage == null) {
-      this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
-      return;
-    }
-    this.cldImage = cldImage;
-  }
-
   public String getImage() {
     return cldImage != null ? cldImage.getUrl() : "";
   }
@@ -63,10 +53,12 @@ public class ProductCategory implements CloudinaryImageManager {
   private String description = "";
 
   @JsonCreator
-  public ProductCategory(
-      @JsonProperty("name") String name, @JsonProperty("description") String description) {
+  public ProductCategory(@JsonProperty("name") String name) {
+    this.name = name;
+    this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
+  }
 
-    ConsoleUtils.prettyPrint("init cldImage");
+  public ProductCategory(String name, String description) {
     this.name = name;
     this.description = description;
     this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);

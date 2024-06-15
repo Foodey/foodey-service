@@ -1,9 +1,11 @@
 package com.foodey.server.upload.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.foodey.server.config.CloudinaryConfig;
 
 public interface CloudinaryImageManager {
 
+  @JsonIgnore
   default String getCloudinaryFolder() {
     return getClass().getSimpleName().toLowerCase() + "s";
   }
@@ -12,6 +14,7 @@ public interface CloudinaryImageManager {
     return "https://res.cloudinary.com/" + cloud_name + "/image/upload";
   }
 
+  @JsonIgnore
   default String getCloudinaryImageEndpoint() {
     return "https://res.cloudinary.com/" + CloudinaryConfig.CLOUD_NAME + "/image/upload";
   }

@@ -20,6 +20,8 @@ public interface ShopService {
 
   Slice<Shop> findAll(Pageable pageable);
 
+  List<Shop> findAll();
+
   Slice<Shop> findAllByIdNear(
       Iterable<String> ids,
       double longitude,

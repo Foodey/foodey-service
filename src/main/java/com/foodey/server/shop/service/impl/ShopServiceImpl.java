@@ -213,4 +213,9 @@ public class ShopServiceImpl implements ShopService {
         new Distance(maxDistanceKms, Metrics.KILOMETERS),
         pageable);
   }
+
+  @Override
+  public List<Shop> findAll() {
+    return shopRepository.findAll();
+  }
 }

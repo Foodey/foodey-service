@@ -59,4 +59,9 @@ public class ProductServiceImpl implements ProductService {
     Product product = findById(productId);
     return cloudinaryService.getUploadApiOptions(product.getCldImage());
   }
+
+  @Override
+  public List<Product> findAll() {
+    return productRepository.findAll();
+  }
 }

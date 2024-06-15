@@ -1,5 +1,6 @@
 package com.foodey.server.product.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -59,14 +60,6 @@ public class Product implements Persistable<String>, CloudinaryImageManager {
   @Schema(description = "The url image of the product")
   private CloudinaryImage cldImage;
 
-  @JsonProperty("cldImage")
-  public void setCldImage(CloudinaryImage cldImage) {
-    if (cldImage == null) {
-      cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
-    }
-    this.cldImage = cldImage;
-  }
-
   public String getImage() {
     return cldImage != null ? cldImage.getUrl() : "";
   }
@@ -90,8 +83,20 @@ public class Product implements Persistable<String>, CloudinaryImageManager {
 
   @LastModifiedDate private Instant updatedAt;
 
-  public Product(String name, long price, String image, String description) {
+  @JsonCreator
+  public Product(
+      @JsonProperty("name") String name,
+      @JsonProperty("categoryId") String categoryId,
+      @JsonProperty("price") long price) {
     this.name = name;
+    this.price = price;
+    this.categoryId = categoryId;
+    this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
+  }
+
+  public Product(String name, String categoryId, long price, String description) {
+    this.name = name;
+    this.categoryId = categoryId;
     this.price = price;
     this.description = description;
     this.cldImage = new CloudinaryImage(getCloudinaryFolder(), name);
